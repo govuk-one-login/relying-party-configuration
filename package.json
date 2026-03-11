@@ -7,10 +7,20 @@
     "node": "24.14.x"
   },
   "scripts": {
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "lint": "prettier --check \"*/**/*.{ts,json}\" ; eslint . ",
+    "lint:fix": "prettier . --write \"*/**/*.{ts,json}\" ; eslint . --fix"
+  },
+  "dependencies": {
+    "@eslint/compat": "^2.0.3",
+    "jiti": "^2.6.1",
+    "prettier": "^3.4.2"
   },
   "devDependencies": {
+    "eslint": "^9.39.2",
     "nodemon": "^3.1.11",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.55.0"
   }
 }
