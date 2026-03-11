@@ -1,0 +1,16 @@
+{
+  "name": "relying-party-configuration",
+  "version": "1.0.0",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": "24.14.x"
+  },
+  "scripts": {
+    "dev": "nodemon"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2"
+  }
+}
