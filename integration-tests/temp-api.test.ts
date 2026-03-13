@@ -8,11 +8,15 @@ describe("Temp API test", () => {
     expect(response.ok).toBe(true);
   });
 });
-describe("Localstack test", () => {
-  it("should connect to localstack", async () => {
+describe("DynamoDBLocal test", () => {
+  it("should connect to DynamoDBLocal", async () => {
     const dynamoClient = new DynamoDBClient({
       region: process.env.AWS_REGION,
-      endpoint: process.env.LOCALSTACK_ENDPOINT,
+      endpoint: process.env.DYNAMODB_LOCAL_ENDPOINT,
+      credentials: {
+        accessKeyId: "test",
+        secretAccessKey: "test",
+      },
     });
 
     const docClient = DynamoDBDocument.from(dynamoClient);

@@ -9,7 +9,8 @@ Integration tests are found in the `integration-tests` folder. To run the integr
 
 ```sh
 npm install
-npm run localstack:up        # Starts LocalStack in its own container (for DynamoDB interactions)
+npm run dynamodblocal:up     # Starts DynamoDBLocal in its own container
+npm run build
 npm run start:local:api      # Starts the API GW locally
 npm run test:integration
 ```

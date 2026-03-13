@@ -11,10 +11,11 @@
     "lint": "prettier --check \"*/**/*.{ts,json}\" ; eslint . ",
     "lint:fix": "prettier . --write \"*/**/*.{ts,json}\" ; eslint . --fix",
     "test:unit": "vitest --run",
-    "start:local": "sam local start-api --template template.yml --warm-containers EAGER",
+    "build": "sam build --template template.yml --build-dir build",
+    "start:local": "sam local start-api --template build/template.yaml --warm-containers EAGER",
     "test:integration": "vitest --run --config vitest.integration.config.ts",
-    "localstack:up": "docker compose -f docker-compose.local.yml up -d",
-    "localstack:down": "docker compose -f docker-compose.local.yml down"
+    "dynamodblocal:up": "docker compose -f docker-compose.local.yml up -d",
+    "dynamodblocal:down": "docker compose -f docker-compose.local.yml down"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1008.0",
