@@ -12,7 +12,7 @@ describe("Localstack test", () => {
   it("should connect to localstack", async () => {
     const dynamoClient = new DynamoDBClient({
       region: process.env.AWS_REGION,
-      endpoint: process.env.LOCALSTACK_ENDPOINT,
+      endpoint: process.env.DYNAMODB_LOCAL_ENDPOINT,
     });
 
     const docClient = DynamoDBDocument.from(dynamoClient);

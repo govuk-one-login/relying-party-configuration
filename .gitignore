@@ -141,5 +141,5 @@ vite.config.ts.timestamp-*
 # AWS SAM cache
 .aws-sam/**
 
-# LocalStack local volume
-volume/**
+# DynamoDBLocal
+docker/dynamodb/**
