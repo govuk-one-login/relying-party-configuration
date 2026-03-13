@@ -10,15 +10,19 @@
     "dev": "nodemon",
     "lint": "prettier --check \"*/**/*.{ts,json}\" ; eslint . ",
     "lint:fix": "prettier . --write \"*/**/*.{ts,json}\" ; eslint . --fix",
-    "test:unit": "vitest --run"
+    "test:unit": "vitest --run",
+    "start:local": "sam local start-api --template template.yml --warm-containers EAGER",
+    "test:integration": "vitest --config vitest.integration.config.ts"
   },
   "dependencies": {
     "@eslint/compat": "^2.0.3",
+    "esbuild": "^0.27.4",
     "jiti": "^2.6.1",
     "prettier": "^3.4.2",
     "vitest": "^4.0.18"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.161",
     "eslint": "^9.39.2",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
