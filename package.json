@@ -9,12 +9,14 @@
   "scripts": {
     "dev": "nodemon",
     "lint": "prettier --check \"*/**/*.{ts,json}\" ; eslint . ",
-    "lint:fix": "prettier . --write \"*/**/*.{ts,json}\" ; eslint . --fix"
+    "lint:fix": "prettier . --write \"*/**/*.{ts,json}\" ; eslint . --fix",
+    "test:unit": "vitest --run"
   },
   "dependencies": {
     "@eslint/compat": "^2.0.3",
     "jiti": "^2.6.1",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "vitest": "^4.0.18"
   },
   "devDependencies": {
     "eslint": "^9.39.2",
