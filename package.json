@@ -14,8 +14,8 @@
     "build": "sam build --template template.yml --build-dir build",
     "start:local": "sam local start-api --template build/template.yaml --warm-containers EAGER",
     "test:integration": "vitest --run --config vitest.integration.config.ts",
-    "dynamodblocal:up": "docker compose -f docker-compose.local.yml up -d",
-    "dynamodblocal:down": "docker compose -f docker-compose.local.yml down"
+    "dynamodblocal:up": "docker compose -f dynamodb.local.yml up -d",
+    "dynamodblocal:down": "docker compose -f dynamodb.local.yml down"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1008.0",
