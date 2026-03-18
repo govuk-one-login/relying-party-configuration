@@ -22,10 +22,6 @@ export default defineConfig(
     },
   },
   {
-    ignores: [
-      "eslint.config.ts",
-      "vitest.config.ts",
-      "integration-tests/playwright.config.ts",
-    ],
+    ignores: ["eslint.config.ts", "vitest.config.ts"],
   }
 );
