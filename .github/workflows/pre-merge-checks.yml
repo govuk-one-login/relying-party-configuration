@@ -49,7 +49,7 @@ jobs:
       - name: Configure Docker for ARM
         run: docker run --privileged --rm tonistiigi/binfmt --install all
       - name: Start and run tests
-        run: npm run start:local & (until curl --silent 127.0.0.1:3000/authorize; do sleep 1; done && npm run test:unit; npm run test:integration; exit 0)
+        run: npm run test:ci
   detect-secrets:
     name: Detect Secrets
     runs-on: ubuntu-latest
