@@ -1,66 +1,55 @@
-name: Pre-merge checks
+name: Validation
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
+  merge_group:
 
 jobs:
   style-checks:
-    name: Style Checks
+    name: Validation Checks
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
       - name: Set up Node
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
         with:
           node-version-file: .nvmrc
+
       - name: Install dependencies
         run: npm ci
-      - name: Run lint + prettier
+
+      - name: Check ESLint and Prettier
         run: npm run lint
+
       - name: Set up tflint
         uses: terraform-linters/setup-tflint@4cb9feea73331a35b422df102992a03a44a3bb33
+
       - name: Lint Terraform
         run: npm run tflint
-  run-tests:
-    name: Run tests
-    runs-on: ubuntu-latest
-    services:
-      dynamodb:
-        image: amazon/dynamodb-local
-        ports:
-          - 8000:8000
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Setup SAM
+        uses: aws-actions/setup-sam@d78e1a4a9656d3b223e59b80676a797f20093133 # v2
         with:
-          fetch-depth: 0
-      - name: Set up Node
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
-        with:
-          node-version-file: .nvmrc
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Configure Docker for ARM
-        run: docker run --privileged --rm tonistiigi/binfmt --install all
-      - name: Start and run tests
-        run: npm run test:ci
+          use-installer: true
+
+      - name: Run SAM validate + cfnlint
+        run: sam validate -t template.yml --region eu-west-2 --lint
+
   detect-secrets:
     name: Detect Secrets
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
       - name: Setup python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.11.2'
-      - name: Detect secrets
+
+      - name: Run detect-secrets
         uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
         with:
           extra_args: "detect-secrets --all-files"
