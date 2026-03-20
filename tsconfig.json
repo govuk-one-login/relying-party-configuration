@@ -10,5 +10,9 @@
     "outDir": "./dist",
     "types": ["vitest/globals", "node"]
   },
-  "include": ["src/**/*", "integration-tests/**/*"]
+  "include": [
+    "src/**/*",
+    "integration-tests/**/*",
+    "vitest.integration.config.ts"
+  ]
 }

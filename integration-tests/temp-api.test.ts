@@ -14,8 +14,9 @@ describe("DynamoDBLocal test", () => {
       region: process.env.AWS_REGION,
       endpoint: process.env.DYNAMODB_LOCAL_ENDPOINT,
       credentials: {
-        accessKeyId: "test",
-        secretAccessKey: "test",
+        // We need to provide some credential values for DynamoDBLocal, so ignoring from detect-secrets
+        accessKeyId: "test", // pragma: allowlist secret
+        secretAccessKey: "test", // pragma: allowlist secret
       },
     });
 
