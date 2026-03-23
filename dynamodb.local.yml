@@ -9,5 +9,5 @@ services:
       - "./docker/dynamodb:/home/dynamodblocal/data"
     working_dir: /home/dynamodblocal
     environment:
-      AWS_ACCESS_KEY_ID: "DUMMYIDEXAMPLE"
-      AWS_SECRET_ACCESS_KEY: "DUMMYEXAMPLEKEY"
+      AWS_ACCESS_KEY_ID: "DUMMYIDEXAMPLE" # pragma: allowlist secret
+      AWS_SECRET_ACCESS_KEY: "DUMMYEXAMPLEKEY" # pragma: allowlist secret
