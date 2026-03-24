@@ -144,3 +144,7 @@ build.toml
 
 # DynamoDBLocal
 docker/dynamodb/**
+
+# Terraform outputs
+infra/.terraform
+infra/.terraform.lock.hcl
