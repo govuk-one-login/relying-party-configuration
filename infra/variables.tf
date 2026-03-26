@@ -30,3 +30,8 @@ variable "owner_email" {
   description = "The owning team's Google Group email address. Used for tagging and ECR scan notifications"
   default     = "di-orchestration@digital.cabinet-office.gov.uk"
 }
+
+variable "signer_allowed_accounts" {
+  type        = list(string)
+  description = "The AWS account IDs that can read the code signing KMS key"
+}
