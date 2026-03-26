@@ -1,0 +1,3 @@
+bucket = "di-rp-configuration-integration-tfstate"
+key    = "rp-configuration.tfstate"
+region = "eu-west-2"
