@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: Client Registry API (read only)
+  version: 1.0.0
+paths:
+  /clients:
+    get:
+      summary: Get all clients
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+              example:
+                - clientID: "abc123-client-id"
+                  clientName: "My Example Service"
+                  publicKeySource: "STATIC"
+                  publicKey: "MIIBIjANBgkqhkiG9w..."
+                  jwksUrl: null
+                  scopes:
+                    - "openid"
+                    - "email"
+                    - "phone"
+                  redirectUrls:
+                    - "https://example.com/callback"
+                  contacts:
+                    - "<email>"
+                  postLogoutRedirectUrls:
+                    - "https://example.com/signed-out"
+                  backChannelLogoutUri: "https://example.com/back-channel-logout"
+                  serviceType: "MANDATORY"
+                  sectorIdentifierUri: "https://example.com"
+                  subjectType: "pairwise"
+                  isActive: true
+                  cookieConsentShared: false
+                  testClient: false
+                  testClientEmailAllowlist: []
+                  jarValidationRequired: false
+                  claims:
+                    - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
+                  clientType: "web"
+                  identityVerificationSupported: true
+                  oneLoginService: false
+                  idTokenSigningAlgorithm: "ES256"
+                  tokenAuthMethod: "private_key_jwt"
+                  clientSecret: null
+                  smokeTest: false
+                  landingPageUrl: "https://example.com"
+                  clientLoCs:
+                    - "P2"
+                    - "P0"
+                  permitMissingNonce: false
+                  channel: "web"
+                  maxAgeEnabled: false
+                  pkceEnforced: true
+                  rateLimit: 100
+
+  /client/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: "Client ID"
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get client by clientId
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+              example:
+                clientID: "abc123-client-id"
+                clientName: "My Example Service"
+                publicKeySource: "STATIC"
+                publicKey: "MIIBIjANBgkqhkiG9w..."
+                jwksUrl: null
+                scopes:
+                  - "openid"
+                  - "email"
+                  - "phone"
+                redirectUrls:
+                  - "https://example.com/callback"
+                contacts:
+                  - "<email>"
+                postLogoutRedirectUrls:
+                  - "https://example.com/signed-out"
+                backChannelLogoutUri: "https://example.com/back-channel-logout"
+                serviceType: "MANDATORY"
+                sectorIdentifierUri: "https://example.com"
+                subjectType: "pairwise"
+                isActive: true
+                cookieConsentShared: false
+                testClient: false
+                testClientEmailAllowlist: []
+                jarValidationRequired: false
+                claims:
+                  - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
+                clientType: "web"
+                identityVerificationSupported: true
+                oneLoginService: false
+                idTokenSigningAlgorithm: "ES256"
+                tokenAuthMethod: "private_key_jwt"
+                clientSecret: null
+                smokeTest: false
+                landingPageUrl: "https://example.com"
+                clientLoCs:
+                  - "P2"
+                  - "P0"
+                permitMissingNonce: false
+                channel: "web"
+                maxAgeEnabled: false
+                pkceEnforced: true
+                rateLimit: 100
+
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        clientID:
+          type: string
+        clientName:
+          type: string
+        publicKeySource:
+          type: string
+          default: "STATIC"
+        publicKey:
+          type: string
+        jwksUrl:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        redirectUrls:
+          type: array
+          items:
+            type: string
+        contacts:
+          type: array
+          items:
+            type: string
+        postLogoutRedirectUrls:
+          type: array
+          items:
+            type: string
+        backChannelLogoutUri:
+          type: string
+        serviceType:
+          type: string
+        sectorIdentifierUri:
+          type: string
+        subjectType:
+          type: string
+        isActive:
+          type: boolean
+          default: true
+        cookieConsentShared:
+          type: boolean
+          default: false
+        testClient:
+          type: boolean
+          default: false
+        testClientEmailAllowlist:
+          type: array
+          items:
+            type: string
+        jarValidationRequired:
+          type: boolean
+          default: false
+        claims:
+          type: array
+          items:
+            type: string
+        clientType:
+          type: string
+        identityVerificationSupported:
+          type: boolean
+          default: false
+        oneLoginService:
+          type: boolean
+          default: false
+        idTokenSigningAlgorithm:
+          type: string
+          default: "ES256"
+        tokenAuthMethod:
+          type: string
+        clientSecret:
+          type: string
+        smokeTest:
+          type: boolean
+          default: false
+        landingPageUrl:
+          type: string
+        clientLoCs:
+          type: array
+          items:
+            type: string
+        permitMissingNonce:
+          type: boolean
+          default: false
+        channel:
+          type: string
+          default: "web"
+        maxAgeEnabled:
+          type: boolean
+          default: false
+        pkceEnforced:
+          type: boolean
+          default: false
+        rateLimit:
+          type: integer
+          nullable: true
