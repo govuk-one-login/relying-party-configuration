@@ -5,59 +5,38 @@ info:
 paths:
   /clients:
     get:
-      summary: Get all clients
+      summary: Get all clients (paginated)
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 20
       responses:
         "200":
           description: Success
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Client"
+                $ref: "#/components/schemas/PaginatedResponse"
               example:
-                - clientID: "abc123-client-id"
-                  clientName: "My Example Service"
-                  publicKeySource: "STATIC"
-                  publicKey: "MIIBIjANBgkqhkiG9w..."
-                  jwksUrl: null
-                  scopes:
-                    - "openid"
-                    - "email"
-                    - "phone"
-                  redirectUrls:
-                    - "https://example.com/callback"
-                  contacts:
-                    - "<email>"
-                  postLogoutRedirectUrls:
-                    - "https://example.com/signed-out"
-                  backChannelLogoutUri: "https://example.com/back-channel-logout"
-                  serviceType: "MANDATORY"
-                  sectorIdentifierUri: "https://example.com"
-                  subjectType: "pairwise"
-                  isActive: true
-                  cookieConsentShared: false
-                  testClient: false
-                  testClientEmailAllowlist: []
-                  jarValidationRequired: false
-                  claims:
-                    - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
-                  clientType: "web"
-                  identityVerificationSupported: true
-                  oneLoginService: false
-                  idTokenSigningAlgorithm: "ES256"
-                  tokenAuthMethod: "private_key_jwt"
-                  clientSecret: null
-                  smokeTest: false
-                  landingPageUrl: "https://example.com"
-                  clientLoCs:
-                    - "P2"
-                    - "P0"
-                  permitMissingNonce: false
-                  channel: "web"
-                  maxAgeEnabled: false
-                  pkceEnforced: true
-                  rateLimit: 100
+                page: 1
+                page_size: 3
+                total_items: 6
+                total_pages: 2
+                clients:
+                  - clientId: testClientId1
+                    clientName: My Test Client 1
+                  - clientId: testClientId2
+                    clientName: My Test Client 2
+                  - clientId: testClientId3
+                    clientName: My Test Client 3
+
     post:
       summary: Create a new client
       requestBody:
@@ -153,6 +132,33 @@ paths:
 
 components:
   schemas:
+    PaginatedResponse:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_items:
+          type: integer
+        total_pages:
+          type: integer
+    PaginatedClients:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            clients:
+              type: array
+              items:
+                $ref: '#/components/schemas/ClientSummary'
+    ClientSummary:
+      type: object
+      properties:
+        clientID:
+          type: string
+        clientName:
+          type: string
     Client:
       type: object
       properties:
