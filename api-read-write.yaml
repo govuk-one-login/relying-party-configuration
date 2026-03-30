@@ -125,18 +125,14 @@ components:
       type: object
       required:
         - clientName
-        - publicKeySource
+        - clientAuthentication
         - redirectUrls
         - scopes
       properties:
         clientName:
           type: string
-        publicKeySource:
-          $ref: '#/components/schemas/PublicKeySource'
-        publicKey:
-          type: string
-        jwksUrl:
-          type: string
+        clientAuthentication:
+          $ref: '#/components/schemas/ClientAuthentication'
         scopes:
           $ref: '#/components/schemas/Scopes'
         redirectUrls:
@@ -187,8 +183,6 @@ components:
           $ref: '#/components/schemas/IdTokenSigningAlgorithm'
         tokenAuthMethod:
           $ref: '#/components/schemas/TokenAuthMethod'
-        clientSecret:
-          type: string
         smokeTest:
           type: boolean
           default: false
@@ -214,9 +208,9 @@ components:
           nullable: true
       example:
         clientName: 'My Example Service'
-        publicKeySource: 'STATIC'
-        publicKey: 'MIIBIjANBgkqhkiG9w...'
-        jwksUrl: null
+        clientAuthentication:
+          type: JWKS
+          jwksUrl: 'http://example.com'
         scopes:
           - 'openid'
           - 'email'
@@ -316,3 +310,49 @@ components:
       enum:
         - private_key_jwt
         - client_secret_post
+    ClientAuthentication:
+      oneOf:
+        - $ref: '#/components/schemas/JwksAuthentication'
+        - $ref: '#/components/schemas/StaticPublicKeyAuthentication'
+        - $ref: '#/components/schemas/StaticClientSecretAuthentication'
+      discriminator:
+        propertyName: type
+        mapping:
+          JWKS: '#/components/schemas/JwksAuthentication'
+          STATIC: '#/components/schemas/StaticPublicKeyAuthentication'
+          CLIENT_SECRET: '#/components/schemas/StaticClientSecretAuthentication'
+    JwksAuthentication:
+      type: object
+      required:
+        - type
+        - jwksUrl
+      properties:
+        type:
+          type: string
+          enum: [JWKS]
+        jwksUrl:
+          type: string
+          format: uri
+          example: 'http://test.com'
+    StaticPublicKeyAuthentication:
+      type: object
+      required:
+        - type
+        - publicKey
+      properties:
+        type:
+          type: string
+          enum: [STATIC]
+        publicKey:
+          type: string
+    StaticClientSecretAuthentication:
+      type: object
+      required:
+        - type
+        - clientSecret
+      properties:
+        type:
+          type: string
+          enum: [CLIENT_SECRET]
+        clientSecret:
+          type: string
