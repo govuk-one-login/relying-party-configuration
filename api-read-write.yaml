@@ -45,47 +45,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Client'
-            example:
-              clientName: "My Example Service"
-              publicKeySource: "STATIC"
-              publicKey: "MIIBIjANBgkqhkiG9w..."
-              jwksUrl: null
-              scopes:
-                - "openid"
-                - "email"
-                - "phone"
-              redirectUrls:
-                - "https://example.com/callback"
-              contacts:
-                - "<email>"
-              postLogoutRedirectUrls:
-                - "https://example.com/signed-out"
-              backChannelLogoutUri: "https://example.com/back-channel-logout"
-              serviceType: "MANDATORY"
-              sectorIdentifierUri: "https://example.com"
-              subjectType: "pairwise"
-              isActive: true
-              cookieConsentShared: false
-              testClient: false
-              jarValidationRequired: false
-              claims:
-                - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
-              clientType: "web"
-              identityVerificationSupported: true
-              oneLoginService: false
-              idTokenSigningAlgorithm: "ES256"
-              tokenAuthMethod: "private_key_jwt"
-              clientSecret: null
-              smokeTest: false
-              landingPageUrl: "https://example.com"
-              clientLoCs:
-                - "P2"
-                - "P0"
-              permitMissingNonce: false
-              channel: "web"
-              maxAgeEnabled: false
-              pkceEnforced: true
-              rateLimit: 100
       responses:
         "200":
           description: Success
@@ -106,7 +65,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Client'
+                $ref: '#/components/schemas/ClientWithID'
     put:
       summary: Update an existing client
       requestBody:
@@ -115,48 +74,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Client'
-            example:
-              clientID: "abc123-client-id"
-              clientName: "My Example Service"
-              publicKeySource: "STATIC"
-              publicKey: "MIIBIjANBgkqhkiG9w..."
-              jwksUrl: null
-              scopes:
-                - "openid"
-                - "email"
-                - "phone"
-              redirectUrls:
-                - "https://example.com/callback"
-              contacts:
-                - "<email>"
-              postLogoutRedirectUrls:
-                - "https://example.com/signed-out"
-              backChannelLogoutUri: "https://example.com/back-channel-logout"
-              serviceType: "MANDATORY"
-              sectorIdentifierUri: "https://example.com"
-              subjectType: "pairwise"
-              isActive: true
-              cookieConsentShared: false
-              testClient: false
-              jarValidationRequired: false
-              claims:
-                - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
-              clientType: "web"
-              identityVerificationSupported: true
-              oneLoginService: false
-              idTokenSigningAlgorithm: "ES256"
-              tokenAuthMethod: "private_key_jwt"
-              clientSecret: null
-              smokeTest: false
-              landingPageUrl: "https://example.com"
-              clientLoCs:
-                - "P2"
-                - "P0"
-              permitMissingNonce: false
-              channel: "web"
-              maxAgeEnabled: false
-              pkceEnforced: true
-              rateLimit: 100
       responses:
         "200":
           description: Success
@@ -195,6 +112,13 @@ components:
           type: string
         clientName:
           type: string
+    ClientWithID:
+      allOf:
+        - $ref: '#/components/schemas/Client'
+        - type: object
+          properties:
+            clientID:
+              type: string
     Client:
       type: object
       properties:
@@ -285,6 +209,47 @@ components:
         rateLimit:
           type: integer
           nullable: true
+      example:
+        clientName: "My Example Service"
+        publicKeySource: "STATIC"
+        publicKey: "MIIBIjANBgkqhkiG9w..."
+        jwksUrl: null
+        scopes:
+          - "openid"
+          - "email"
+          - "phone"
+        redirectUrls:
+          - "https://example.com/callback"
+        contacts:
+          - "<email>"
+        postLogoutRedirectUrls:
+          - "https://example.com/signed-out"
+        backChannelLogoutUri: "https://example.com/back-channel-logout"
+        serviceType: "MANDATORY"
+        sectorIdentifierUri: "https://example.com"
+        subjectType: "pairwise"
+        isActive: true
+        cookieConsentShared: false
+        testClient: false
+        jarValidationRequired: false
+        claims:
+          - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
+        clientType: "web"
+        identityVerificationSupported: true
+        oneLoginService: false
+        idTokenSigningAlgorithm: "ES256"
+        tokenAuthMethod: "private_key_jwt"
+        clientSecret: null
+        smokeTest: false
+        landingPageUrl: "https://example.com"
+        clientLoCs:
+          - "P2"
+          - "P0"
+        permitMissingNonce: false
+        channel: "web"
+        maxAgeEnabled: false
+        pkceEnforced: true
+        rateLimit: 100
     PublicKeySource:
       type: string
       enum:
