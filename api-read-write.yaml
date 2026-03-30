@@ -67,7 +67,6 @@ paths:
               isActive: true
               cookieConsentShared: false
               testClient: false
-              testClientEmailAllowlist: []
               jarValidationRequired: false
               claims:
                 - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
@@ -139,7 +138,6 @@ paths:
               isActive: true
               cookieConsentShared: false
               testClient: false
-              testClientEmailAllowlist: []
               jarValidationRequired: false
               claims:
                 - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
@@ -243,10 +241,6 @@ components:
         testClient:
           type: boolean
           default: false
-        testClientEmailAllowlist:
-          type: array
-          items:
-            type: string
         jarValidationRequired:
           type: boolean
           default: false
