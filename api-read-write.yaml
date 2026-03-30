@@ -18,12 +18,12 @@ paths:
             type: integer
             default: 20
       responses:
-        "200":
+        '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedClients"
+                $ref: '#/components/schemas/PaginatedClients'
 
     post:
       summary: Create a new client
@@ -34,21 +34,21 @@ paths:
             schema:
               $ref: '#/components/schemas/Client'
       responses:
-        "200":
+        '200':
           description: Success
 
   /client/{id}:
     parameters:
       - name: id
         in: path
-        description: "Client ID"
+        description: 'Client ID'
         required: true
         schema:
           type: string
     get:
       summary: Get client by clientId
       responses:
-        "200":
+        '200':
           description: Success
           content:
             application/json:
@@ -63,12 +63,12 @@ paths:
             schema:
               $ref: '#/components/schemas/Client'
       responses:
-        "200":
+        '200':
           description: Success
     delete:
       summary: Delete the client
       responses:
-        "200":
+        '200':
           description: Success
 
 components:
@@ -210,43 +210,43 @@ components:
           type: integer
           nullable: true
       example:
-        clientName: "My Example Service"
-        publicKeySource: "STATIC"
-        publicKey: "MIIBIjANBgkqhkiG9w..."
+        clientName: 'My Example Service'
+        publicKeySource: 'STATIC'
+        publicKey: 'MIIBIjANBgkqhkiG9w...'
         jwksUrl: null
         scopes:
-          - "openid"
-          - "email"
-          - "phone"
+          - 'openid'
+          - 'email'
+          - 'phone'
         redirectUrls:
-          - "https://example.com/callback"
+          - 'https://example.com/callback'
         contacts:
-          - "<email>"
+          - '<email>'
         postLogoutRedirectUrls:
-          - "https://example.com/signed-out"
-        backChannelLogoutUri: "https://example.com/back-channel-logout"
-        serviceType: "MANDATORY"
-        sectorIdentifierUri: "https://example.com"
-        subjectType: "pairwise"
+          - 'https://example.com/signed-out'
+        backChannelLogoutUri: 'https://example.com/back-channel-logout'
+        serviceType: 'MANDATORY'
+        sectorIdentifierUri: 'https://example.com'
+        subjectType: 'pairwise'
         isActive: true
         cookieConsentShared: false
         testClient: false
         jarValidationRequired: false
         claims:
-          - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
-        clientType: "web"
+          - 'https://vocab.account.gov.uk/v1/coreIdentityJWT'
+        clientType: 'web'
         identityVerificationSupported: true
         oneLoginService: false
-        idTokenSigningAlgorithm: "ES256"
-        tokenAuthMethod: "private_key_jwt"
+        idTokenSigningAlgorithm: 'ES256'
+        tokenAuthMethod: 'private_key_jwt'
         clientSecret: null
         smokeTest: false
-        landingPageUrl: "https://example.com"
+        landingPageUrl: 'https://example.com'
         clientLoCs:
-          - "P2"
-          - "P0"
+          - 'P2'
+          - 'P0'
         permitMissingNonce: false
-        channel: "web"
+        channel: 'web'
         maxAgeEnabled: false
         pkceEnforced: true
         rateLimit: 100
