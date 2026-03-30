@@ -23,18 +23,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedResponse"
+                $ref: "#/components/schemas/PaginatedClients"
               example:
                 page: 1
                 page_size: 3
                 total_items: 6
                 total_pages: 2
                 clients:
-                  - clientId: testClientId1
+                  - clientID: testClientId1
                     clientName: My Test Client 1
-                  - clientId: testClientId2
+                  - clientID: testClientId2
                     clientName: My Test Client 2
-                  - clientId: testClientId3
+                  - clientID: testClientId3
                     clientName: My Test Client 3
 
 
@@ -136,8 +136,7 @@ components:
         clientName:
           type: string
         publicKeySource:
-          type: string
-          default: "STATIC"
+          $ref: '#/components/schemas/PublicKeySource'
         publicKey:
           type: string
         jwksUrl:
@@ -195,8 +194,7 @@ components:
           type: boolean
           default: false
         idTokenSigningAlgorithm:
-          type: string
-          default: "ES256"
+          $ref: '#/components/schemas/IdTokenSigningAlgorithm'
         tokenAuthMethod:
           type: string
         clientSecret:
@@ -214,8 +212,7 @@ components:
           type: boolean
           default: false
         channel:
-          type: string
-          default: "web"
+          $ref: '#/components/schemas/Channel'
         maxAgeEnabled:
           type: boolean
           default: false
@@ -225,3 +222,22 @@ components:
         rateLimit:
           type: integer
           nullable: true
+    PublicKeySource:
+      type: string
+      enum:
+        - STATIC
+        - JWKS
+      default: STATIC
+    IdTokenSigningAlgorithm:
+      type: string
+      enum:
+        - ES256
+        - RS256
+      default: ES256
+    Channel:
+      type: string
+      enum:
+        - web
+        - generic_app
+        - strategic_app
+      default: web
