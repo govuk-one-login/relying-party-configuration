@@ -24,19 +24,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedClients"
-              example:
-                page: 1
-                page_size: 3
-                total_items: 6
-                total_pages: 2
-                clients:
-                  - clientID: testClientId1
-                    clientName: My Test Client 1
-                  - clientID: testClientId2
-                    clientName: My Test Client 2
-                  - clientID: testClientId3
-                    clientName: My Test Client 3
-
 
   /client/{id}:
     parameters:
@@ -78,6 +65,18 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ClientSummary'
+      example:
+        page: 1
+        page_size: 3
+        total_items: 6
+        total_pages: 2
+        clients:
+          - clientID: testClientId1
+            clientName: My Test Client 1
+          - clientID: testClientId2
+            clientName: My Test Client 2
+          - clientID: testClientId3
+            clientName: My Test Client 3
     ClientSummary:
       type: object
       properties:
