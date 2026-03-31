@@ -61,7 +61,7 @@ paths:
     put:
       summary: Update an existing client
       requestBody:
-        description: Client to update
+        description: Client to update (note that partial updates are not supported)
         content:
           application/json:
             schema:
