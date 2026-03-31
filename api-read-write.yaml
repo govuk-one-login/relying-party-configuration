@@ -132,30 +132,42 @@ components:
         clientName:
           type: string
         clientAuthentication:
+          description: How the service should authenticate with OneLogin
           $ref: '#/components/schemas/ClientAuthentication'
         scopes:
+          description: The scopes that this service is requesting
           $ref: '#/components/schemas/Scopes'
         redirectUrls:
+          description: The URL to redirect users to once they have logged in
           type: array
           items:
             type: string
+            format: uri
         contacts:
+          description: The email addresses of people who can be contacted about this service if the need arises
           type: array
           items:
             type: string
         postLogoutRedirectUrls:
+          description: The valid redirect URLs that a user can be redirected to once they have logged out
           type: array
           items:
             type: string
+            format: uri
         backChannelLogoutUri:
+          description: A URI which a post request can be sent to after the user has logged out.
           type: string
+          format: uri
         serviceType:
           $ref: '#/components/schemas/ServiceType'
         sectorIdentifierUri:
+          description: Used to calculate the subject ID
           type: string
         subjectType:
+          description: Which subject ID should be used to calculate the pairwise subject ID
           $ref: '#/components/schemas/SubjectType'
         isActive:
+          description: Whether this integration is enabled or not.
           type: boolean
           default: true
         cookieConsentShared:
@@ -165,45 +177,54 @@ components:
           type: boolean
           default: false
         jarValidationRequired:
+          description: If enabled, rejects any non-JWT requests, and rejects any JWTs that are signed incorrectly.
           type: boolean
           default: false
         claims:
+          description: Required if identityVerificationSupported is true. The list of requested claims when performing an identity journey.
           type: array
           items:
             $ref: '#/components/schemas/Claim'
         clientType:
-          type: string
+          $ref: '#/components/schemas/ClientType'
         identityVerificationSupported:
+          description: Enables support for identity journeys.
           type: boolean
           default: false
         oneLoginService:
           type: boolean
           default: false
         idTokenSigningAlgorithm:
+          description: Algorithm used to sign the ID token
           $ref: '#/components/schemas/IdTokenSigningAlgorithm'
-        tokenAuthMethod:
-          $ref: '#/components/schemas/TokenAuthMethod'
         smokeTest:
           type: boolean
           default: false
         landingPageUrl:
+          description: Page to be redirected to after in-person identity check
           type: string
         clientLoCs:
+          description: Pertains to the level of security for identity verification. Prior approval is required for low and high levels of confidence
           type: array
           items:
             $ref: '#/components/schemas/ClientLoC'
         permitMissingNonce:
+          description: Allows missing nonce in auth request. If identityVerificationSupported is true, this will always be false
           type: boolean
           default: false
         channel:
+          description: Determines the layout of the login pages (web for web browser, generic_app for mobile app)
           $ref: '#/components/schemas/Channel'
         maxAgeEnabled:
+          description: Whether to enforce max age for auth requests. If the auth time for the current session has expired, a new session will be generated
           type: boolean
           default: false
         pkceEnforced:
+          description: Whether to use PKCE code challenges
           type: boolean
           default: false
         rateLimit:
+          description: The maximum number of requests allowed for this client in a 1 minute period
           type: integer
           nullable: true
       example:
@@ -211,6 +232,7 @@ components:
         clientAuthentication:
           type: JWKS
           jwksUrl: 'http://example.com'
+          tokenAuthMethod: 'private_key_jwt'
         scopes:
           - 'openid'
           - 'email'
@@ -235,7 +257,6 @@ components:
         identityVerificationSupported: true
         oneLoginService: false
         idTokenSigningAlgorithm: 'ES256'
-        tokenAuthMethod: 'private_key_jwt'
         clientSecret: null
         smokeTest: false
         landingPageUrl: 'https://example.com'
@@ -322,6 +343,7 @@ components:
           STATIC: '#/components/schemas/StaticPublicKeyAuthentication'
           CLIENT_SECRET: '#/components/schemas/StaticClientSecretAuthentication'
     JwksAuthentication:
+      description: Authenticate using a JWKS endpoint
       type: object
       required:
         - type
@@ -330,11 +352,15 @@ components:
         type:
           type: string
           enum: [JWKS]
+          tokenAuthMethod:
+            $ref: '#/components/schemas/TokenAuthMethod'
         jwksUrl:
           type: string
           format: uri
           example: 'http://test.com'
+        tokenAuthMethod: private_key_jwt
     StaticPublicKeyAuthentication:
+      description: Authenticate using a static public key
       type: object
       required:
         - type
@@ -343,9 +369,13 @@ components:
         type:
           type: string
           enum: [STATIC]
+          tokenAuthMethod:
+            $ref: '#/components/schemas/TokenAuthMethod'
         publicKey:
           type: string
+        tokenAuthMethod: private_key_jwt
     StaticClientSecretAuthentication:
+      description: Authenticate using a public key generated from a private key. Note that this requires prior approval
       type: object
       required:
         - type
@@ -354,5 +384,13 @@ components:
         type:
           type: string
           enum: [CLIENT_SECRET]
+          tokenAuthMethod:
+            $ref: '#/components/schemas/TokenAuthMethod'
         clientSecret:
           type: string
+        tokenAuthMethod: client_secret_post
+    ClientType:
+      type: string
+      enum:
+          - web
+          - app
