@@ -12,7 +12,7 @@ paths:
           schema:
             type: integer
             default: 1
-        - name: page_size
+        - name: pageSize
           in: query
           schema:
             type: integer
@@ -50,11 +50,11 @@ components:
       properties:
         page:
           type: integer
-        page_size:
+        pageSize:
           type: integer
-        total_items:
+        totalItems:
           type: integer
-        total_pages:
+        totalPages:
           type: integer
     PaginatedClients:
       allOf:
@@ -67,9 +67,9 @@ components:
                 $ref: '#/components/schemas/ClientSummary'
       example:
         page: 1
-        page_size: 3
-        total_items: 6
-        total_pages: 2
+        pageSize: 3
+        totalItems: 6
+        totalPages: 2
         clients:
           - clientID: testClientId1
             clientName: My Test Client 1
