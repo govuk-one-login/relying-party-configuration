@@ -35,3 +35,33 @@ variable "signer_allowed_accounts" {
   type        = list(string)
   description = "The AWS account IDs that can read the code signing KMS key"
 }
+variable "signing_profile_arn" {
+  type        = string
+  description = "The ARN of the signing profile used to sign Lambda code. This is the shared profile deployed in build from the signer stack"
+}
+variable "signing_profile_version_arn" {
+  type        = string
+  description = "The ARN of the signing profile version used to sign Lambda code. This is the shared profile deployed in build from the signer stack"
+}
+variable "api_artifact_source_bucket_arn" {
+  type        = string
+  description = "The ARN of the promotion bucket from the previous environment's API pipeline"
+  default     = "none"
+}
+
+variable "api_artifact_source_bucket_event_trigger_role_arn" {
+  type        = string
+  description = "The ARN of the role to assume for promotion events from the previous environment's API pipeline"
+  default     = "none"
+}
+variable "repository_name" {
+  type        = string
+  description = "The Github repository name"
+  default     = "relying-party-configuration"
+}
+
+variable "allowed_promotion_accounts" {
+  type        = list(string)
+  description = "The AWS account IDs that this pipeline will promote to. Maximum 2 accounts"
+  default     = []
+}
