@@ -1,0 +1,30 @@
+name: Deploy API Dev
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-checks:
+    steps:
+      - uses: ./.github/workflows/unit-tests.yml
+      - uses: ./.github/workflows/integration-tests.yml
+      - uses: ./.github/workflows/sonarcloud.yml
+        secrets:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: ./.github/workflows/terraform-checks.yml
+      - uses: ./.github/workflows/checkov.yml
+      - uses: ./.github/workflows/validation.yml
+        secrets:
+          SAM_APP_VALIDATE_ROLE_ARN: ${{ secrets.DEV_SAM_VALIDATE_ROLE_ARN }}
+
+  deploy-api-dev:
+    uses: ./.github/workflows/deploy-api.yml
+    needs: run-checks
+    secrets:
+      GH_ACTIONS_ROLE_ARN: ${{ secrets.DEV_GH_ACTIONS_ROLE_ARN }}
+      ARTIFACT_BUCKET_NAME: ${{ secrets.DEV_ARTIFACT_BUCKET_NAME }}
+      SIGNING_PROFILE_NAME: ${{ secrets.DEV_SIGNING_PROFILE_NAME }}
