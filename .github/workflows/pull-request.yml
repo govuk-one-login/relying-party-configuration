@@ -1,9 +1,13 @@
-name: Deploy API Build and Promote
+name: Pull Request
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - synchronize
+  merge_group:
 
 permissions:
   id-token: write
@@ -31,13 +35,5 @@ jobs:
 
   validation:
     uses: ./.github/workflows/validation.yml
-
-  deploy:
-    uses: ./.github/workflows/deploy-api.yml
-    needs:
-      - unit-tests
-      - integration-tests
-      - sonarcloud
-      - terraform-checks
-      - checkov
-      - validation
+    secrets:
+      SAM_VALIDATE_ROLE_ARN: ${{ secrets.DEV_SAM_VALIDATE_ROLE_ARN }}

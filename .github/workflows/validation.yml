@@ -1,8 +1,10 @@
 name: Validation
 
 on:
-  pull_request:
-  merge_group:
+  workflow_call:
+    secrets:
+      SAM_VALIDATE_ROLE_ARN:
+        required: true
 
 jobs:
   style-checks:
