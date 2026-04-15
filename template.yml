@@ -7,6 +7,37 @@ Description: Relying Party Configuration
 #        Source: govuk-one-login/relying-party-configuration
 #        Owner: di-orchestration@digital.cabinet-office.gov.uk
 
+Parameters:
+  Environment:
+    Type: String
+    Description: The name of the environment to deploy to
+    AllowedValues:
+      - dev
+      - build
+  CodeSigningConfigArn:
+    Type: String
+    Description: The ARN of the Code Signing Config to use, provided by the deployment pipeline
+    Default: none
+  PermissionsBoundary:
+    Type: String
+    Description: The ARN of the permissions boundary to apply when creating IAM roles
+    Default: none
+
+Conditions:
+  UseCodeSigning: !Not [!Equals [none, !Ref CodeSigningConfigArn]]
+  UsePermissionsBoundary: !Not [!Equals [none, !Ref PermissionsBoundary]]
+
+Globals:
+  Function:
+    CodeSigningConfigArn: !If
+      - UseCodeSigning
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
+      - !Ref AWS::NoValue
+
 Resources:
   ApiGateway:
     Type: AWS::Serverless::Api
