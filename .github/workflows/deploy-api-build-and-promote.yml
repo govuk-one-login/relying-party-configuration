@@ -10,18 +10,30 @@ on:
       - main
 
 jobs:
-  run-checks:
-    steps:
-      - uses: ./.github/workflows/unit-tests.yml
-      - uses: ./.github/workflows/integration-tests.yml
-      - uses: ./.github/workflows/sonarcloud.yml
-        secrets:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - uses: ./.github/workflows/terraform-checks.yml
-      - uses: ./.github/workflows/checkov.yml
-      - uses: ./.github/workflows/validation.yml
-        secrets:
-          SAM_APP_VALIDATE_ROLE_ARN: ${{ secrets.SAM_VALIDATE_ROLE_ARN }}
+  unit-tests:
+    uses: ./.github/workflows/unit-tests.yml
+
+  integration-tests:
+    uses: ./.github/workflows/integration-tests.yml
+
+  sonarcloud:
+    uses: ./.github/workflows/sonarcloud.yml
+
+  terraform-checks:
+    uses: ./.github/workflows/terraform-checks.yml
+
+  checkov:
+    uses: ./.github/workflows/checkov.yml
+
+  validation:
+    uses: ./.github/workflows/validation.yml
+
   deploy:
     uses: ./.github/workflows/deploy-api.yml
-    needs: run-checks
+    needs:
+      - unit-tests
+      - integration-tests
+      - sonarcloud
+      - terraform-checks
+      - checkov
+      - validation
