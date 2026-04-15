@@ -1,7 +1,6 @@
 name: Terraform checks
 on:
-  pull_request:
-    paths: ["infra/**"]
+  workflow_call:
 
 jobs:
   terraform-format:

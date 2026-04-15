@@ -1,11 +1,13 @@
 name: Deploy API Dev
 
+on:
+  workflow_dispatch:
+
 permissions:
   id-token: write
   contents: read
-
-on:
-  workflow_dispatch:
+  security-events: write
+  actions: read
 
 jobs:
   unit-tests:
@@ -16,6 +18,8 @@ jobs:
 
   sonarcloud:
     uses: ./.github/workflows/sonarcloud.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   terraform-checks:
     uses: ./.github/workflows/terraform-checks.yml
