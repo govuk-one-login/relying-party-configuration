@@ -12,8 +12,6 @@ on:
         required: true
       SIGNING_PROFILE_NAME:
         required: true
-      WORKING_DIRECTORY:
-        required: true
 
 jobs:
   deploy:
