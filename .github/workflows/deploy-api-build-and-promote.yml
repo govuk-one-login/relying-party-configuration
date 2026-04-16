@@ -43,3 +43,7 @@ jobs:
       - terraform-checks
       - checkov
       - validation
+    secrets:
+      GH_ACTIONS_ROLE_ARN: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
+      ARTIFACT_BUCKET_NAME: ${{ secrets.ARTIFACT_BUCKET_NAME }}
+      SIGNING_PROFILE_NAME: ${{ secrets.SIGNING_PROFILE_NAME }}
