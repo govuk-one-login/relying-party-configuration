@@ -25,6 +25,9 @@ Parameters:
     Type: String
     Description: The ARN of the permissions boundary to apply when creating IAM roles
     Default: none
+  VpcStackName:
+    Type: String
+    Description: The name of the stack used to create the VPC
 
 Conditions:
   UseCodeSigning: !Not [!Equals [none, !Ref CodeSigningConfigArn]]
@@ -46,11 +49,32 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: !Sub ${AWS::StackName}-ApiGateway
-      StageName: Live
+      StageName: !Sub ${Environment}
       AlwaysDeploy: true
       Tags:
         FMSRegionalPolicy: false
         CustomPolicy: true
+      Auth:
+        ResourcePolicy:
+          CustomStatements:
+            - Effect: Allow
+              Action: "execute-api:Invoke"
+              Principal: "*"
+              Resource:
+                - "execute-api:/*"
+            - Effect: Deny
+              Action: "execute-api:Invoke"
+              Principal: "*"
+              Resource:
+                - "execute-api:/*"
+              Condition:
+                StringNotEquals:
+                  aws:SourceVpce:
+                    - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
+      EndpointConfiguration:
+        Type: PRIVATE
+        VpcEndpointIds:
+          - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
 
   TempLambda:
     Type: AWS::Serverless::Function

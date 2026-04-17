@@ -5,6 +5,7 @@ resource "aws_cloudformation_stack" "vpc_stack" {
   capabilities = ["CAPABILITY_NAMED_IAM", "CAPABILITY_AUTO_EXPAND"]
 
   parameters = {
-    DynamoDBApiEnabled = "Yes"
+    DynamoDBApiEnabled       = "Yes"
+    ExecuteApiGatewayEnabled = "Yes"
   }
 }
