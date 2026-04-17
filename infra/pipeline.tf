@@ -18,6 +18,8 @@ resource "aws_cloudformation_stack" "api_pipeline_stack" {
     SlackNotificationType                   = var.environment == "dev" ? "None" : "Failures"
     AllowedServiceOne                       = "DynamoDB"
     ProgrammaticPermissionsBoundary         = "True"
+    TestImageRepositoryUri                  = contains(["dev", "build"], var.environment) ? aws_cloudformation_stack.test_image_repository[0].outputs["TestRunnerImageEcrRepositoryUri"] : "none"
+    RunTestContainerInVPC                   = contains(["dev", "build"], var.environment) ? "True" : "False"
   }
 
 
