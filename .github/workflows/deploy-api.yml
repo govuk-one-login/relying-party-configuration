@@ -65,7 +65,7 @@ jobs:
         if: ${{ inputs.DEPLOY_TEST_IMAGE }}
         uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
         with:
-          cosign-release: 'v2.6.0'
+          cosign-release: "v2.6.0"
 
       - name: Build, tag, and push testing image to Amazon ECR
         if: ${{ inputs.DEPLOY_TEST_IMAGE }}

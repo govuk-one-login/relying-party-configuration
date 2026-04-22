@@ -8,7 +8,7 @@ import playwrightEslint from "eslint-plugin-playwright";
 export default defineConfig(
   includeIgnoreFile(
     fileURLToPath(new URL(".gitignore", import.meta.url)),
-    "Imported .gitignore patterns"
+    "Imported .gitignore patterns",
   ),
   eslint.configs.recommended,
   {
@@ -38,5 +38,5 @@ export default defineConfig(
       "vitest.config.ts",
       "acceptance-tests/playwright.config.ts",
     ],
-  }
+  },
 );

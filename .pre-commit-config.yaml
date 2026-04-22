@@ -39,11 +39,11 @@ repos:
           - sam validate --lint --ignore-lint-errors W1001 -t template.yml
         language: system
         pass_filenames: false
-        files: '^template.yml$'
+        files: "^template.yml$"
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
-    -   id: detect-secrets
+      - id: detect-secrets
         exclude: package.lock.json
   - repo: local
     hooks:
@@ -55,4 +55,4 @@ repos:
           - tflint --init && tflint --recursive --format compact --chdir infra --fix
         language: system
         pass_filenames: false
-        files: '^infra/'
+        files: "^infra/"
