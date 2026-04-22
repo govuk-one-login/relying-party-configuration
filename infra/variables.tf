@@ -65,3 +65,19 @@ variable "allowed_promotion_accounts" {
   description = "The AWS account IDs that this pipeline will promote to. Maximum 2 accounts"
   default     = []
 }
+variable "container_signer_kms_key_arn" {
+  type        = string
+  description = "The ARN of the KMS key that signs test container images"
+  default     = "none"
+}
+variable "additional_code_signing_version_arns" {
+  type        = string
+  description = "The ARN of an additional signing profile version used to sign Lambda code"
+  default     = "arn:aws:signer:eu-west-2:216552277552:/signing-profiles/DynatraceSigner/5uwzCCGTPq"
+}
+
+variable "custom_kms_key_arn" {
+  type        = string
+  description = "The ARN of a custom KMS key that can be used to access secrets"
+  default     = "arn:aws:kms:eu-west-2:216552277552:key/4bc58ab5-c9bb-4702-a2c3-5d339604a8fe"
+}

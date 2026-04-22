@@ -5,7 +5,12 @@ resource "aws_cloudformation_stack" "vpc_stack" {
   capabilities = ["CAPABILITY_NAMED_IAM", "CAPABILITY_AUTO_EXPAND"]
 
   parameters = {
-    DynamoDBApiEnabled       = "Yes"
-    ExecuteApiGatewayEnabled = "Yes"
+    CloudFormationEndpointEnabled = contains(["dev", "build"], var.environment) ? "Yes" : "No" # Required for acceptance tests to run when inside the VPC
+    CloudWatchLogsApiEnabled      = contains(["dev", "build"], var.environment) ? "Yes" : "No" # Required for acceptance tests to run when inside the VPC
+    SSMApiEnabled                 = contains(["dev", "build"], var.environment) ? "Yes" : "No" # Required for acceptance tests to run when inside the VPC
+    S3ApiEnabled                  = contains(["dev", "build"], var.environment) ? "Yes" : "No" # Required for acceptance tests to run when inside the VPC
+    SecretsManagerApiEnabled      = contains(["dev", "build"], var.environment) ? "Yes" : "No" # Required for acceptance tests to run when inside the VPC
+    DynamoDBApiEnabled            = "Yes"
+    ExecuteApiGatewayEnabled      = "Yes"
   }
 }
