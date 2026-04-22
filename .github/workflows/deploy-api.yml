@@ -16,6 +16,11 @@ on:
         required: true
       ECR_REPOSITORY:
         required: true
+    inputs:
+      DEPLOY_TEST_IMAGE:
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   deploy:
@@ -52,15 +57,18 @@ jobs:
         run: npm run build
 
       - name: Login to Amazon ECR
+        if: ${{ inputs.DEPLOY_TEST_IMAGE }}
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@376925c9d111252e87ae59691e5a442dd100ef6a # v2.1.3
 
       - name: Install Cosign
+        if: ${{ inputs.DEPLOY_TEST_IMAGE }}
         uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
         with:
           cosign-release: 'v2.6.0'
 
       - name: Build, tag, and push testing image to Amazon ECR
+        if: ${{ inputs.DEPLOY_TEST_IMAGE }}
         env:
           CONTAINER_SIGN_KMS_KEY: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}

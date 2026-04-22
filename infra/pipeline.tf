@@ -20,9 +20,9 @@ resource "aws_cloudformation_stack" "api_pipeline_stack" {
     SlackNotificationType                   = var.environment == "dev" ? "None" : "Failures"
     AllowedServiceOne                       = "DynamoDB"
     ProgrammaticPermissionsBoundary         = "True"
-    TestImageRepositoryNames                = contains(["dev", "build"], var.environment) ? var.repository_name : ""
-    TestImageRepositoryUri                  = contains(["dev", "build"], var.environment) ? aws_cloudformation_stack.test_image_repository[0].outputs["TestRunnerImageEcrRepositoryUri"] : "none"
-    RunTestContainerInVPC                   = contains(["dev", "build"], var.environment) ? "True" : "False"
+    TestImageRepositoryNames                = contains(["build"], var.environment) ? var.repository_name : ""
+    TestImageRepositoryUri                  = contains(["build"], var.environment) ? aws_cloudformation_stack.test_image_repository[0].outputs["TestRunnerImageEcrRepositoryUri"] : "none"
+    RunTestContainerInVPC                   = contains(["build"], var.environment) ? "True" : "False"
     ContainerSignerKmsKeyArn                = var.container_signer_kms_key_arn
   }
 

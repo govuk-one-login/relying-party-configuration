@@ -49,3 +49,5 @@ jobs:
       SIGNING_PROFILE_NAME: ${{ secrets.SIGNING_PROFILE_NAME }}
       CONTAINER_SIGN_KMS_KEY: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
       ECR_REPOSITORY: ${{ secrets.TEST_ECR_REPOSITORY }}
+    with:
+      DEPLOY_TEST_IMAGE: true
