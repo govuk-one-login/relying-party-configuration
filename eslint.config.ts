@@ -3,6 +3,7 @@ import eslint from "@eslint/js";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
+import playwrightEslint from "eslint-plugin-playwright";
 
 export default defineConfig(
   includeIgnoreFile(
@@ -10,10 +11,12 @@ export default defineConfig(
     "Imported .gitignore patterns"
   ),
   eslint.configs.recommended,
-  tseslint.configs.strictTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
   {
-    files: ["**/*.ts", "**/*.js"],
+    files: ["src/**/*.ts", "src/**/*.js"],
+    extends: [
+      ...tseslint.configs.strictTypeChecked,
+      ...tseslint.configs.stylisticTypeChecked,
+    ],
     languageOptions: {
       ecmaVersion: "latest",
       parserOptions: {
@@ -22,6 +25,18 @@ export default defineConfig(
     },
   },
   {
-    ignores: ["eslint.config.ts", "vitest.config.ts"],
+    ...playwrightEslint.configs["flat/recommended"],
+    files: ["acceptance-tests/tests/**"],
+    rules: {
+      ...playwrightEslint.configs["flat/recommended"].rules,
+      "playwright/no-standalone-expect": "off",
+    },
+  },
+  {
+    ignores: [
+      "eslint.config.ts",
+      "vitest.config.ts",
+      "acceptance-tests/playwright.config.ts",
+    ],
   }
 );
