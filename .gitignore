@@ -148,3 +148,8 @@ docker/dynamodb/**
 # Terraform outputs
 infra/.terraform
 infra/.terraform.lock.hcl
+
+# Acceptance tests
+acceptance-tests/node_modules/
+acceptance-tests/.features-gen/
+acceptance-tests/results/*

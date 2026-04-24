@@ -5,6 +5,7 @@ Use `npm ci` to install packages.
 ## Tests
 
 ### Integration
+
 Integration tests are found in the `integration-tests` folder.
 
 If you want to run the integration tests locally, you can run the following commands:
