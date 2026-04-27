@@ -35,17 +35,20 @@ jobs:
         run: npm run tflint
 
       - name: Setup SAM
+        if: github.actor != 'dependabot[bot]'
         uses: aws-actions/setup-sam@d78e1a4a9656d3b223e59b80676a797f20093133 # v2
         with:
           use-installer: true
 
       - name: Set up AWS credentials
+        if: github.actor != 'dependabot[bot]'
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.1.1
         with:
           role-to-assume: ${{ secrets.SAM_VALIDATE_ROLE_ARN }}
           aws-region: eu-west-2
 
       - name: Run SAM validate + cfnlint
+        if: github.actor != 'dependabot[bot]'
         run: sam validate -t template.yml --region eu-west-2 --lint
 
   detect-secrets:
