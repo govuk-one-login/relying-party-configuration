@@ -22,11 +22,11 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1008.0",
     "@aws-sdk/lib-dynamodb": "^3.1008.0",
-    "@eslint/compat": "^2.0.3",
+    "@eslint/compat": "^2.0.5",
     "esbuild": "^0.27.4",
     "jiti": "^2.6.1",
-    "prettier": "^3.4.2",
-    "vitest": "^4.0.18",
+    "prettier": "^3.8.3",
+    "vitest": "^4.1.4",
     "eslint-plugin-playwright": "^2.5.1",
     "@typescript-eslint/parser": "^8.56.1",
     "@vitest/eslint-plugin": "^1.6.9"
