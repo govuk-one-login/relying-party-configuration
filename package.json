@@ -20,7 +20,7 @@
     "tflint": "tflint --chdir infra --recursive"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.1008.0",
+    "@aws-sdk/client-dynamodb": "^3.1014.0",
     "@aws-sdk/lib-dynamodb": "^3.1008.0",
     "@eslint/compat": "^2.0.5",
     "esbuild": "^0.27.4",
