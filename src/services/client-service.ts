@@ -1,24 +1,28 @@
 import { DynamoDBDocument, paginateScan } from "@aws-sdk/lib-dynamodb";
 import {
   Client,
+  ClientInput,
   ClientSummary,
   PaginatedClientSummary,
 } from "../models/client";
+import { randomBytes } from "crypto";
 
 export class ClientService {
   dynamoClient: DynamoDBDocument;
   tableName: string;
   constructor(dynamo: DynamoDBDocument) {
     this.dynamoClient = dynamo;
-    this.tableName = `${process.env.ENVIRONMENT}-client-registry`;
+    this.tableName = `${process.env.ENVIRONMENT ?? "test"}-client-registry`;
   }
+
   getClient = async (clientId: string): Promise<Client | undefined> => {
     const result = await this.dynamoClient.get({
       TableName: this.tableName,
       Key: { ClientID: clientId },
     });
-    return result?.Item as Client;
+    return result.Item as Client;
   };
+
   getClientSummaries = async (
     pageNumber = 1,
     pageSize = 20,
@@ -39,8 +43,8 @@ export class ClientService {
         clients =
           page.Items?.map((client) => {
             return {
-              ClientID: client.ClientID,
-              ClientName: client.ClientName,
+              ClientID: client.ClientID as string,
+              ClientName: client.ClientName as string,
             } as ClientSummary;
           }) ?? [];
       }

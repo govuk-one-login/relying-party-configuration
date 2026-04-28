@@ -1,8 +1,13 @@
-import { DynamoDBDocument, GetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocument,
+  GetCommand,
+  PutCommand,
+  ScanCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { ClientService } from "./client-service";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { createClient } from "../models/client";
+import { CLIENT_DEFAULTS, createClient } from "../models/client";
 
 process.env.ENVIRONMENT = "test";
 
