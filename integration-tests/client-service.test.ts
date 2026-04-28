@@ -45,6 +45,7 @@ describe("Client service integration test", async () => {
       expect(actualClient).toBeUndefined();
     });
   });
+
   describe("Get client summaries", () => {
     it("should get first page of client summaries (less clients than page size)", async () => {
       const testClient = createClient("test-client-id");
@@ -101,6 +102,7 @@ describe("Client service integration test", async () => {
       expect(actualClients).toHaveLength(0);
     });
   });
+
   describe("Create client", () => {
     it("should create client", async () => {
       const testClient = await clientService.createClient(CLIENT_DEFAULTS);
@@ -126,6 +128,36 @@ describe("Client service integration test", async () => {
 
       await expect(() =>
         clientService.createClientWithId("test-client-id", CLIENT_DEFAULTS),
+      ).rejects.toThrow(ClientServiceError);
+    });
+  });
+
+  describe("Update client", () => {
+    it("should update existing client", async () => {
+      const testClient = createClient("test-client-id");
+      await addClientToDynamo(testClient);
+
+      await clientService.updateClient("test-client-id", {
+        ...CLIENT_DEFAULTS,
+        Scopes: ["openid", "phone", "email"],
+      });
+
+      expect(
+        (
+          await dynamoDocClient.get({
+            TableName: "test-client-registry",
+            Key: { ClientID: "test-client-id" },
+          })
+        ).Item,
+      ).toEqual({
+        ...testClient,
+        Scopes: ["openid", "phone", "email"],
+      });
+    });
+
+    it("should fail to update client if client does not exist", async () => {
+      await expect(() =>
+        clientService.updateClient("test-client-id", CLIENT_DEFAULTS),
       ).rejects.toThrow(ClientServiceError);
     });
   });

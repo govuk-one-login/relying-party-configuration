@@ -72,7 +72,27 @@ export class ClientService {
       throw new ClientServiceError("Failed to create client", error as Error);
     }
   };
+
+  updateClient = async (clientId: string, clientUpdates: ClientInput) => {
+    try {
+      await this.dynamoClient.put({
+        ConditionExpression: "attribute_exists(ClientID)",
+        TableName: this.tableName,
+        Item: {
+          ...clientUpdates,
+          ClientID: clientId,
+        },
+      });
+      return {
+        ...clientUpdates,
+        ClientID: clientId,
+      };
+    } catch (error) {
+      throw new ClientServiceError("Failed to update client", error as Error);
+    }
+  };
 }
+
 export class ClientServiceError extends Error {
   constructor(message: string, cause: Error) {
     super(message, {

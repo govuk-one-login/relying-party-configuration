@@ -99,4 +99,19 @@ describe("Client service tests", () => {
       });
     });
   });
+
+  describe("Update client", () => {
+    it("should update a client", async () => {
+      await clientService.updateClient("test-client-id", CLIENT_DEFAULTS);
+
+      expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
+        Item: {
+          ...CLIENT_DEFAULTS,
+          ClientID: "test-client-id",
+        },
+        TableName: "test-client-registry",
+        ConditionExpression: "attribute_exists(ClientID)",
+      });
+    });
+  });
 });
