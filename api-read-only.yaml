@@ -71,37 +71,37 @@ components:
         totalItems: 6
         totalPages: 2
         clients:
-          - clientId: testClientId1
-            clientName: My Test Client 1
-          - clientId: testClientId2
-            clientName: My Test Client 2
-          - clientId: testClientId3
-            clientName: My Test Client 3
+          - ClientID: testClientId1
+            ClientName: My Test Client 1
+          - ClientID: testClientId2
+            ClientName: My Test Client 2
+          - ClientID: testClientId3
+            ClientName: My Test Client 3
     ClientSummary:
       type: object
       properties:
-        clientId:
+        ClientID:
           type: string
-        clientName:
+        ClientName:
           type: string
     ClientWithIdAndTimestamps:
       required:
-        - clientId
-        - created
-        - lastModified
+        - ClientID
+        - Created
+        - LastModified
       allOf:
         - $ref: "#/components/schemas/Client"
         - type: object
           properties:
-            clientId:
+            ClientID:
               type: string
               example: "test-client-id"
-            created:
+            Created:
               description: When this client was created
               type: string
               format: date-time
               example: "2017-07-21T17:32:28Z"
-            lastModified:
+            LastModified:
               description: When this client was last modified
               type: string
               format: date-time
@@ -109,21 +109,21 @@ components:
     Client:
       type: object
       required:
-        - clientName
-        - clientAuthentication
-        - redirectUrls
-        - scopes
+        - ClientName
+        - ClientAuthentication
+        - RedirectUrls
+        - Scopes
       properties:
-        clientName:
+        ClientName:
           type: string
           example: "My Example Service"
-        clientJwtPublicKeySource:
+        ClientJwtPublicKeySource:
           $ref: "#/components/schemas/ClientJwtPublicKeySource"
-        clientTokenAuthMethod:
+        ClientTokenAuthMethod:
           $ref: "#/components/schemas/ClientTokenAuthMethod"
-        scopes:
+        Scopes:
           $ref: "#/components/schemas/Scopes"
-        redirectUrls:
+        RedirectUrls:
           description: The URL to redirect users to once they have logged in
           type: array
           items:
@@ -131,7 +131,7 @@ components:
             format: uri
           example:
             - "https://example.com/callback"
-        postLogoutRedirectUrls:
+        PostLogoutRedirectUrls:
           description: The valid redirect URLs that a user can be redirected to once they have logged out
           type: array
           items:
@@ -139,60 +139,60 @@ components:
             format: uri
           example:
             - "https://example.com/logout"
-        backChannelLogoutUri:
+        BackChannelLogoutUri:
           description: A URI which a post request can be sent to after the user has logged out.
           type: string
           format: uri
           example: "https://example.com/backchannel-logout"
-        serviceType:
+        ServiceType:
           $ref: "#/components/schemas/ServiceType"
-        sectorIdentifierUri:
+        SectorIdentifierUri:
           description: Used to calculate the subject ID
           type: string
-        subjectType:
+        SubjectType:
           $ref: "#/components/schemas/SubjectType"
-        isActive:
+        IsActive:
           description: Whether this integration is enabled or not.
           type: boolean
           default: true
-        cookieConsentShared:
+        CookieConsentShared:
           type: boolean
           default: false
-        testClient:
+        TestClient:
           type: boolean
           default: false
-        jarValidationRequired:
+        JarValidationRequired:
           description: If enabled, rejects any non-JWT requests, and rejects any JWTs that are signed incorrectly.
           type: boolean
           default: false
-        claims:
+        Claims:
           description: Required if identityVerificationSupported is true. The list of requested claims when performing an identity journey.
           type: array
           items:
             $ref: "#/components/schemas/Claim"
           example:
             - "https://vocab.account.gov.uk/v1/coreIdentityJWT"
-        clientType:
+        ClientType:
           $ref: "#/components/schemas/ClientType"
-        identityVerificationSupported:
+        IdentityVerificationSupported:
           description: Enables support for identity journeys.
           type: boolean
           default: false
           example: true
-        oneLoginService:
+        OneLoginService:
           type: boolean
           default: false
-        idTokenSigningAlgorithm:
+        IdTokenSigningAlgorithm:
           $ref: "#/components/schemas/IdTokenSigningAlgorithm"
-        smokeTest:
+        SmokeTest:
           type: boolean
           default: false
-        landingPageUrl:
+        LandingPageUrl:
           description: Page to be redirected to after in-person identity check
           type: string
           format: uri
           example: http://example.com/landing-page
-        clientLoCs:
+        ClientLoCs:
           description: Pertains to the level of security for identity verification. Prior approval is required for low and high levels of confidence
           type: array
           items:
@@ -200,38 +200,38 @@ components:
           example:
             - P0
             - P2
-        permitMissingNonce:
+        PermitMissingNonce:
           description: Allows missing nonce in auth request. If identityVerificationSupported is true, this will always be false
           type: boolean
           default: false
-        channel:
+        Channel:
           $ref: "#/components/schemas/Channel"
-        maxAgeEnabled:
+        MaxAgeEnabled:
           description: Whether to enforce max age for auth requests. If the auth time for the current session has expired, a new session will be generated
           type: boolean
           default: false
-        pkceEnforced:
+        PkceEnforced:
           description: Whether to use PKCE code challenges
           type: boolean
           default: false
-        rateLimit:
+        RateLimit:
           description: The maximum number of requests allowed for this client in a 1 minute period
           type: integer
           nullable: true
           example: 100
-        organisationId:
+        OrganisationId:
           description: The organisation that this client belongs to
           type: string
           example: TEST_ORGANISATION
-        serviceIntegrationId:
+        ServiceIntegrationId:
           description: The service integration that this client belongs to
           type: string
           example: My Service Integration
-        created:
+        Created:
           description: When this client was created
           type: string
           format: date-time
-        lastModified:
+        LastModified:
           description: When this client was last modified
           type: string
           format: date-time
@@ -308,8 +308,8 @@ components:
           JWKS: "#/components/schemas/JwksPublicKeySource"
           STATIC: "#/components/schemas/StaticPublicKeySource"
       example:
-        type: JWKS
-        jwksUrl: "http://test.com"
+        Type: JWKS
+        JwksUrl: "http://test.com"
     JwksPublicKeySource:
       description: Using a JWKS endpoint
       type: object
@@ -317,10 +317,10 @@ components:
         - type
         - jwksUrl
       properties:
-        type:
+        Type:
           type: string
           enum: [JWKS]
-        jwksUrl:
+        JwksUrl:
           type: string
           format: uri
           example: "http://test.com"
@@ -331,10 +331,10 @@ components:
         - type
         - publicKey
       properties:
-        type:
+        Type:
           type: string
           enum: [STATIC]
-        publicKey:
+        PublicKey:
           type: string
     ClientTokenAuthMethod:
       description: |
@@ -345,15 +345,15 @@ components:
         - $ref: "#/components/schemas/PrivateKeyJwt"
         - $ref: "#/components/schemas/ClientSecretPost"
       example:
-        tokenAuthMethod: client_secret_post
-        clientSecret: test-secret # pragma: allowlist secret
+        TokenAuthMethod: client_secret_post
+        ClientSecret: test-secret # pragma: allowlist secret
     PrivateKeyJwt:
       description: Authenticate with a signed JWT using the key from ClientJwtPublicKeySource
       type: object
       required:
         - tokenAuthMethod
       properties:
-        tokenAuthMethod:
+        TokenAuthMethod:
           enum: [private_key_jwt]
           default: private_key_jwt
     ClientSecretPost:
@@ -363,10 +363,10 @@ components:
         - tokenAuthMethod
         - clientSecret
       properties:
-        tokenAuthMethod:
+        TokenAuthMethod:
           enum: [client_secret_post]
           default: client_secret_post
-        clientSecret:
+        ClientSecret:
           type: string
     ClientType:
       type: string
