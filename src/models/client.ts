@@ -34,6 +34,13 @@ export type ClientType = "web" | "app";
 export type IdTokenSigningAlgorithm = "ES256" | "RS256";
 export type LevelOfConfidence = "P0" | "P1" | "P2" | "P3";
 export type Channel = "web" | "generic_app" | "strategic_app";
+export interface PaginatedClientSummary {
+  pageSize: number;
+  pageNumber: number;
+  totalClients: number;
+  totalPages: number;
+  clients: ClientSummary[];
+}
 export interface ClientSummary {
   ClientID: string;
   ClientName: string;

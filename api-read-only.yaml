@@ -48,11 +48,11 @@ components:
     PaginatedResponse:
       type: object
       properties:
-        page:
+        pageNumber:
           type: integer
         pageSize:
           type: integer
-        totalItems:
+        totalClients:
           type: integer
         totalPages:
           type: integer
@@ -66,9 +66,9 @@ components:
               items:
                 $ref: "#/components/schemas/ClientSummary"
       example:
-        page: 1
+        pageNumber: 1
         pageSize: 3
-        totalItems: 6
+        totalClients: 6
         totalPages: 2
         clients:
           - clientId: testClientId1
