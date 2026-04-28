@@ -69,6 +69,7 @@ export class ClientService {
     clientId: string,
     clientInput: ClientInput,
   ): Promise<Client> => {
+    // TODO: Perform validation on client input
     try {
       const client: Client = {
         ...clientInput,
@@ -86,6 +87,7 @@ export class ClientService {
   };
 
   updateClient = async (clientId: string, clientUpdates: ClientInput) => {
+    // TODO: Perform validation on client updates
     try {
       await this.dynamoClient.put({
         ConditionExpression: "attribute_exists(ClientID)",
