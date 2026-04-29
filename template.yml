@@ -51,10 +51,10 @@ Globals:
       - !Ref AWS::NoValue
 
 Resources:
-  ApiGateway:
+  ReadOnlyApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      Name: !Sub ${AWS::StackName}-ApiGateway
+      Name: !Sub ${AWS::StackName}-ReadOnlyApiGateway
       StageName: !Sub ${Environment}
       AlwaysDeploy: true
       Tags:
@@ -94,7 +94,7 @@ Resources:
         Get:
           Type: Api
           Properties:
-            RestApiId: !Ref ApiGateway
+            RestApiId: !Ref ReadOnlyApiGateway
             Path: /temp-api
             Method: get
       Policies:
@@ -121,7 +121,7 @@ Resources:
         Get:
           Type: Api
           Properties:
-            RestApiId: !Ref ApiGateway
+            RestApiId: !Ref ReadOnlyApiGateway
             Path: /client/{id}
             Method: get
       Policies:
@@ -225,6 +225,7 @@ Resources:
               - dynamodb:Scan
             Resource:
               - !GetAtt ClientRegistryTable.Arn
+              - !Sub "${ClientRegistryTable.Arn}/index/*"
           - Sid: AllowClientRegistryTableKeyAccess
             Effect: Allow
             Action:
