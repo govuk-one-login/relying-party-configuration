@@ -17,6 +17,11 @@ paths:
           schema:
             type: integer
             default: 20
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetPaginatedClientsLambda.Arn}/invocations
       responses:
         "200":
           description: Success
@@ -24,6 +29,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedClients"
+        "400":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /client/{id}:
     parameters:
@@ -45,6 +62,11 @@ paths:
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+           type: string
     PaginatedResponse:
       type: object
       properties:
