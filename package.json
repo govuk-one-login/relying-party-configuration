@@ -23,22 +23,23 @@
     "@aws-sdk/client-dynamodb": "^3.1014.0",
     "@aws-sdk/lib-dynamodb": "^3.1032.0",
     "@eslint/compat": "^2.0.5",
-    "esbuild": "^0.27.4",
-    "jiti": "^2.6.1",
-    "prettier": "^3.8.3",
-    "vitest": "^4.1.4",
-    "eslint-plugin-playwright": "^2.5.1",
     "@typescript-eslint/parser": "^8.56.1",
-    "@vitest/eslint-plugin": "^1.6.9"
+    "@vitest/eslint-plugin": "^1.6.9",
+    "esbuild": "^0.27.4",
+    "eslint-plugin-playwright": "^2.5.1",
+    "jiti": "^2.6.1",
+    "pino": "^10.3.1",
+    "prettier": "^3.8.3",
+    "vitest": "^4.1.4"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.161",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-vitest": "^7.0.1",
     "eslint": "^9.39.2",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.55.0",
-    "aws-sdk-client-mock": "^4.1.0",
-    "aws-sdk-client-mock-vitest": "^7.0.1"
+    "typescript-eslint": "^8.55.0"
   }
 }
