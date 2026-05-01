@@ -6,6 +6,7 @@ import {
   PaginatedClientSummary,
 } from "../models/client";
 import { randomBytes } from "crypto";
+import { logger } from "../logger";
 
 export class ClientService {
   dynamoClient: DynamoDBDocument;
@@ -82,6 +83,7 @@ export class ClientService {
       });
       return client;
     } catch (error) {
+      logger.error(`Failed to create client: ${(error as Error).message}`);
       throw new ClientServiceError("Failed to create client", error as Error);
     }
   };
@@ -102,6 +104,7 @@ export class ClientService {
         ClientID: clientId,
       };
     } catch (error) {
+      logger.error(`Failed to update client: ${(error as Error).message}`);
       throw new ClientServiceError("Failed to update client", error as Error);
     }
   };
