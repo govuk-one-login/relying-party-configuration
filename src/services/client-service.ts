@@ -1,20 +1,23 @@
 import { DynamoDBDocument, paginateScan } from "@aws-sdk/lib-dynamodb";
-import { Client, ClientSummary } from "../models/client";
+import { Client, ClientInput, ClientSummary } from "../models/client";
+import { randomBytes } from "crypto";
 
 export class ClientService {
   dynamoClient: DynamoDBDocument;
   tableName: string;
   constructor(dynamo: DynamoDBDocument) {
     this.dynamoClient = dynamo;
-    this.tableName = `${process.env.ENVIRONMENT}-client-registry`;
+    this.tableName = `${process.env.ENVIRONMENT ?? "test"}-client-registry`;
   }
+
   getClient = async (clientId: string): Promise<Client | undefined> => {
     const result = await this.dynamoClient.get({
       TableName: this.tableName,
       Key: { ClientID: clientId },
     });
-    return result?.Item as Client;
+    return result.Item as Client;
   };
+
   getClientSummaries = async (
     pageNumber = 1,
     pageSize = 20,
@@ -33,13 +36,47 @@ export class ClientService {
         return (
           page.Items?.map((client) => {
             return {
-              ClientID: client.ClientID,
-              ClientName: client.ClientName,
+              ClientID: client.ClientID as string,
+              ClientName: client.ClientName as string,
             } as ClientSummary;
-          }) || []
+          }) ?? []
         );
       }
     }
     return [];
   };
+
+  createClient = async (clientInput: ClientInput): Promise<Client> => {
+    return this.createClientWithId(
+      randomBytes(20).toString("base64"),
+      clientInput,
+    );
+  };
+
+  createClientWithId = async (
+    clientId: string,
+    clientInput: ClientInput,
+  ): Promise<Client> => {
+    try {
+      const client: Client = {
+        ...clientInput,
+        ClientID: clientId,
+      };
+      await this.dynamoClient.put({
+        ConditionExpression: "attribute_not_exists(ClientID)",
+        TableName: this.tableName,
+        Item: client,
+      });
+      return client;
+    } catch (error) {
+      throw new ClientServiceError("Failed to create client", error as Error);
+    }
+  };
+}
+export class ClientServiceError extends Error {
+  constructor(message: string, cause: Error) {
+    super(message, {
+      cause,
+    });
+  }
 }

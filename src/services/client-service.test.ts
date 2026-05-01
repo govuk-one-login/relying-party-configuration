@@ -1,8 +1,13 @@
-import { DynamoDBDocument, GetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocument,
+  GetCommand,
+  PutCommand,
+  ScanCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { ClientService } from "./client-service";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { createClient } from "../models/client";
+import { CLIENT_DEFAULTS, createClient } from "../models/client";
 
 process.env.ENVIRONMENT = "test";
 
@@ -77,6 +82,21 @@ describe("Client service tests", () => {
         });
       const result = await clientService.getClientSummaries(1, 5);
       expect(result.length).toEqual(0);
+    });
+  });
+
+  describe("Create client", () => {
+    it("should create a client", async () => {
+      await clientService.createClient(CLIENT_DEFAULTS);
+
+      expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
+        Item: {
+          ...CLIENT_DEFAULTS,
+          ClientID: expect.any(String),
+        },
+        TableName: "test-client-registry",
+        ConditionExpression: "attribute_not_exists(ClientID)",
+      });
     });
   });
 });

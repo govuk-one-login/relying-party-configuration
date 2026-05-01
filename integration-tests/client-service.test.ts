@@ -4,8 +4,11 @@ import {
   DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
-import { Client, createClient } from "../src/models/client";
-import { ClientService } from "../src/services/client-service";
+import { Client, CLIENT_DEFAULTS, createClient } from "../src/models/client";
+import {
+  ClientService,
+  ClientServiceError,
+} from "../src/services/client-service";
 
 const dynamoClient = new DynamoDBClient({
   region: process.env.AWS_REGION,
@@ -98,6 +101,34 @@ describe("Client service integration test", async () => {
       expect(actualClients).toHaveLength(0);
     });
   });
+  describe("Create client", () => {
+    it("should create client", async () => {
+      const testClient = await clientService.createClient(CLIENT_DEFAULTS);
+
+      expect(
+        (
+          await dynamoDocClient.get({
+            TableName: "test-client-registry",
+            Key: { ClientID: testClient.ClientID },
+          })
+        ).Item,
+      ).toEqual(testClient);
+    });
+
+    it("should fail to create client if client already exists", async () => {
+      await dynamoDocClient.put({
+        TableName: "test-client-registry",
+        Item: {
+          ...CLIENT_DEFAULTS,
+          ClientID: "test-client-id",
+        },
+      });
+
+      await expect(() =>
+        clientService.createClientWithId("test-client-id", CLIENT_DEFAULTS),
+      ).rejects.toThrow(ClientServiceError);
+    });
+  });
 });
 
 const addClientToDynamo = async (client: Client) => {
@@ -130,5 +161,6 @@ const deleteTable = async () => {
   const command = new DeleteTableCommand({
     TableName: "test-client-registry",
   });
+
   await dynamoClient.send(command);
 };
