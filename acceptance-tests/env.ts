@@ -4,7 +4,7 @@ import * as v from "valibot";
 const envSchema = v.object({
   TEST_TARGET: v.fallback(
     v.union([v.literal("local"), v.literal("dev"), v.literal("build")]),
-    "local"
+    "local",
   ),
   TEST_REPORT_DIR: v.optional(v.string()),
   API_GW_URL: v.optional(v.string()),
