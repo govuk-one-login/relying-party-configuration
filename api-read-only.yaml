@@ -35,6 +35,11 @@ paths:
           type: string
     get:
       summary: Get client by clientId
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetClientLambda.Arn}/invocations
       responses:
         "200":
           description: Success
@@ -42,9 +47,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClientWithIdAndTimestamps"
+        "400":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+           type: string
     PaginatedResponse:
       type: object
       properties:
@@ -302,11 +330,6 @@ components:
       oneOf:
         - $ref: "#/components/schemas/JwksPublicKeySource"
         - $ref: "#/components/schemas/StaticPublicKeySource"
-      discriminator:
-        propertyName: type
-        mapping:
-          JWKS: "#/components/schemas/JwksPublicKeySource"
-          STATIC: "#/components/schemas/StaticPublicKeySource"
       example:
         Type: JWKS
         JwksUrl: "http://test.com"
