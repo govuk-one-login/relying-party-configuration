@@ -109,6 +109,39 @@ Resources:
         Target: es2022
         UseNpmCi: True
 
+  GetPaginatedClientsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: get-paginated-clients.handler
+      Runtime: nodejs24.x
+      Architectures:
+        - arm64
+      Events:
+        Get:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /clients
+            Method: get
+            RequestParameters:
+              - method.request.querystring.pageNumber
+              - method.request.querystring.pageSize
+      Policies:
+        - !Ref ClientRegistryTableReadAccessPolicy
+      Environment:
+        Variables:
+          ENVIRONMENT: !Sub ${Environment}
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/get-paginated-clients.ts
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+        UseNpmCi: True
+
   #region ClientRegistry DynamoDB Table
   ClientRegistryTableEncryptionKey:
     Type: AWS::KMS::Key
