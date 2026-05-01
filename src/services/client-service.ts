@@ -57,4 +57,38 @@ export class ClientService {
       clients,
     };
   };
+
+  createClient = async (clientInput: ClientInput): Promise<Client> => {
+    return this.createClientWithId(
+      randomBytes(20).toString("base64"),
+      clientInput,
+    );
+  };
+
+  createClientWithId = async (
+    clientId: string,
+    clientInput: ClientInput,
+  ): Promise<Client> => {
+    try {
+      const client: Client = {
+        ...clientInput,
+        ClientID: clientId,
+      };
+      await this.dynamoClient.put({
+        ConditionExpression: "attribute_not_exists(ClientID)",
+        TableName: this.tableName,
+        Item: client,
+      });
+      return client;
+    } catch (error) {
+      throw new ClientServiceError("Failed to create client", error as Error);
+    }
+  };
+}
+export class ClientServiceError extends Error {
+  constructor(message: string, cause: Error) {
+    super(message, {
+      cause,
+    });
+  }
 }

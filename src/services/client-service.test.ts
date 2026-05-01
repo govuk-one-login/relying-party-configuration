@@ -98,4 +98,19 @@ describe("Client service tests", () => {
       });
     });
   });
+
+  describe("Create client", () => {
+    it("should create a client", async () => {
+      await clientService.createClient(CLIENT_DEFAULTS);
+
+      expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
+        Item: {
+          ...CLIENT_DEFAULTS,
+          ClientID: expect.any(String),
+        },
+        TableName: "test-client-registry",
+        ConditionExpression: "attribute_not_exists(ClientID)",
+      });
+    });
+  });
 });

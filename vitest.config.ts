@@ -11,5 +11,6 @@ export default defineConfig({
       reporter: ["lcov", "text"],
     },
     globals: true,
+    setupFiles: ["src/setup-unit-tests.ts"],
   },
 });
