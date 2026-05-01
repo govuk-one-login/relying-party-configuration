@@ -56,3 +56,14 @@ repos:
         language: system
         pass_filenames: false
         files: "^infra/"
+  - repo: local
+    hooks:
+      - id: lint-fix
+        name: lint-fix
+        entry: bash
+        args:
+          - -c
+          - npm run lint:fix
+        language: system
+        pass_filenames: false
+        files: ^.*\.ts$

@@ -25,6 +25,22 @@ export default defineConfig(
     },
   },
   {
+    files: ["src/**/*.test.ts", "src/**/*.test.js"],
+    extends: [
+      ...tseslint.configs.strictTypeChecked,
+      ...tseslint.configs.stylisticTypeChecked,
+    ],
+    rules: {
+      "@typescript-eslint/no-unsafe-assignment": "off",
+    },
+    languageOptions: {
+      ecmaVersion: "latest",
+      parserOptions: {
+        projectService: true,
+      },
+    },
+  },
+  {
     ...playwrightEslint.configs["flat/recommended"],
     files: ["acceptance-tests/tests/**"],
     rules: {
