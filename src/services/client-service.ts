@@ -31,8 +31,12 @@ export class ClientService {
     const paginator = paginateScan(
       {
         client: this.dynamoClient,
+        pageSize,
       },
-      { TableName: this.tableName, Limit: pageSize },
+      {
+        TableName: this.tableName,
+        ProjectionExpression: "ClientID, ClientName",
+      },
     );
     let pageCount = 0;
     let totalClients = 0;
