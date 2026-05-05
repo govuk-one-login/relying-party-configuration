@@ -1,45 +1,24 @@
-import {
-  CreateTableCommand,
-  DeleteTableCommand,
-  DynamoDBClient,
-} from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
-import { Client, CLIENT_DEFAULTS, createClient } from "../src/models/client";
-import {
-  ClientService,
-  ClientServiceError,
-} from "../src/services/client-service";
+import { CLIENT_DEFAULTS, createClient } from "../src/models/client";
+import { ClientServiceError } from "../src/services/client-service";
+import { it } from "./base";
 
-const dynamoClient = new DynamoDBClient({
-  region: process.env.AWS_REGION,
-  endpoint: process.env.DYNAMODB_LOCAL_ENDPOINT,
-  credentials: {
-    // We need to provide some credential values for DynamoDBLocal, so ignoring from detect-secrets
-    accessKeyId: "test", // pragma: allowlist secret
-    secretAccessKey: "test", // pragma: allowlist secret
-  },
-});
-const dynamoDocClient = DynamoDBDocument.from(dynamoClient);
-const clientService = new ClientService(dynamoDocClient);
 describe("Client service integration test", async () => {
-  beforeEach(async () => {
-    await createTable();
-  });
-  afterEach(async () => {
-    await deleteTable();
-  });
-
   describe("Get client by ID tests", () => {
-    it("should get client by ID", async () => {
+    it("should get client by ID", async ({
+      addClientsToDynamo,
+      clientService,
+    }) => {
       const testClient = createClient("test-client-id");
-      await addClientToDynamo(testClient);
+      await addClientsToDynamo(testClient);
 
       const actualClient = await clientService.getClient("test-client-id");
 
       expect(actualClient).toEqual(testClient);
     });
 
-    it("should not get client if client does not exist with ID", async () => {
+    it("should not get client if client does not exist with ID", async ({
+      clientService,
+    }) => {
       const actualClient = await clientService.getClient("test-client-id");
 
       expect(actualClient).toBeUndefined();
@@ -47,9 +26,12 @@ describe("Client service integration test", async () => {
   });
 
   describe("Get client summaries", () => {
-    it("should get first page of client summaries (less clients than page size)", async () => {
+    it("should get first page of client summaries (less clients than page size)", async ({
+      addClientsToDynamo,
+      clientService,
+    }) => {
       const testClient = createClient("test-client-id");
-      await addClientToDynamo(testClient);
+      await addClientsToDynamo(testClient);
 
       const actualClients = await clientService.getClientSummaries(1, 5);
 
@@ -64,13 +46,14 @@ describe("Client service integration test", async () => {
       });
     });
 
-    it("should get first page of client summaries (more clients than page size)", async () => {
+    it("should get first page of client summaries (more clients than page size)", async ({
+      addClientsToDynamo,
+      clientService,
+    }) => {
       const testClient1 = createClient("test-client-id-1");
       const testClient2 = createClient("test-client-id-2");
       const testClient3 = createClient("test-client-id-3");
-      await addClientToDynamo(testClient1);
-      await addClientToDynamo(testClient2);
-      await addClientToDynamo(testClient3);
+      await addClientsToDynamo(testClient1, testClient2, testClient3);
 
       const actualClients = await clientService.getClientSummaries(1, 2);
 
@@ -92,13 +75,14 @@ describe("Client service integration test", async () => {
       });
     });
 
-    it("should get second page of client summaries (more clients than page size)", async () => {
+    it("should get second page of client summaries (more clients than page size)", async ({
+      addClientsToDynamo,
+      clientService,
+    }) => {
       const testClient1 = createClient("test-client-id-1");
       const testClient2 = createClient("test-client-id-2");
       const testClient3 = createClient("test-client-id-3");
-      await addClientToDynamo(testClient1);
-      await addClientToDynamo(testClient2);
-      await addClientToDynamo(testClient3);
+      await addClientsToDynamo(testClient1, testClient2, testClient3);
 
       const actualClients = await clientService.getClientSummaries(2, 2);
 
@@ -116,7 +100,9 @@ describe("Client service integration test", async () => {
       });
     });
 
-    it("should get no client summaries (no clients exist)", async () => {
+    it("should get no client summaries (no clients exist)", async ({
+      clientService,
+    }) => {
       const actualClients = await clientService.getClientSummaries(1, 5);
 
       expect(actualClients).toEqual({
@@ -130,26 +116,24 @@ describe("Client service integration test", async () => {
   });
 
   describe("Create client", () => {
-    it("should create client", async () => {
+    it("should create client", async ({
+      getClientFromDynamo,
+      clientService,
+    }) => {
       const testClient = await clientService.createClient(CLIENT_DEFAULTS);
 
-      expect(
-        (
-          await dynamoDocClient.get({
-            TableName: "test-client-registry",
-            Key: { ClientID: testClient.ClientID },
-          })
-        ).Item,
-      ).toEqual(testClient);
+      expect(await getClientFromDynamo(testClient.ClientID)).toEqual(
+        testClient,
+      );
     });
 
-    it("should fail to create client if client already exists", async () => {
-      await dynamoDocClient.put({
-        TableName: "test-client-registry",
-        Item: {
-          ...CLIENT_DEFAULTS,
-          ClientID: "test-client-id",
-        },
+    it("should fail to create client if client already exists", async ({
+      addClientsToDynamo,
+      clientService,
+    }) => {
+      await addClientsToDynamo({
+        ...CLIENT_DEFAULTS,
+        ClientID: "test-client-id",
       });
 
       await expect(() =>
@@ -159,66 +143,31 @@ describe("Client service integration test", async () => {
   });
 
   describe("Update client", () => {
-    it("should update existing client", async () => {
+    it("should update existing client", async ({
+      addClientsToDynamo,
+      getClientFromDynamo,
+      clientService,
+    }) => {
       const testClient = createClient("test-client-id");
-      await addClientToDynamo(testClient);
+      await addClientsToDynamo(testClient);
 
       await clientService.updateClient("test-client-id", {
         ...CLIENT_DEFAULTS,
         Scopes: ["openid", "phone", "email"],
       });
 
-      expect(
-        (
-          await dynamoDocClient.get({
-            TableName: "test-client-registry",
-            Key: { ClientID: "test-client-id" },
-          })
-        ).Item,
-      ).toEqual({
+      expect(await getClientFromDynamo("test-client-id")).toEqual({
         ...testClient,
         Scopes: ["openid", "phone", "email"],
       });
     });
 
-    it("should fail to update client if client does not exist", async () => {
+    it("should fail to update client if client does not exist", async ({
+      clientService,
+    }) => {
       await expect(() =>
         clientService.updateClient("test-client-id", CLIENT_DEFAULTS),
       ).rejects.toThrow(ClientServiceError);
     });
   });
 });
-
-const addClientToDynamo = async (client: Client) => {
-  await dynamoDocClient.put({
-    TableName: "test-client-registry",
-    Item: client,
-  });
-};
-
-const createTable = async () => {
-  const command = new CreateTableCommand({
-    TableName: "test-client-registry",
-    AttributeDefinitions: [
-      {
-        AttributeName: "ClientID",
-        AttributeType: "S",
-      },
-    ],
-    KeySchema: [
-      {
-        AttributeName: "ClientID",
-        KeyType: "HASH",
-      },
-    ],
-    BillingMode: "PAY_PER_REQUEST",
-  });
-  await dynamoClient.send(command);
-};
-const deleteTable = async () => {
-  const command = new DeleteTableCommand({
-    TableName: "test-client-registry",
-  });
-
-  await dynamoClient.send(command);
-};
