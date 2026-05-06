@@ -24,6 +24,11 @@ export class ClientService {
     return result.Item as Client;
   };
 
+  /**
+   * We aren't entirely sure how this method will be used at the moment.
+   * RPAT and orch will likely not use it, but fraud might to get a list of client IDs and names.
+   * We may need to refine this in the future and decide whether we need the totalClients/totalPages fields.
+   */
   getClientSummaries = async (
     pageNumber = 1,
     pageSize = 20,
@@ -31,8 +36,12 @@ export class ClientService {
     const paginator = paginateScan(
       {
         client: this.dynamoClient,
+        pageSize,
       },
-      { TableName: this.tableName, Limit: pageSize },
+      {
+        TableName: this.tableName,
+        ProjectionExpression: "ClientID, ClientName",
+      },
     );
     let pageCount = 0;
     let totalClients = 0;
