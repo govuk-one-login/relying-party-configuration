@@ -25,7 +25,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginatedClients"
 
-  /client/{id}:
+  /clients/{id}:
     parameters:
       - name: id
         in: path
