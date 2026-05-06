@@ -32,6 +32,7 @@ export default defineConfig(
     ],
     rules: {
       "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-empty-function": "off",
     },
     languageOptions: {
       ecmaVersion: "latest",
