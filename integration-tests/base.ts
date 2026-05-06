@@ -24,7 +24,7 @@ export const it = baseTest
     return DynamoDBDocument.from(dynamoClient);
   })
   .extend("clientService", ({ dynamoDocClient }) => {
-    return new ClientService(dynamoDocClient);
+    return new ClientService(dynamoDocClient, "test");
   })
   .extend("addClientsToDynamo", ({ dynamoDocClient }) => {
     return async (...clients: Client[]) => {

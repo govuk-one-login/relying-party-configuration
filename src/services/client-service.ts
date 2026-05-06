@@ -11,9 +11,9 @@ import { logger } from "../logger";
 export class ClientService {
   dynamoClient: DynamoDBDocument;
   tableName: string;
-  constructor(dynamo: DynamoDBDocument) {
+  constructor(dynamo: DynamoDBDocument, tablePrefix = process.env.ENVIRONMENT) {
     this.dynamoClient = dynamo;
-    this.tableName = `${process.env.ENVIRONMENT ?? "test"}-client-registry`;
+    this.tableName = `${tablePrefix ?? "test"}-client-registry`;
   }
 
   getClient = async (clientId: string): Promise<Client | undefined> => {

@@ -9,13 +9,13 @@ import { ClientService } from "./client-service";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { CLIENT_DEFAULTS, createClient } from "../models/client";
 
-process.env.ENVIRONMENT = "test";
-
 const TEST_CLIENT = createClient("abcd1234");
+const TABLE_PREFIX = "test";
 describe("Client service tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
   const clientService = new ClientService(
     DynamoDBDocument.from(new DynamoDBClient({})),
+    TABLE_PREFIX,
   );
   beforeEach(() => {
     mockDynamo.reset();
@@ -25,7 +25,7 @@ describe("Client service tests", () => {
     it("should get client from dynamo", async () => {
       mockDynamo
         .on(GetCommand, {
-          TableName: "test-client-registry",
+          TableName: `${TABLE_PREFIX}-client-registry`,
           Key: {
             ClientID: TEST_CLIENT.ClientID,
           },
@@ -41,7 +41,7 @@ describe("Client service tests", () => {
     it("should get no client if client does not exist in dynamo", async () => {
       mockDynamo
         .on(GetCommand, {
-          TableName: "test-client-registry",
+          TableName: `${TABLE_PREFIX}-client-registry`,
           Key: {
             ClientID: "not-a-client-id",
           },
@@ -57,7 +57,7 @@ describe("Client service tests", () => {
     it("should get client summaries from dynamo with one page", async () => {
       mockDynamo
         .on(ScanCommand, {
-          TableName: "test-client-registry",
+          TableName: `${TABLE_PREFIX}-client-registry`,
           Limit: 5,
         })
         .resolves({
@@ -82,7 +82,7 @@ describe("Client service tests", () => {
     it("should get no client summaries from dynamo", async () => {
       mockDynamo
         .on(ScanCommand, {
-          TableName: "test-client-registry",
+          TableName: `${TABLE_PREFIX}-client-registry`,
           Limit: 5,
         })
         .resolves({
@@ -108,7 +108,7 @@ describe("Client service tests", () => {
           ...CLIENT_DEFAULTS,
           ClientID: expect.any(String),
         },
-        TableName: "test-client-registry",
+        TableName: `${TABLE_PREFIX}-client-registry`,
         ConditionExpression: "attribute_not_exists(ClientID)",
       });
     });
@@ -123,7 +123,7 @@ describe("Client service tests", () => {
           ...CLIENT_DEFAULTS,
           ClientID: "test-client-id",
         },
-        TableName: "test-client-registry",
+        TableName: `${TABLE_PREFIX}-client-registry`,
         ConditionExpression: "attribute_exists(ClientID)",
       });
     });
