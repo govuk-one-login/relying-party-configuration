@@ -31,7 +31,7 @@ describe("Create client endpoint integration tests", () => {
 
     const expectedClient = {
       ...CLIENT_DEFAULTS,
-      ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA==",
+      ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
       Created: 1234567,
       LastModified: 1234567,
     };
@@ -48,7 +48,7 @@ describe("Create client endpoint integration tests", () => {
   }) => {
     const existingClient = {
       ...CLIENT_DEFAULTS,
-      ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA==",
+      ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
       Created: 1234567890,
       LastModified: 1234567890,
     };

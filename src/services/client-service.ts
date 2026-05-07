@@ -70,7 +70,7 @@ export class ClientService {
 
   createClient = async (clientInput: ClientInput): Promise<Client> => {
     return this.createClientWithId(
-      crypto.randomBytes(20).toString("base64"),
+      crypto.randomBytes(20).toString("base64url"),
       clientInput,
     );
   };
