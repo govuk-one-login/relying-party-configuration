@@ -79,7 +79,6 @@ export class ClientService {
     clientId: string,
     clientInput: ClientInput,
   ): Promise<Client> => {
-    // TODO: Perform validation on client input
     try {
       const createdTime = Math.floor(Date.now() / 1000);
       const client: Client = {
