@@ -5,7 +5,7 @@ import {
   ClientSummary,
   PaginatedClientSummary,
 } from "../models/client";
-import { randomBytes } from "crypto";
+import crypto from "crypto";
 import { logger } from "../logger";
 
 export class ClientService {
@@ -70,7 +70,7 @@ export class ClientService {
 
   createClient = async (clientInput: ClientInput): Promise<Client> => {
     return this.createClientWithId(
-      randomBytes(20).toString("base64"),
+      crypto.randomBytes(20).toString("base64"),
       clientInput,
     );
   };
