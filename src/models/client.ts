@@ -47,6 +47,8 @@ export interface ClientSummary {
 }
 export interface Client extends ClientInput {
   ClientID: string;
+  Created: number;
+  LastModified: number;
 }
 export interface ClientInput {
   ClientName: string;
@@ -78,8 +80,6 @@ export interface ClientInput {
   RateLimit?: number;
   OrganisationId: string;
   ServiceIntegrationId: string;
-  Created: number;
-  LastModified: number;
 }
 export const CLIENT_DEFAULTS: ClientInput = {
   ClientName: "",
@@ -115,12 +115,16 @@ export const CLIENT_DEFAULTS: ClientInput = {
   PkceEnforced: false,
   OrganisationId: "test-org",
   ServiceIntegrationId: "test-service-integration",
-  Created: 123456,
-  LastModified: 123456,
 };
 export function createClient(
   clientId: string,
   overrides?: Partial<ClientInput>,
 ): Client {
-  return { ...CLIENT_DEFAULTS, ...overrides, ClientID: clientId };
+  return {
+    ...CLIENT_DEFAULTS,
+    ...overrides,
+    ClientID: clientId,
+    Created: 123456,
+    LastModified: 123456,
+  };
 }

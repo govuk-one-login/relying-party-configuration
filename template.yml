@@ -82,6 +82,37 @@ Resources:
         VpcEndpointIds:
           - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
 
+  ReadWriteApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub ${AWS::StackName}-ReadWriteApiGateway
+      StageName: !Sub ${Environment}
+      AlwaysDeploy: true
+      Tags:
+        FMSRegionalPolicy: false
+        CustomPolicy: true
+      Auth:
+        ResourcePolicy:
+          CustomStatements:
+            - Effect: Allow
+              Action: "execute-api:Invoke"
+              Principal: "*"
+              Resource:
+                - "execute-api:/*"
+            - Effect: Deny
+              Action: "execute-api:Invoke"
+              Principal: "*"
+              Resource:
+                - "execute-api:/*"
+              Condition:
+                StringNotEquals:
+                  aws:SourceVpce:
+                    - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
+      EndpointConfiguration:
+        Type: PRIVATE
+        VpcEndpointIds:
+          - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
+
   TempLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -118,10 +149,16 @@ Resources:
       Architectures:
         - arm64
       Events:
-        Get:
+        GetReadOnly:
           Type: Api
           Properties:
             RestApiId: !Ref ReadOnlyApiGateway
+            Path: /clients/{id}
+            Method: get
+        GetReadWrite:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ReadWriteApiGateway
             Path: /clients/{id}
             Method: get
       Policies:
@@ -134,6 +171,36 @@ Resources:
       BuildProperties:
         EntryPoints:
           - src/handler/get-client.ts
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+        UseNpmCi: True
+
+  CreateClientLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: create-client.handler
+      Runtime: nodejs24.x
+      Architectures:
+        - arm64
+      Events:
+        Post:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ReadWriteApiGateway
+            Path: /clients
+            Method: post
+      Policies:
+        - !Ref ClientRegistryTableReadWriteAccessPolicy
+      Environment:
+        Variables:
+          ENVIRONMENT: !Sub ${Environment}
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handler/create-client.ts
         Minify: true
         Sourcemap: true
         Target: es2022
@@ -237,4 +304,28 @@ Resources:
               - kms:DescribeKey
             Resource:
               - !GetAtt ClientRegistryTableEncryptionKey.Arn
+
+  ClientRegistryTableReadWriteAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowClientRegistryTableReadAccess
+            Effect: Allow
+            Action:
+              - dynamodb:DescribeTable
+              - dynamodb:Get*
+            Resource: !GetAtt ClientRegistryTable.Arn
+          - Sid: AllowClientRegistryTableWriteAccess
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+            Resource: !GetAtt ClientRegistryTable.Arn
+          - Sid: AllowClientRegistryTableDecryptionAndEncryption
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:Encrypt
+            Resource: !GetAtt ClientRegistryTableEncryptionKey.Arn
   #endregion

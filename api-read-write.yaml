@@ -33,6 +33,11 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Client"
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateClientLambda.Arn}/invocations
       responses:
         "201":
           description: Created
@@ -40,6 +45,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClientWithIdAndTimestamps"
+        "400":
+          description: Client input not provided in body of request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /clients/{id}:
     parameters:

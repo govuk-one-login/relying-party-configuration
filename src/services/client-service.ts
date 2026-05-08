@@ -5,7 +5,7 @@ import {
   ClientSummary,
   PaginatedClientSummary,
 } from "../models/client";
-import { randomBytes } from "crypto";
+import crypto from "crypto";
 import { logger } from "../logger";
 
 export class ClientService {
@@ -70,7 +70,7 @@ export class ClientService {
 
   createClient = async (clientInput: ClientInput): Promise<Client> => {
     return this.createClientWithId(
-      randomBytes(20).toString("base64"),
+      crypto.randomBytes(20).toString("base64url"),
       clientInput,
     );
   };
@@ -79,11 +79,13 @@ export class ClientService {
     clientId: string,
     clientInput: ClientInput,
   ): Promise<Client> => {
-    // TODO: Perform validation on client input
     try {
+      const createdTime = Math.floor(Date.now() / 1000);
       const client: Client = {
         ...clientInput,
         ClientID: clientId,
+        Created: createdTime,
+        LastModified: createdTime,
       };
       await this.dynamoClient.put({
         ConditionExpression: "attribute_not_exists(ClientID)",
@@ -100,17 +102,20 @@ export class ClientService {
   updateClient = async (clientId: string, clientUpdates: ClientInput) => {
     // TODO: Perform validation on client updates
     try {
+      const updatedTime = Math.floor(Date.now() / 1000);
       await this.dynamoClient.put({
         ConditionExpression: "attribute_exists(ClientID)",
         TableName: this.tableName,
         Item: {
           ...clientUpdates,
           ClientID: clientId,
+          LastModified: updatedTime,
         },
       });
       return {
         ...clientUpdates,
         ClientID: clientId,
+        LastModified: updatedTime,
       };
     } catch (error) {
       logger.error(`Failed to update client: ${(error as Error).message}`);

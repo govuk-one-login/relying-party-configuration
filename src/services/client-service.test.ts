@@ -17,8 +17,16 @@ describe("Client service tests", () => {
     DynamoDBDocument.from(new DynamoDBClient({})),
     TABLE_PREFIX,
   );
+  const TEST_TIMESTAMP = 1234567890;
+
   beforeEach(() => {
     mockDynamo.reset();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(TEST_TIMESTAMP));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe("Get client by clientId", () => {
@@ -107,6 +115,8 @@ describe("Client service tests", () => {
         Item: {
           ...CLIENT_DEFAULTS,
           ClientID: expect.any(String),
+          Created: 1234567,
+          LastModified: 1234567,
         },
         TableName: `${TABLE_PREFIX}-client-registry`,
         ConditionExpression: "attribute_not_exists(ClientID)",
@@ -122,6 +132,7 @@ describe("Client service tests", () => {
         Item: {
           ...CLIENT_DEFAULTS,
           ClientID: "test-client-id",
+          LastModified: 1234567,
         },
         TableName: `${TABLE_PREFIX}-client-registry`,
         ConditionExpression: "attribute_exists(ClientID)",
