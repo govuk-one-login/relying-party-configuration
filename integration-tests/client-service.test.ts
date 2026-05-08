@@ -3,6 +3,17 @@ import { ClientServiceError } from "../src/services/client-service";
 import { it } from "./base";
 
 describe("Client service integration test", async () => {
+  const TEST_TIMESTAMP = 1234567890;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(TEST_TIMESTAMP));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   describe("Get client by ID tests", () => {
     it("should get client by ID", async ({
       addClientsToDynamo,
@@ -134,6 +145,8 @@ describe("Client service integration test", async () => {
       await addClientsToDynamo({
         ...CLIENT_DEFAULTS,
         ClientID: "test-client-id",
+        Created: 1234567,
+        LastModified: 1234567,
       });
 
       await expect(() =>
@@ -152,13 +165,14 @@ describe("Client service integration test", async () => {
       await addClientsToDynamo(testClient);
 
       await clientService.updateClient("test-client-id", {
-        ...CLIENT_DEFAULTS,
+        ...testClient,
         Scopes: ["openid", "phone", "email"],
       });
 
       expect(await getClientFromDynamo("test-client-id")).toEqual({
         ...testClient,
         Scopes: ["openid", "phone", "email"],
+        LastModified: 1234567,
       });
     });
 
