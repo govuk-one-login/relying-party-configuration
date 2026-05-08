@@ -206,6 +206,36 @@ Resources:
         Target: es2022
         UseNpmCi: True
 
+  UpdateClientLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: update-client.handler
+      Runtime: nodejs24.x
+      Architectures:
+        - arm64
+      Events:
+        Put:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ReadWriteApiGateway
+            Path: /clients/{id}
+            Method: put
+      Policies:
+        - !Ref ClientRegistryTableReadWriteAccessPolicy
+      Environment:
+        Variables:
+          ENVIRONMENT: !Sub ${Environment}
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handler/update-client.ts
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+        UseNpmCi: True
+
   #region ClientRegistry DynamoDB Table
   ClientRegistryTableEncryptionKey:
     Type: AWS::KMS::Key
