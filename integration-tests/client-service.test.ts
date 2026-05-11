@@ -179,8 +179,10 @@ describe("Client service integration test", async () => {
     it("should fail to update client if client does not exist", async ({
       clientService,
     }) => {
+      const testClient = createClient("test-client-id");
+
       await expect(() =>
-        clientService.updateClient("test-client-id", CLIENT_DEFAULTS),
+        clientService.updateClient("test-client-id", testClient),
       ).rejects.toThrow(ClientServiceError);
     });
   });

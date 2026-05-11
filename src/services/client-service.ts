@@ -99,7 +99,7 @@ export class ClientService {
     }
   };
 
-  updateClient = async (clientId: string, clientUpdates: ClientInput) => {
+  updateClient = async (clientId: string, updatedClient: Client) => {
     // TODO: Perform validation on client updates
     try {
       const updatedTime = Math.floor(Date.now() / 1000);
@@ -107,13 +107,13 @@ export class ClientService {
         ConditionExpression: "attribute_exists(ClientID)",
         TableName: this.tableName,
         Item: {
-          ...clientUpdates,
+          ...updatedClient,
           ClientID: clientId,
           LastModified: updatedTime,
         },
       });
       return {
-        ...clientUpdates,
+        ...updatedClient,
         ClientID: clientId,
         LastModified: updatedTime,
       };
