@@ -55,7 +55,7 @@ export class ClientService {
             return {
               ClientID: client.ClientID as string,
               ClientName: client.ClientName as string,
-            } as ClientSummary;
+            };
           }) ?? [];
       }
     }
