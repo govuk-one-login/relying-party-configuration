@@ -36,7 +36,7 @@
     "@types/aws-lambda": "^8.10.161",
     "aws-sdk-client-mock": "^4.1.0",
     "aws-sdk-client-mock-vitest": "^7.0.1",
-    "eslint": "^9.39.2",
+    "eslint": "^10.3.0",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
