@@ -409,17 +409,13 @@ components:
     ClientJwtPublicKeySource:
       description: How to get the public key used to verify JWTs signed by the client.
       oneOf:
-        - $ref: "#/components/schemas/JwksPublicKeySource"
+        - $ref: "#/components/schemas/JwksUrlPublicKeySource"
+        - $ref: "#/components/schemas/StaticJwksPublicKeySource"
         - $ref: "#/components/schemas/StaticPublicKeySource"
-      discriminator:
-        propertyName: type
-        mapping:
-          JWKS: "#/components/schemas/JwksPublicKeySource"
-          STATIC: "#/components/schemas/StaticPublicKeySource"
       example:
         Type: JWKS
         JwksUrl: "http://test.com"
-    JwksPublicKeySource:
+    JwksUrlPublicKeySource:
       description: Using a JWKS endpoint
       type: object
       required:
@@ -433,6 +429,23 @@ components:
           type: string
           format: uri
           example: "http://test.com"
+    StaticJwksPublicKeySource:
+      description: Using a static JWKS
+      type: object
+      required:
+        - type
+        - jwks
+      properties:
+        Type:
+          type: string
+          enum: [STATIC]
+        Jwks:
+          type: array
+          description: An array of JWKs
+          items:
+            type: object
+            example:
+              { "kid": "test-key-1", "kty": "EC", "alg": "ES256", "use": "sig" }
     StaticPublicKeySource:
       description: Using a static public key
       type: object
