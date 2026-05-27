@@ -334,7 +334,6 @@ components:
       oneOf:
         - $ref: "#/components/schemas/JwksUrlPublicKeySource"
         - $ref: "#/components/schemas/StaticJwksPublicKeySource"
-        - $ref: "#/components/schemas/StaticPublicKeySource"
       example:
         Type: JWKS
         JwksUrl: "http://test.com"
@@ -369,18 +368,6 @@ components:
             type: object
             example:
               { "kid": "test-key-1", "kty": "EC", "alg": "ES256", "use": "sig" }
-    StaticPublicKeySource:
-      description: Using a static public key
-      type: object
-      required:
-        - type
-        - publicKey
-      properties:
-        Type:
-          type: string
-          enum: [STATIC]
-        PublicKey:
-          type: string
     ClientTokenAuthMethod:
       description: |
         The authentication method for token requests.
