@@ -145,6 +145,11 @@ paths:
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
     PaginatedResponse:
       type: object
       properties:
