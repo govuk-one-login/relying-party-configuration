@@ -145,6 +145,11 @@ paths:
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
     PaginatedResponse:
       type: object
       properties:
@@ -255,6 +260,10 @@ components:
           description: Whether this integration is enabled or not.
           type: boolean
           default: true
+        IsDeprecated:
+          description: Whether this integration is deprecated or not.
+          type: boolean
+          default: false
         CookieConsentShared:
           type: boolean
           default: false

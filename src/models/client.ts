@@ -62,6 +62,7 @@ export interface ClientInput {
   SectorIdentifierUri: string;
   SubjectType: SubjectType;
   IsActive: boolean;
+  IsDeprecated: boolean;
   CookieConsentShared: boolean;
   TestClient: boolean;
   JarValidationRequired: boolean;
@@ -98,6 +99,7 @@ export const CLIENT_DEFAULTS: ClientInput = {
   SectorIdentifierUri: "",
   SubjectType: "pairwise",
   IsActive: true,
+  IsDeprecated: false,
   CookieConsentShared: false,
   TestClient: false,
   JarValidationRequired: false,
