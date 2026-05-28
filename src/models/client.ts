@@ -1,3 +1,5 @@
+import { JWK } from "jose";
+
 export type ClientJwtPublicKeySource =
   | {
       Type: "JWKS";
@@ -5,7 +7,7 @@ export type ClientJwtPublicKeySource =
     }
   | {
       Type: "STATIC";
-      PublicKey: string;
+      Jwks: JWK[];
     };
 export type ClientTokenAuthMethod =
   | {
