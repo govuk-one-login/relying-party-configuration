@@ -25,7 +25,7 @@ export default defineConfig(
     },
   },
   {
-    files: ["src/**/*.test.ts", "src/**/*.test.js"],
+    files: ["src/setup-unit-tests.ts", "src/**/*.test.ts", "src/**/*.test.js"],
     extends: [
       ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
@@ -33,6 +33,8 @@ export default defineConfig(
     rules: {
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-explicit-any": "off",
     },
     languageOptions: {
       ecmaVersion: "latest",
