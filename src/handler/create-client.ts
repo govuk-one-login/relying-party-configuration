@@ -11,7 +11,14 @@ import { generateApiGatewayResponse, generateErrorResponse } from "./utils";
 import { logger } from "../logger";
 
 const clientService = new ClientService(
-  DynamoDBDocument.from(new DynamoDBClient({})),
+  DynamoDBDocument.from(
+    new DynamoDBClient({
+      region: "eu-west-2",
+      ...(process.env.DYNAMO_ENDPOINT && {
+        endpoint: process.env.DYNAMO_ENDPOINT,
+      }),
+    }),
+  ),
 );
 export const handler: Handler = async (
   event: APIGatewayProxyEvent,

@@ -38,6 +38,7 @@ Conditions:
       !Equals [integration, !Ref Environment],
       !Equals [production, !Ref Environment],
     ]
+  IsLocalEnv: !Equals [local, !Ref Environment]
 
 Globals:
   Function:
@@ -166,6 +167,8 @@ Resources:
       Environment:
         Variables:
           ENVIRONMENT: !Sub ${Environment}
+          # This will always be over-written when running locally in local-env.json
+          DYNAMO_ENDPOINT: !If [IsLocalEnv, "", !Ref AWS::NoValue]
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -196,6 +199,8 @@ Resources:
       Environment:
         Variables:
           ENVIRONMENT: !Sub ${Environment}
+          # This will always be over-written when running locally in local-env.json
+          DYNAMO_ENDPOINT: !If [IsLocalEnv, "", !Ref AWS::NoValue]
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -226,6 +231,8 @@ Resources:
       Environment:
         Variables:
           ENVIRONMENT: !Sub ${Environment}
+          # This will always be over-written when running locally in local-env.json
+          DYNAMO_ENDPOINT: !If [IsLocalEnv, "", !Ref AWS::NoValue]
     Metadata:
       BuildMethod: esbuild
       BuildProperties:

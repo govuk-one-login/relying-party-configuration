@@ -1,0 +1,6 @@
+{
+  "Parameters": {
+    "ENVIRONMENT": "local",
+    "DYNAMO_ENDPOINT": "http://host.docker.internal:8000"
+  }
+}
