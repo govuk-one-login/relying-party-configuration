@@ -173,6 +173,14 @@ const jwksUrlValidator = when(
     ),
 );
 
+const permitMissingNonceValidator = when(
+  (client: Client) => client.IdentityVerificationSupported,
+  rule(
+    (client: Client) => !client.PermitMissingNonce,
+    "Cannot enable PermitMissingNonce if IdentityVerificationSupported is true",
+  ),
+);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -182,4 +190,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(clientTypeValidator)
   .and(idTokenSigningAlgorithmValidator)
   .and(landingPageUrlValidator)
-  .and(jwksUrlValidator);
+  .and(jwksUrlValidator)
+  .and(permitMissingNonceValidator);

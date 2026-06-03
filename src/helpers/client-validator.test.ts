@@ -332,4 +332,18 @@ describe("Client validator tests", () => {
       }
     });
   });
+
+  it("should return invalid result when PermitMissingNonce is true and identity is enabled", async () => {
+    const client = createClient({
+      IdentityVerificationSupported: true,
+      PermitMissingNonce: true,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `Cannot enable PermitMissingNonce if IdentityVerificationSupported is true`,
+    ]);
+  });
 });
