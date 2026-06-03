@@ -609,4 +609,46 @@ describe("Client validator tests", () => {
     expect(result).toBeInvalid();
     expect(result).toHaveInvalidReasons([`Scopes must contain "openid"`]);
   });
+
+  describe("URL validation for SectorIdentifierUri", () => {
+    it(`should return invalid result when SectorIdentifierUri is not a legal URL`, async () => {
+      const client = createClient({
+        SectorIdentifierUri: "/////not-a-url!",
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field SectorIdentifierUri is not a legal URL`,
+      ]);
+    });
+
+    it(`should return invalid result when SectorIdentifierUri has a local hostname in production`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        SectorIdentifierUri: "https://localhost",
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field SectorIdentifierUri is using a local hostname`,
+      ]);
+    });
+
+    it(`should return valid result when SectorIdentifierUri has a local hostname in non-prod`, async () => {
+      const client = createClient({
+        SectorIdentifierUri: "https://localhost",
+      });
+
+      for (const env of NON_PROD_ENVS) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeValid();
+      }
+    });
+  });
 });

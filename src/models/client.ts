@@ -116,7 +116,7 @@ export const CLIENT_DEFAULTS: ClientInput = {
   RedirectUrls: ["https://example.com"],
   PostLogoutRedirectUrls: [],
   ServiceType: "MANDATORY",
-  SectorIdentifierUri: "",
+  SectorIdentifierUri: "https://example.com",
   SubjectType: "pairwise",
   IsActive: true,
   IsDeprecated: false,

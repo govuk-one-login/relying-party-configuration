@@ -320,6 +320,10 @@ const scopesValidator = listFieldValidator(VALID_SCOPES, "Scope")
   )
   .adaptedFrom((client: Client) => client.Scopes);
 
+const sectorIdentifierUriValidator = validUrlValidator("SectorIdentifierUri")
+  .and(when(isProd, notLocalhostValidator("SectorIdentifierUri")))
+  .adaptedFrom((client: Client) => client.SectorIdentifierUri);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -335,4 +339,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(postLogoutRedirectUrlsValidator)
   .and(rateLimitValidator)
   .and(redirectUrlsValidator)
-  .and(scopesValidator);
+  .and(scopesValidator)
+  .and(sectorIdentifierUriValidator);
