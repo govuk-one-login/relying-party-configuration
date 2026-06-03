@@ -150,4 +150,37 @@ describe("Client validator tests", () => {
       "ClientName must include at least one non-whitespace character",
     ]);
   });
+
+  it("should return invalid result when ClientSecret is empty when TokenAuthMethod is client_secret_post", async () => {
+    const client = createClient({
+      ClientTokenAuthMethod: {
+        TokenAuthMethod: "client_secret_post",
+        ClientSecret: "",
+      },
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `TokenAuthMethod is "client_secret_post" but ClientSecret was not provided`,
+    ]);
+  });
+
+  it("should return invalid result when TokenAuthMethod is client_secret_post and identity is enabled", async () => {
+    const client = createClient({
+      ClientTokenAuthMethod: {
+        TokenAuthMethod: "client_secret_post",
+        ClientSecret: "test-client-secret", //pragma: allowlist secret
+      },
+      IdentityVerificationSupported: true,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `Cannot use TokenAuthMethod of client_secret_post with identity enabled`,
+    ]);
+  });
 });

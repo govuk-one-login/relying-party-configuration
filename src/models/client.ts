@@ -10,14 +10,14 @@ export type ClientJwtPublicKeySource =
       Type: "STATIC";
       Jwks: JWK[];
     };
-export type ClientTokenAuthMethod =
-  | {
-      TokenAuthMethod: "private_key_jwt";
-    }
-  | {
-      TokenAuthMethod: "client_secret_post";
-      ClientSecret: string;
-    };
+export interface PrivateKeyJwtAuth {
+  TokenAuthMethod: "private_key_jwt";
+}
+export interface ClientSecretPostAuth {
+  TokenAuthMethod: "client_secret_post";
+  ClientSecret: string;
+}
+export type ClientTokenAuthMethod = PrivateKeyJwtAuth | ClientSecretPostAuth;
 export type Scope =
   | "openid"
   | "phone"

@@ -1,5 +1,7 @@
 import {
   Client,
+  ClientSecretPostAuth,
+  ClientTokenAuthMethod,
   VALID_CHANNELS,
   VALID_CLAIMS,
   VALID_LOCS,
@@ -113,8 +115,30 @@ const clientNameValidator = rule(
   )
   .adaptedFrom((client: Client) => client.ClientName);
 
+const clientSecretValidator = when(
+  (tokenAuthMethod: ClientTokenAuthMethod) =>
+    tokenAuthMethod.TokenAuthMethod === "client_secret_post",
+  rule(
+    (tokenAuthMethod: ClientTokenAuthMethod) =>
+      !!(tokenAuthMethod as ClientSecretPostAuth).ClientSecret,
+    `TokenAuthMethod is "client_secret_post" but ClientSecret was not provided`,
+  ),
+)
+  .adaptedFrom((client: Client) => client.ClientTokenAuthMethod)
+  .and(
+    when(
+      (client: Client) => client.IdentityVerificationSupported,
+      rule(
+        (client: Client) =>
+          client.ClientTokenAuthMethod.TokenAuthMethod === "private_key_jwt",
+        "Cannot use TokenAuthMethod of client_secret_post with identity enabled",
+      ),
+    ),
+  );
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
   .and(clientLoCsValidator)
-  .and(clientNameValidator);
+  .and(clientNameValidator)
+  .and(clientSecretValidator);
