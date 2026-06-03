@@ -111,7 +111,7 @@ export const CLIENT_DEFAULTS: ClientInput = {
     TokenAuthMethod: "private_key_jwt",
   },
   Scopes: ["openid"],
-  RedirectUrls: [],
+  RedirectUrls: ["https://example.com"],
   PostLogoutRedirectUrls: [],
   ServiceType: "MANDATORY",
   SectorIdentifierUri: "",

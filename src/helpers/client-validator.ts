@@ -15,6 +15,18 @@ import { invalid, rule, valid, Validator, optional, when } from "./validator";
 
 const IDENTITY_LOCS = ["P1", "P2", "P3"];
 
+const PROHIBITED_REDIRECT_URI_SCHEMES: string[] = [
+  "data",
+  "javascript",
+  "vbscript",
+];
+
+const PROHIBITED_REDIRECT_URI_QUERY_PARAMETER_NAMES: string[] = [
+  "code",
+  "state",
+  "response",
+];
+
 const isProd = () => process.env.ENVIRONMENT === "production";
 
 const isValidUrl = (url: string): boolean => {
@@ -69,6 +81,11 @@ const listFieldValidator = (
   validValues: readonly string[],
   fieldName: string,
 ) => listValidator(fieldValidator(validValues, fieldName));
+
+const notEmptyValidator = <T>(fieldName: string) =>
+  rule((input: T[]) => {
+    return input.length > 0;
+  }, `Field ${fieldName} cannot be empty`);
 
 const backChannelLogoutUriValidator = optional(
   validUrlValidator("BackChannelLogoutUri")
@@ -238,6 +255,61 @@ const rateLimitValidator = rule(
   "RateLimit must be a positive whole number",
 ).adaptedFrom((client: Client) => client.RateLimit);
 
+const redirectUrlsValidator = notEmptyValidator<string>("RedirectUrls")
+  .and(
+    listValidator(
+      rule(
+        isValidUrl,
+        `Field RedirectUrls contains a URL that is not a legal URL`,
+      )
+        .and(
+          when(
+            isProd,
+            rule(
+              protocolNotHttp,
+              `Field RedirectUrls contains a URL that does not have a valid URL protocol`,
+            ).and(
+              rule(
+                isNotLocalhost,
+                `Field RedirectUrls contains a URL that is using a local hostname`,
+              ),
+            ),
+          ),
+        )
+        .and(
+          when(
+            isValidUrl,
+            rule((urlString: string) => {
+              const url = new URL(urlString);
+
+              let valid = true;
+              url.searchParams.forEach((_value, key) => {
+                if (
+                  PROHIBITED_REDIRECT_URI_QUERY_PARAMETER_NAMES.includes(key)
+                ) {
+                  valid = false;
+                }
+              });
+              return valid;
+            }, "RedirectUrls contains a URL with an invalid query parameter name"),
+          ),
+        )
+        .and(
+          when(
+            isValidUrl,
+            rule((urlString: string) => {
+              const url = new URL(urlString);
+
+              const urlScheme = url.protocol.replace(":", "");
+
+              return !PROHIBITED_REDIRECT_URI_SCHEMES.includes(urlScheme);
+            }, "RedirectUrls contains a URL with an invalid schema"),
+          ),
+        ),
+    ),
+  )
+  .adaptedFrom((client: Client) => client.RedirectUrls);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -251,4 +323,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(staticJwksValidator)
   .and(permitMissingNonceValidator)
   .and(postLogoutRedirectUrlsValidator)
-  .and(rateLimitValidator);
+  .and(rateLimitValidator)
+  .and(redirectUrlsValidator);

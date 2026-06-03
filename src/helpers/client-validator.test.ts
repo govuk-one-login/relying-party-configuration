@@ -476,4 +476,112 @@ describe("Client validator tests", () => {
       `RateLimit must be a positive whole number`,
     ]);
   });
+
+  describe("URL validation for RedirectUrls", () => {
+    it(`should return invalid result when RedirectUrls contains an illegal URL`, async () => {
+      const client = createClient({
+        RedirectUrls: ["/////not-a-url!"],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field RedirectUrls contains a URL that is not a legal URL`,
+      ]);
+    });
+
+    it(`should return invalid result when RedirectUrls contains a URL with an invalid protocol in production`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        RedirectUrls: ["http://test.com"],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field RedirectUrls contains a URL that does not have a valid URL protocol`,
+      ]);
+    });
+
+    it(`should return invalid result when RedirectUrls contains a URL with a local hostname in production`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        RedirectUrls: ["https://localhost"],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field RedirectUrls contains a URL that is using a local hostname`,
+      ]);
+    });
+
+    it("should return invalid result when RedirectUrls is empty", async () => {
+      const client = createClient({
+        RedirectUrls: [],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field RedirectUrls cannot be empty`,
+      ]);
+    });
+
+    it("should return invalid result when RedirectUrls contains a URL with an invalid schema", async () => {
+      const client = createClient({
+        RedirectUrls: ["javascript://stuff"],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `RedirectUrls contains a URL with an invalid schema`,
+      ]);
+    });
+
+    it("should return invalid result when RedirectUrls contains a URL with an invalid query parameter", async () => {
+      const client = createClient({
+        RedirectUrls: ["https://example.com?code=123"],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `RedirectUrls contains a URL with an invalid query parameter name`,
+      ]);
+    });
+
+    it(`should return valid result when RedirectUrls contains a URL that has an invalid protocol in non-prod`, async () => {
+      const client = createClient({
+        RedirectUrls: ["http://test.com"],
+      });
+
+      for (const env of NON_PROD_ENVS) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeValid();
+      }
+    });
+
+    it(`should return valid result when RedirectUrls contains a URL that has a local hostname in non-prod`, async () => {
+      const client = createClient({
+        RedirectUrls: ["https://localhost"],
+      });
+
+      for (const env of NON_PROD_ENVS) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeValid();
+      }
+    });
+  });
 });
