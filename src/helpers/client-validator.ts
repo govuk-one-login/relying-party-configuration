@@ -11,6 +11,7 @@ import {
   VALID_LOCS,
   VALID_SCOPES,
   VALID_SERVICE_TYPES,
+  VALID_SUBJECT_TYPES,
   VALID_TOKEN_SIGNING_ALGS,
 } from "../models/client";
 import { invalid, rule, valid, Validator, optional, when } from "./validator";
@@ -330,6 +331,11 @@ const serviceTypeValidator = fieldValidator(
   "ServiceType",
 ).adaptedFrom((client: Client) => client.ServiceType);
 
+const subjectTypeValidator = fieldValidator(
+  VALID_SUBJECT_TYPES,
+  "SubjectType",
+).adaptedFrom((client: Client) => client.SubjectType);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -347,4 +353,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(redirectUrlsValidator)
   .and(scopesValidator)
   .and(sectorIdentifierUriValidator)
-  .and(serviceTypeValidator);
+  .and(serviceTypeValidator)
+  .and(subjectTypeValidator);

@@ -42,7 +42,11 @@ export const VALID_SERVICE_TYPES = Object.freeze([
   "OPTIONAL",
 ] as const);
 export type ServiceType = (typeof VALID_SERVICE_TYPES)[number];
-export type SubjectType = "pairwise" | "public";
+export const VALID_SUBJECT_TYPES = Object.freeze([
+  "pairwise",
+  "public",
+] as const);
+export type SubjectType = (typeof VALID_SUBJECT_TYPES)[number];
 export const VALID_CLIENT_TYPES = Object.freeze(["web", "app"] as const);
 export type ClientType = (typeof VALID_CLIENT_TYPES)[number];
 export const VALID_TOKEN_SIGNING_ALGS = Object.freeze([

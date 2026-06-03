@@ -7,6 +7,7 @@ import {
   LevelOfConfidence,
   Scope,
   ServiceType,
+  SubjectType,
 } from "../models/client";
 import { allValidators } from "./client-validator";
 
@@ -663,6 +664,19 @@ describe("Client validator tests", () => {
     expect(result).toBeInvalid();
     expect(result).toHaveInvalidReasons([
       'Invalid ServiceType provided: "not-a-service-type"',
+    ]);
+  });
+
+  it("should return invalid result when SubjectType is not valid", async () => {
+    const client = createClient({
+      SubjectType: "not-a-subject-type" as unknown as SubjectType,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      'Invalid SubjectType provided: "not-a-subject-type"',
     ]);
   });
 });
