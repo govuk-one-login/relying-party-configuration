@@ -6,7 +6,7 @@ import {
 import { ClientService } from "../services/client-service";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
-import { ClientInput } from "../models/client";
+import { ClientInput, createClient } from "../models/client";
 import { generateApiGatewayResponse, generateErrorResponse } from "./utils";
 import { logger } from "../logger";
 
@@ -28,7 +28,8 @@ export const handler: Handler = async (
   try {
     // TODO: Perform validation on client input
     const clientInput = JSON.parse(event.body) as unknown as ClientInput;
-    const client = await clientService.createClient(clientInput);
+    const clientToCreate = createClient(clientInput);
+    const client = await clientService.putClient(clientToCreate);
     return generateApiGatewayResponse(201, { ...client });
   } catch (error) {
     logger.error((error as Error).message);

@@ -9,7 +9,7 @@ import { ClientService } from "./client-service";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { CLIENT_DEFAULTS, createClient } from "../models/client";
 
-const TEST_CLIENT = createClient("abcd1234");
+const TEST_CLIENT = createClient({ ClientID: "abcd1234" });
 const TABLE_PREFIX = "test";
 describe("Client service tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
@@ -109,7 +109,8 @@ describe("Client service tests", () => {
 
   describe("Create client", () => {
     it("should create a client", async () => {
-      await clientService.createClient(CLIENT_DEFAULTS);
+      const client = createClient();
+      await clientService.putClient(client);
 
       expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
         Item: {
@@ -126,12 +127,17 @@ describe("Client service tests", () => {
 
   describe("Update client", () => {
     it("should update a client", async () => {
-      await clientService.updateClient("test-client-id", CLIENT_DEFAULTS);
+      const clientToUpdate = createClient({
+        ClientID: "test-client-id",
+        Created: 100000,
+      });
+      await clientService.updateClient(clientToUpdate);
 
       expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
         Item: {
           ...CLIENT_DEFAULTS,
           ClientID: "test-client-id",
+          Created: 100000,
           LastModified: 1234567,
         },
         TableName: `${TABLE_PREFIX}-client-registry`,

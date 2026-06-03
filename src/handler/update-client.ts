@@ -29,7 +29,7 @@ export const handler: Handler = async (
   try {
     // TODO: Perform validation on client input
     const clientInput = JSON.parse(event.body) as unknown as Client;
-    const client = await clientService.updateClient(clientId, clientInput);
+    const client = await clientService.updateClient(clientInput);
     return generateApiGatewayResponse(200, { ...client });
   } catch (error) {
     logger.error((error as Error).message);

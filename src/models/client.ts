@@ -1,4 +1,5 @@
 import { JWK } from "jose";
+import crypto from "crypto";
 
 export type ClientJwtPublicKeySource =
   | {
@@ -120,15 +121,13 @@ export const CLIENT_DEFAULTS: ClientInput = {
   OrganisationId: "test-org",
   ServiceIntegrationId: "test-service-integration",
 };
-export function createClient(
-  clientId: string,
-  overrides?: Partial<ClientInput>,
-): Client {
+export function createClient(overrides?: Partial<Client>): Client {
   return {
     ...CLIENT_DEFAULTS,
     ...overrides,
-    ClientID: clientId,
-    Created: 123456,
-    LastModified: 123456,
+    ClientID:
+      overrides?.ClientID ?? crypto.randomBytes(20).toString("base64url"),
+    Created: overrides?.Created ?? 123456,
+    LastModified: overrides?.LastModified ?? 123456,
   };
 }

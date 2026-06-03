@@ -21,7 +21,7 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 200 response with updated client if provided with valid client input", async () => {
-    const testClient = createClient("test-client-id");
+    const testClient = createClient({ ClientID: "test-client-id" });
 
     const response: APIGatewayProxyResult = await handler(
       createApiGatewayEvent(
@@ -83,7 +83,7 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 500 response if dynamo throws an error", async () => {
-    const testClient = createClient("test-client-id");
+    const testClient = createClient({ ClientID: "test-client-id" });
     mockDynamo.on(PutCommand).rejects(new Error("Test dynamo error"));
 
     const response: APIGatewayProxyResult = await handler(

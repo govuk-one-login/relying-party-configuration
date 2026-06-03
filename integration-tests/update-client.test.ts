@@ -24,7 +24,7 @@ describe("Create client endpoint integration tests", () => {
     addClientsToDynamo,
     getClientFromDynamo,
   }) => {
-    const testClient = createClient("Z2VuZXJhdGVkLWNsaWVudC1pZA");
+    const testClient = createClient({ ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA" });
     await addClientsToDynamo(testClient);
 
     const response: APIGatewayProxyResult = await handler(
@@ -68,7 +68,9 @@ describe("Create client endpoint integration tests", () => {
     };
     await addClientsToDynamo(existingClient);
 
-    const testClient = createClient("client-id-that-does-not-exist");
+    const testClient = createClient({
+      ClientID: "client-id-that-does-not-exist",
+    });
     const response: APIGatewayProxyResult = await handler(
       createApiGatewayEvent(
         "PUT",
