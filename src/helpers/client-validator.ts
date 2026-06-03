@@ -1,4 +1,4 @@
-import { Client } from "../models/client";
+import { Client ,VALID_CHANNELS} from "../models/client";
 import { optional, rule } from "./validator";
 
 const isValidUrl = (url: string): boolean => {
@@ -28,10 +28,20 @@ const notHttpValidator = (fieldName: string) =>
 const notLocalhostValidator = (fieldName: string) =>
   rule(isNotLocalhost, `Field ${fieldName} is using a local hostname`);
 
+const fieldValidator = (validValues: readonly string[], fieldName: string) =>
+  rule(
+    (value: string) => validValues.includes(value),
+    (value: string) => `Invalid ${fieldName} provided: "${value}"`,
+  );
+
 const backChannelLogoutUriValidator = optional(
   validUrlValidator("BackChannelLogoutUri")
     .and(notHttpValidator("BackChannelLogoutUri"))
     .and(notLocalhostValidator("BackChannelLogoutUri")),
 ).adaptedFrom((client: Client) => client.BackChannelLogoutUri);
 
-export const allValidators = backChannelLogoutUriValidator;
+const channelValidator = fieldValidator(VALID_CHANNELS, "Channel").adaptedFrom(
+  (client: Client) => client.Channel,
+);
+
+export const allValidators = backChannelLogoutUriValidator.and(channelValidator);

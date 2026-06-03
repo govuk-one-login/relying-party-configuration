@@ -1,4 +1,4 @@
-import { createClient } from "../models/client";
+import { Channel, createClient } from "../models/client";
 import { allValidators } from "./client-validator";
 
 describe("Client validator tests", () => {
@@ -41,5 +41,18 @@ describe("Client validator tests", () => {
         `Field BackChannelLogoutUri is using a local hostname`,
       ]);
     });
+  });
+
+  it("should return invalid result when Channel is not valid", async () => {
+    const client = createClient({
+      Channel: "not-a-channel" as unknown as Channel,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      'Invalid Channel provided: "not-a-channel"',
+    ]);
   });
 });
