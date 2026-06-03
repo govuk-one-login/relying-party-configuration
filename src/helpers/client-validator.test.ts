@@ -6,6 +6,7 @@ import {
   IdTokenSigningAlgorithm,
   LevelOfConfidence,
   Scope,
+  ServiceType,
 } from "../models/client";
 import { allValidators } from "./client-validator";
 
@@ -650,5 +651,18 @@ describe("Client validator tests", () => {
         expect(result).toBeValid();
       }
     });
+  });
+
+  it("should return invalid result when ServiceType is not valid", async () => {
+    const client = createClient({
+      ServiceType: "not-a-service-type" as unknown as ServiceType,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      'Invalid ServiceType provided: "not-a-service-type"',
+    ]);
   });
 });

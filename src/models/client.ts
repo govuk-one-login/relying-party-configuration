@@ -37,7 +37,11 @@ export const VALID_CLAIMS = Object.freeze([
   "https://vocab.account.gov.uk/v1/returnCode",
 ] as const);
 export type Claim = (typeof VALID_CLAIMS)[number];
-export type ServiceType = "MANDATORY" | "OPTIONAL";
+export const VALID_SERVICE_TYPES = Object.freeze([
+  "MANDATORY",
+  "OPTIONAL",
+] as const);
+export type ServiceType = (typeof VALID_SERVICE_TYPES)[number];
 export type SubjectType = "pairwise" | "public";
 export const VALID_CLIENT_TYPES = Object.freeze(["web", "app"] as const);
 export type ClientType = (typeof VALID_CLIENT_TYPES)[number];

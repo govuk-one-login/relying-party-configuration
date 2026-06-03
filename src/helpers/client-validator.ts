@@ -10,6 +10,7 @@ import {
   VALID_CLIENT_TYPES,
   VALID_LOCS,
   VALID_SCOPES,
+  VALID_SERVICE_TYPES,
   VALID_TOKEN_SIGNING_ALGS,
 } from "../models/client";
 import { invalid, rule, valid, Validator, optional, when } from "./validator";
@@ -324,6 +325,11 @@ const sectorIdentifierUriValidator = validUrlValidator("SectorIdentifierUri")
   .and(when(isProd, notLocalhostValidator("SectorIdentifierUri")))
   .adaptedFrom((client: Client) => client.SectorIdentifierUri);
 
+const serviceTypeValidator = fieldValidator(
+  VALID_SERVICE_TYPES,
+  "ServiceType",
+).adaptedFrom((client: Client) => client.ServiceType);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -340,4 +346,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(rateLimitValidator)
   .and(redirectUrlsValidator)
   .and(scopesValidator)
-  .and(sectorIdentifierUriValidator);
+  .and(sectorIdentifierUriValidator)
+  .and(serviceTypeValidator);
