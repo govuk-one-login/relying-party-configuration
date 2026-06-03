@@ -232,6 +232,12 @@ const postLogoutRedirectUrlsValidator = listValidator(
   ),
 ).adaptedFrom((client: Client) => client.PostLogoutRedirectUrls);
 
+const rateLimitValidator = rule(
+  (rateLimit?: number) =>
+    !rateLimit || (rateLimit > 0 && Math.floor(rateLimit) === rateLimit),
+  "RateLimit must be a positive whole number",
+).adaptedFrom((client: Client) => client.RateLimit);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -244,4 +250,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(jwksUrlValidator)
   .and(staticJwksValidator)
   .and(permitMissingNonceValidator)
-  .and(postLogoutRedirectUrlsValidator);
+  .and(postLogoutRedirectUrlsValidator)
+  .and(rateLimitValidator);

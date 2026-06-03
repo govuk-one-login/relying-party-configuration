@@ -289,8 +289,8 @@ describe("Client validator tests", () => {
       const client = createClient({
         ClientJwtPublicKeySource: {
           Type: "JWKS",
-          JwksUrl: "/////not-a-url!"
-        }
+          JwksUrl: "/////not-a-url!",
+        },
       });
 
       const result = await allValidators.validate(client);
@@ -449,5 +449,31 @@ describe("Client validator tests", () => {
         expect(result).toBeValid();
       }
     });
+  });
+
+  it("should return invalid result when RateLimit is a negative number", async () => {
+    const client = createClient({
+      RateLimit: -123,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `RateLimit must be a positive whole number`,
+    ]);
+  });
+
+  it("should return invalid result when RateLimit is not a whole number", async () => {
+    const client = createClient({
+      RateLimit: 123.456,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `RateLimit must be a positive whole number`,
+    ]);
   });
 });
