@@ -11,6 +11,9 @@ import {
 import { invalid, rule, valid, Validator, optional, when } from "./validator";
 
 const IDENTITY_LOCS = ["P1", "P2", "P3"];
+
+const isProd = () => process.env.ENVIRONMENT === "production";
+
 const isValidUrl = (url: string): boolean => {
   try {
     new URL(url);
@@ -148,6 +151,17 @@ const idTokenSigningAlgorithmValidator = fieldValidator(
   "IdTokenSigningAlgorithm",
 ).adaptedFrom((client: Client) => client.IdTokenSigningAlgorithm);
 
+const landingPageUrlValidator = optional(
+  validUrlValidator("LandingPageUrl").and(
+    when(
+      isProd,
+      notHttpValidator("LandingPageUrl").and(
+        notLocalhostValidator("LandingPageUrl"),
+      ),
+    ),
+  ),
+).adaptedFrom((client: Client) => client.LandingPageUrl);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -155,4 +169,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(clientNameValidator)
   .and(clientSecretValidator)
   .and(clientTypeValidator)
-  .and(idTokenSigningAlgorithmValidator);
+  .and(idTokenSigningAlgorithmValidator)
+  .and(landingPageUrlValidator);

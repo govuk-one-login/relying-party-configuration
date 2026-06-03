@@ -9,6 +9,10 @@ import {
 import { allValidators } from "./client-validator";
 
 describe("Client validator tests", () => {
+  const NON_PROD_ENVS = ["dev", "build", "staging", "integration"];
+  beforeEach(() => {
+    process.env.ENVIRONMENT = "dev";
+  });
   describe("URL validation for BackChannelLogoutUri", () => {
     it(`should return invalid result when BackChannelLogoutUri is not a legal URL`, async () => {
       const client = createClient({
@@ -210,5 +214,74 @@ describe("Client validator tests", () => {
     expect(result).toHaveInvalidReasons([
       `Invalid IdTokenSigningAlgorithm provided: "Ed25519"`,
     ]);
+  });
+
+  describe("URL validation for LandingPageUrl", () => {
+    it(`should return invalid result when LandingPageUrl is not a legal URL`, async () => {
+      const client = createClient({
+        LandingPageUrl: "/////not-a-url!",
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field LandingPageUrl is not a legal URL`,
+      ]);
+    });
+
+    it(`should return invalid result when LandingPageUrl has an invalid protocol in production`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        LandingPageUrl: "http://test.com",
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field LandingPageUrl does not have a valid URL protocol`,
+      ]);
+    });
+
+    it(`should return invalid result when LandingPageUrl has a local hostname in production`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        LandingPageUrl: "https://localhost",
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field LandingPageUrl is using a local hostname`,
+      ]);
+    });
+
+    it(`should return valid result when LandingPageUrl has an invalid protocol in non-prod`, async () => {
+      const client = createClient({
+        LandingPageUrl: "http://test.com",
+      });
+
+      for (const env of NON_PROD_ENVS) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeValid();
+      }
+    });
+
+    it(`should return valid result when LandingPageUrl has a local hostname in non-prod`, async () => {
+      const client = createClient({
+        LandingPageUrl: "https://localhost",
+      });
+
+      for (const env of NON_PROD_ENVS) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeValid();
+      }
+    });
   });
 });

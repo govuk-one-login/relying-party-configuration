@@ -89,7 +89,7 @@ export interface ClientInput {
   OneLoginService: boolean;
   IdTokenSigningAlgorithm: IdTokenSigningAlgorithm;
   SmokeTest: boolean;
-  LandingPageUrl: string;
+  LandingPageUrl?: string;
   ClientLoCs: LevelOfConfidence[];
   PermitMissingNonce: boolean;
   Channel: Channel;
