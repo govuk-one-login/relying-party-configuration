@@ -1,4 +1,4 @@
-import { Channel, createClient } from "../models/client";
+import { Channel, Claim, createClient } from "../models/client";
 import { allValidators } from "./client-validator";
 
 describe("Client validator tests", () => {
@@ -53,6 +53,19 @@ describe("Client validator tests", () => {
     expect(result).toBeInvalid();
     expect(result).toHaveInvalidReasons([
       'Invalid Channel provided: "not-a-channel"',
+    ]);
+  });
+
+  it("should return invalid result when Claims contains invalid claim", async () => {
+    const client = createClient({
+      Claims: ["not-a-claim"] as unknown as Claim[],
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      'Invalid Claim provided: "not-a-claim"',
     ]);
   });
 });

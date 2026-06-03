@@ -25,12 +25,14 @@ export type Scope =
   | "wallet_subject_id"
   | "am"
   | "offline_access";
-export type Claim =
-  | "https://vocab.account.gov.uk/v1/passport"
-  | "https://vocab.account.gov.uk/v1/drivingPermit"
-  | "https://vocab.account.gov.uk/v1/coreIdentityJWT"
-  | "https://vocab.account.gov.uk/v1/address"
-  | "https://vocab.account.gov.uk/v1/returnCode";
+export const VALID_CLAIMS = Object.freeze([
+  "https://vocab.account.gov.uk/v1/passport",
+  "https://vocab.account.gov.uk/v1/drivingPermit",
+  "https://vocab.account.gov.uk/v1/coreIdentityJWT",
+  "https://vocab.account.gov.uk/v1/address",
+  "https://vocab.account.gov.uk/v1/returnCode",
+] as const);
+export type Claim = (typeof VALID_CLAIMS)[number];
 export type ServiceType = "MANDATORY" | "OPTIONAL";
 export type SubjectType = "pairwise" | "public";
 export type ClientType = "web" | "app";
@@ -74,7 +76,7 @@ export interface ClientInput {
   CookieConsentShared: boolean;
   TestClient: boolean;
   JarValidationRequired: boolean;
-  Claims: string[];
+  Claims: Claim[];
   ClientType: ClientType;
   IdentityVerificationSupported: boolean;
   OneLoginService: boolean;
@@ -102,7 +104,6 @@ export const CLIENT_DEFAULTS: ClientInput = {
   Scopes: ["openid"],
   RedirectUrls: [],
   PostLogoutRedirectUrls: [],
-  BackChannelLogoutUri: "",
   ServiceType: "MANDATORY",
   SectorIdentifierUri: "",
   SubjectType: "pairwise",
