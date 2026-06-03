@@ -2,7 +2,7 @@ import { APIGatewayProxyResult, Context } from "aws-lambda";
 import { handler } from "../src/handler/create-client";
 import { createApiGatewayEvent } from "../src/handler/test-utils";
 import { it } from "./base";
-import { CLIENT_DEFAULTS } from "../src/models/client";
+import { CLIENT_DEFAULTS, ClientInput } from "../src/models/client";
 import crypto from "crypto";
 
 vi.spyOn(crypto, "randomBytes").mockReturnValue(
@@ -23,11 +23,7 @@ describe("Create client endpoint integration tests", () => {
   it("should return a 200 response with client if client does not exist yet", async ({
     getClientFromDynamo,
   }) => {
-    const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("POST", JSON.stringify(CLIENT_DEFAULTS), {}, {}),
-      {} as Context,
-      () => {},
-    );
+    const response = await sendCreateClientRequest(CLIENT_DEFAULTS);
 
     const expectedClient = {
       ...CLIENT_DEFAULTS,
@@ -43,6 +39,24 @@ describe("Create client endpoint integration tests", () => {
     );
   });
 
+  it("should return a 400 response with errors if client is invalid", async () => {
+    const invalidClient = {
+      ...CLIENT_DEFAULTS,
+      RedirectUrls: [],
+      Scopes: [],
+    };
+    const response = await sendCreateClientRequest(invalidClient);
+
+    expect(response.statusCode).toEqual(400);
+    expect(JSON.parse(response.body)).toEqual({
+      message: "One or more validation errors were found",
+      errors: [
+        "Field RedirectUrls cannot be empty",
+        'Scopes must contain "openid"',
+      ],
+    });
+  });
+
   it("should return a 500 response if client already exists with same ID", async ({
     addClientsToDynamo,
   }) => {
@@ -54,15 +68,21 @@ describe("Create client endpoint integration tests", () => {
     };
     await addClientsToDynamo(existingClient);
 
-    const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("POST", JSON.stringify(CLIENT_DEFAULTS), {}, {}),
-      {} as Context,
-      () => {},
-    );
+    const response = await sendCreateClientRequest(existingClient);
 
     expect(response.statusCode).toEqual(500);
     expect(JSON.parse(response.body)).toEqual({
       message: "Internal server error",
     });
   });
+
+  const sendCreateClientRequest = async (
+    clientInput: ClientInput,
+  ): Promise<APIGatewayProxyResult> => {
+    return (await handler(
+      createApiGatewayEvent("POST", JSON.stringify(clientInput), {}, {}, {}),
+      {} as Context,
+      () => {},
+    )) as Promise<APIGatewayProxyResult>;
+  };
 });

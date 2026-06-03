@@ -1,6 +1,6 @@
 import { DynamoDBDocument, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { CLIENT_DEFAULTS } from "../models/client";
+import { CLIENT_DEFAULTS, ClientInput } from "../models/client";
 import { handler } from "./create-client";
 import { createApiGatewayEvent } from "./test-utils";
 import { APIGatewayProxyResult, Context } from "aws-lambda";
@@ -23,11 +23,7 @@ describe("Create client endpoint tests", () => {
   it("should return a 200 response with client if provided with valid client input", async () => {
     const testClientInput = CLIENT_DEFAULTS;
 
-    const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("POST", JSON.stringify(CLIENT_DEFAULTS), {}, {}),
-      {} as Context,
-      () => {},
-    );
+    const response = await sendCreateClientRequest(testClientInput);
 
     const expectedClient = {
       ...testClientInput,
@@ -58,6 +54,25 @@ describe("Create client endpoint tests", () => {
     });
   });
 
+  it("should return a 400 response with validation errors for invalid client input", async () => {
+    const invalidClientInput = {
+      ...CLIENT_DEFAULTS,
+      Scopes: [],
+      RedirectUrls: [],
+    };
+
+    const response = await sendCreateClientRequest(invalidClientInput);
+
+    expect(response.statusCode).toEqual(400);
+    expect(JSON.parse(response.body)).toEqual({
+      message: "One or more validation errors were found",
+      errors: [
+        "Field RedirectUrls cannot be empty",
+        'Scopes must contain "openid"',
+      ],
+    });
+  });
+
   it("should return a 405 response if using wrong method", async () => {
     const response: APIGatewayProxyResult = await handler(
       createApiGatewayEvent("GET", "", {}, {}, {}),
@@ -80,15 +95,21 @@ describe("Create client endpoint tests", () => {
       })
       .rejects(new Error("Test dynamo error"));
 
-    const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("POST", JSON.stringify(CLIENT_DEFAULTS), {}, {}),
-      {} as Context,
-      () => {},
-    );
+    const response = await sendCreateClientRequest(CLIENT_DEFAULTS);
 
     expect(response.statusCode).toEqual(500);
     expect(JSON.parse(response.body)).toEqual({
       message: "Internal server error",
     });
   });
+
+  const sendCreateClientRequest = async (
+    clientInput: ClientInput,
+  ): Promise<APIGatewayProxyResult> => {
+    return (await handler(
+      createApiGatewayEvent("POST", JSON.stringify(clientInput), {}, {}, {}),
+      {} as Context,
+      () => {},
+    )) as Promise<APIGatewayProxyResult>;
+  };
 });

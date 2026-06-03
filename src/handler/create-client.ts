@@ -9,6 +9,7 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { ClientInput, createClient } from "../models/client";
 import { generateApiGatewayResponse, generateErrorResponse } from "./utils";
 import { logger } from "../logger";
+import { allValidators } from "../helpers/client-validator";
 
 const clientService = new ClientService(
   DynamoDBDocument.from(new DynamoDBClient({})),
@@ -26,10 +27,18 @@ export const handler: Handler = async (
     );
   }
   try {
-    // TODO: Perform validation on client input
     // TODO: Fix IdTokenSigningAlgorithm of RSA256
     const clientInput = JSON.parse(event.body) as unknown as ClientInput;
     const clientToCreate = createClient(clientInput);
+
+    const result = await allValidators.validate(clientToCreate);
+    if (!result.isValid) {
+      return generateApiGatewayResponse(400, {
+        message: "One or more validation errors were found",
+        errors: result.reasons,
+      });
+    }
+
     const client = await clientService.putClient(clientToCreate);
     return generateApiGatewayResponse(201, { ...client });
   } catch (error) {
