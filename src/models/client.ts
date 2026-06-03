@@ -20,13 +20,15 @@ export interface ClientSecretPostAuth {
   ClientSecret: string;
 }
 export type ClientTokenAuthMethod = PrivateKeyJwtAuth | ClientSecretPostAuth;
-export type Scope =
-  | "openid"
-  | "phone"
-  | "email"
-  | "wallet_subject_id"
-  | "am"
-  | "offline_access";
+export const VALID_SCOPES = Object.freeze([
+  "openid",
+  "phone",
+  "email",
+  "wallet_subject_id",
+  "am",
+  "offline_access",
+] as const);
+export type Scope = (typeof VALID_SCOPES)[number];
 export const VALID_CLAIMS = Object.freeze([
   "https://vocab.account.gov.uk/v1/passport",
   "https://vocab.account.gov.uk/v1/drivingPermit",

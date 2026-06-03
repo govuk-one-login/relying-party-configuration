@@ -5,6 +5,7 @@ import {
   createClient,
   IdTokenSigningAlgorithm,
   LevelOfConfidence,
+  Scope,
 } from "../models/client";
 import { allValidators } from "./client-validator";
 
@@ -583,5 +584,29 @@ describe("Client validator tests", () => {
         expect(result).toBeValid();
       }
     });
+  });
+
+  it("should return invalid result when Scopes contain invalid value", async () => {
+    const client = createClient({
+      Scopes: ["openid", "not-a-scope"] as unknown as Scope[],
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `Invalid Scope provided: "not-a-scope"`,
+    ]);
+  });
+
+  it('should return invalid result when Scopes does not contain "openid"', async () => {
+    const client = createClient({
+      Scopes: [],
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([`Scopes must contain "openid"`]);
   });
 });

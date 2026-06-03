@@ -9,6 +9,7 @@ import {
   VALID_CLAIMS,
   VALID_CLIENT_TYPES,
   VALID_LOCS,
+  VALID_SCOPES,
   VALID_TOKEN_SIGNING_ALGS,
 } from "../models/client";
 import { invalid, rule, valid, Validator, optional, when } from "./validator";
@@ -310,6 +311,15 @@ const redirectUrlsValidator = notEmptyValidator<string>("RedirectUrls")
   )
   .adaptedFrom((client: Client) => client.RedirectUrls);
 
+const scopesValidator = listFieldValidator(VALID_SCOPES, "Scope")
+  .and(
+    rule(
+      (scopes: string[]) => scopes.includes("openid"),
+      'Scopes must contain "openid"',
+    ),
+  )
+  .adaptedFrom((client: Client) => client.Scopes);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -324,4 +334,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(permitMissingNonceValidator)
   .and(postLogoutRedirectUrlsValidator)
   .and(rateLimitValidator)
-  .and(redirectUrlsValidator);
+  .and(redirectUrlsValidator)
+  .and(scopesValidator);
