@@ -284,4 +284,52 @@ describe("Client validator tests", () => {
       }
     });
   });
+  describe("URL validation for JwksUrl", () => {
+    it(`should return invalid result when JwksUrl is not a legal URL`, async () => {
+      const client = createClient({
+        ClientJwtPublicKeySource: {
+          Type: "JWKS",
+          JwksUrl: "/////not-a-url!"
+        }
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([`Field JwksUrl is not a legal URL`]);
+    });
+
+    it(`should return invalid result when JwksUrl has an invalid protocol in production`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        ClientJwtPublicKeySource: {
+          Type: "JWKS",
+          JwksUrl: "http://test.com",
+        },
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field JwksUrl does not have a valid URL protocol`,
+      ]);
+    });
+
+    it(`should return valid result when JwksUrl has an invalid protocol in non-prod`, async () => {
+      const client = createClient({
+        ClientJwtPublicKeySource: {
+          Type: "JWKS",
+          JwksUrl: "http://test.com",
+        },
+      });
+
+      for (const env of NON_PROD_ENVS) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeValid();
+      }
+    });
+  });
 });

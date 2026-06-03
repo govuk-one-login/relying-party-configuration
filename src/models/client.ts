@@ -1,15 +1,17 @@
 import { JWK } from "jose";
 import crypto from "crypto";
 
+export interface JwksPublicKeySource {
+  Type: "JWKS";
+  JwksUrl: string;
+}
+export interface StaticPublicKeySource {
+  Type: "STATIC";
+  Jwks: JWK[];
+}
 export type ClientJwtPublicKeySource =
-  | {
-      Type: "JWKS";
-      JwksUrl: string;
-    }
-  | {
-      Type: "STATIC";
-      Jwks: JWK[];
-    };
+  | JwksPublicKeySource
+  | StaticPublicKeySource;
 export interface PrivateKeyJwtAuth {
   TokenAuthMethod: "private_key_jwt";
 }
@@ -103,7 +105,7 @@ export const CLIENT_DEFAULTS: ClientInput = {
   ClientName: "test-client",
   ClientJwtPublicKeySource: {
     Type: "JWKS",
-    JwksUrl: "http://example.com",
+    JwksUrl: "https://example.com",
   },
   ClientTokenAuthMethod: {
     TokenAuthMethod: "private_key_jwt",

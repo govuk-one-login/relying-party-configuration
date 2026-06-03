@@ -2,6 +2,7 @@ import {
   Client,
   ClientSecretPostAuth,
   ClientTokenAuthMethod,
+  JwksPublicKeySource,
   VALID_CHANNELS,
   VALID_CLAIMS,
   VALID_CLIENT_TYPES,
@@ -162,6 +163,16 @@ const landingPageUrlValidator = optional(
   ),
 ).adaptedFrom((client: Client) => client.LandingPageUrl);
 
+const jwksUrlValidator = when(
+  (client: Client) => client.ClientJwtPublicKeySource.Type === "JWKS",
+  validUrlValidator("JwksUrl")
+    .and(when(isProd, notHttpValidator("JwksUrl")))
+    .adaptedFrom(
+      (client: Client) =>
+        (client.ClientJwtPublicKeySource as JwksPublicKeySource).JwksUrl,
+    ),
+);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -170,4 +181,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(clientSecretValidator)
   .and(clientTypeValidator)
   .and(idTokenSigningAlgorithmValidator)
-  .and(landingPageUrlValidator);
+  .and(landingPageUrlValidator)
+  .and(jwksUrlValidator);
