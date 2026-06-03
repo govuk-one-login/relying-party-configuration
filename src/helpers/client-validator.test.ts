@@ -1,6 +1,7 @@
 import {
   Channel,
   Claim,
+  ClientType,
   createClient,
   LevelOfConfidence,
 } from "../models/client";
@@ -181,6 +182,19 @@ describe("Client validator tests", () => {
     expect(result).toBeInvalid();
     expect(result).toHaveInvalidReasons([
       `Cannot use TokenAuthMethod of client_secret_post with identity enabled`,
+    ]);
+  });
+
+  it("should return invalid result when ClientType is not valid", async () => {
+    const client = createClient({
+      ClientType: "not-a-client-type" as unknown as ClientType,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `Invalid ClientType provided: "not-a-client-type"`,
     ]);
   });
 });

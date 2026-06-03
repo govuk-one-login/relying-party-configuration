@@ -4,6 +4,7 @@ import {
   ClientTokenAuthMethod,
   VALID_CHANNELS,
   VALID_CLAIMS,
+  VALID_CLIENT_TYPES,
   VALID_LOCS,
 } from "../models/client";
 import { invalid, rule, valid, Validator, optional, when } from "./validator";
@@ -136,9 +137,15 @@ const clientSecretValidator = when(
     ),
   );
 
+const clientTypeValidator = fieldValidator(
+  VALID_CLIENT_TYPES,
+  "ClientType",
+).adaptedFrom((client: Client) => client.ClientType);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
   .and(clientLoCsValidator)
   .and(clientNameValidator)
-  .and(clientSecretValidator);
+  .and(clientSecretValidator)
+  .and(clientTypeValidator);
