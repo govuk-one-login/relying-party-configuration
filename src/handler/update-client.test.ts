@@ -1,6 +1,6 @@
 import { DynamoDBDocument, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { createClient } from "../models/client";
+import { Client, createClient } from "../models/client";
 import { handler } from "./update-client";
 import { createApiGatewayEvent } from "./test-utils";
 import { APIGatewayProxyResult, Context } from "aws-lambda";
@@ -21,24 +21,17 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 200 response with updated client if provided with valid client input", async () => {
-    const testClient = createClient({ ClientID: "test-client-id" });
+    const existingClient = createClient({ ClientID: "test-client-id" });
 
-    const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent(
-        "PUT",
-        JSON.stringify({ ...testClient, Scopes: ["openid", "phone", "email"] }),
-        {},
-        {},
-        { id: testClient.ClientID },
-      ),
-      {} as Context,
-      () => {},
-    );
+    const updatedClient = {
+      ...existingClient,
+      Scopes: ["openid", "phone", "email"],
+    };
+    const response = await sendUpdateClientRequest(updatedClient);
 
     expect(response.statusCode).toEqual(200);
     expect(JSON.parse(response.body)).toEqual({
-      ...testClient,
-      Scopes: ["openid", "phone", "email"],
+      ...updatedClient,
       LastModified: 156789,
     });
   });
@@ -66,6 +59,26 @@ describe("Update client endpoint tests", () => {
     expect(response.statusCode).toEqual(400);
     expect(JSON.parse(response.body)).toEqual({
       message: "Client not provided in body of request",
+    });
+  });
+
+  it("should return a 400 response with errors if client is invalid", async () => {
+    const existingClient = createClient({ ClientID: "test-client-id" });
+
+    const invalidClient = {
+      ...existingClient,
+      RedirectUrls: [],
+      Scopes: [],
+    };
+    const response = await sendUpdateClientRequest(invalidClient);
+
+    expect(response.statusCode).toEqual(400);
+    expect(JSON.parse(response.body)).toEqual({
+      message: "One or more validation errors were found",
+      errors: [
+        "Field RedirectUrls cannot be empty",
+        'Scopes must contain "openid"',
+      ],
     });
   });
 
@@ -103,4 +116,20 @@ describe("Update client endpoint tests", () => {
       message: "Internal server error",
     });
   });
+
+  const sendUpdateClientRequest = async (
+    client: Client,
+  ): Promise<APIGatewayProxyResult> => {
+    return (await handler(
+      createApiGatewayEvent(
+        "PUT",
+        JSON.stringify(client),
+        {},
+        {},
+        { id: client.ClientID },
+      ),
+      {} as Context,
+      () => {},
+    )) as Promise<APIGatewayProxyResult>;
+  };
 });
