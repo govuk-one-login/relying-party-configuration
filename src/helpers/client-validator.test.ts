@@ -381,4 +381,73 @@ describe("Client validator tests", () => {
       `Static JWKS contains an invalid JWK`,
     ]);
   });
+
+  describe("URL validation for PostLogoutRedirectUrls", () => {
+    it(`should return invalid result when PostLogoutRedirectUrls contains an illegal URL`, async () => {
+      const client = createClient({
+        PostLogoutRedirectUrls: ["/////not-a-url!"],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field PostLogoutRedirectUrls contains a URL that is not a legal URL`,
+      ]);
+    });
+
+    it(`should return invalid result when PostLogoutRedirectUrls contains a URL with an invalid protocol in production`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        PostLogoutRedirectUrls: ["http://test.com"],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field PostLogoutRedirectUrls contains a URL that does not have a valid URL protocol`,
+      ]);
+    });
+
+    it(`should return invalid result when PostLogoutRedirectUrls contains a URL with a local hostname in production`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        PostLogoutRedirectUrls: ["https://localhost"],
+      });
+
+      const result = await allValidators.validate(client);
+
+      expect(result).toBeInvalid();
+      expect(result).toHaveInvalidReasons([
+        `Field PostLogoutRedirectUrls contains a URL that is using a local hostname`,
+      ]);
+    });
+
+    it(`should return valid result when PostLogoutRedirectUrls contains a URL that has an invalid protocol in non-prod`, async () => {
+      const client = createClient({
+        PostLogoutRedirectUrls: ["http://test.com"],
+      });
+
+      for (const env of NON_PROD_ENVS) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeValid();
+      }
+    });
+
+    it(`should return valid result when PostLogoutRedirectUrls contains a URL that has a local hostname in non-prod`, async () => {
+      const client = createClient({
+        PostLogoutRedirectUrls: ["https://localhost"],
+      });
+
+      for (const env of NON_PROD_ENVS) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeValid();
+      }
+    });
+  });
 });

@@ -212,6 +212,26 @@ const permitMissingNonceValidator = when(
   ),
 );
 
+const postLogoutRedirectUrlsValidator = listValidator(
+  rule(
+    isValidUrl,
+    `Field PostLogoutRedirectUrls contains a URL that is not a legal URL`,
+  ).and(
+    when(
+      isProd,
+      rule(
+        protocolNotHttp,
+        `Field PostLogoutRedirectUrls contains a URL that does not have a valid URL protocol`,
+      ).and(
+        rule(
+          isNotLocalhost,
+          `Field PostLogoutRedirectUrls contains a URL that is using a local hostname`,
+        ),
+      ),
+    ),
+  ),
+).adaptedFrom((client: Client) => client.PostLogoutRedirectUrls);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
@@ -223,4 +243,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(landingPageUrlValidator)
   .and(jwksUrlValidator)
   .and(staticJwksValidator)
-  .and(permitMissingNonceValidator);
+  .and(permitMissingNonceValidator)
+  .and(postLogoutRedirectUrlsValidator);
