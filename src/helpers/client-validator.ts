@@ -1,8 +1,10 @@
+import { importJWK, JWK } from "jose";
 import {
   Client,
   ClientSecretPostAuth,
   ClientTokenAuthMethod,
   JwksPublicKeySource,
+  StaticPublicKeySource,
   VALID_CHANNELS,
   VALID_CLAIMS,
   VALID_CLIENT_TYPES,
@@ -173,6 +175,35 @@ const jwksUrlValidator = when(
     ),
 );
 
+const staticJwksValidator = when(
+  (client: Client) => client.ClientJwtPublicKeySource.Type === "STATIC",
+  rule((client: Client) => {
+    const jwks = (client.ClientJwtPublicKeySource as StaticPublicKeySource)
+      .Jwks;
+    return (
+      jwks.length > 0 ||
+      client.ClientTokenAuthMethod.TokenAuthMethod === "client_secret_post"
+    );
+  }, "Static JWKS cannot be empty when client secret is not provided").and(
+    when(
+      (jwks: JWK[]) => jwks.length > 0,
+      rule(async (jwks: JWK[]) => {
+        for (const jwk of jwks) {
+          try {
+            await importJWK(jwk);
+          } catch {
+            return false;
+          }
+        }
+        return true;
+      }, "Static JWKS contains an invalid JWK"),
+    ).adaptedFrom(
+      (client: Client) =>
+        (client.ClientJwtPublicKeySource as StaticPublicKeySource).Jwks,
+    ),
+  ),
+);
+
 const permitMissingNonceValidator = when(
   (client: Client) => client.IdentityVerificationSupported,
   rule(
@@ -191,4 +222,5 @@ export const allValidators = backChannelLogoutUriValidator
   .and(idTokenSigningAlgorithmValidator)
   .and(landingPageUrlValidator)
   .and(jwksUrlValidator)
+  .and(staticJwksValidator)
   .and(permitMissingNonceValidator);

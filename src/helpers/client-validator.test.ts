@@ -346,4 +346,39 @@ describe("Client validator tests", () => {
       `Cannot enable PermitMissingNonce if IdentityVerificationSupported is true`,
     ]);
   });
+
+  it("should return invalid result when StaticJwkPublicKeySource but no JWKS or client secret provided", async () => {
+    const client = createClient({
+      ClientJwtPublicKeySource: {
+        Type: "STATIC",
+        Jwks: [],
+      },
+      ClientTokenAuthMethod: {
+        TokenAuthMethod: "private_key_jwt",
+      },
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `Static JWKS cannot be empty when client secret is not provided`,
+    ]);
+  });
+
+  it("should return invalid result when StaticJwkPublicKeySource but no JWKS provided", async () => {
+    const client = createClient({
+      ClientJwtPublicKeySource: {
+        Type: "STATIC",
+        Jwks: [{ kid: "not-a-valid-jwk" }],
+      },
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `Static JWKS contains an invalid JWK`,
+    ]);
+  });
 });
