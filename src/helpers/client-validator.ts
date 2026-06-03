@@ -1,6 +1,12 @@
-import { Client, VALID_CHANNELS, VALID_CLAIMS } from "../models/client";
-import { invalid, rule, valid, Validator, optional } from "./validator";
+import {
+  Client,
+  VALID_CHANNELS,
+  VALID_CLAIMS,
+  VALID_LOCS,
+} from "../models/client";
+import { invalid, rule, valid, Validator, optional, when } from "./validator";
 
+const IDENTITY_LOCS = ["P1", "P2", "P3"];
 const isValidUrl = (url: string): boolean => {
   try {
     new URL(url);
@@ -68,4 +74,22 @@ const claimsValidator = listFieldValidator(VALID_CLAIMS, "Claim").adaptedFrom(
   (client: Client) => client.Claims,
 );
 
-export const allValidators = backChannelLogoutUriValidator.and(channelValidator).and(claimsValidator);
+const clientLoCsValidator = listFieldValidator(VALID_LOCS, "ClientLoC")
+  .adaptedFrom((client: Client) => client.ClientLoCs)
+  .and(
+    when(
+      (client: Client) => !client.IdentityVerificationSupported,
+      rule(
+        (client: Client) =>
+          !client.ClientLoCs.some((clientLoC) =>
+            IDENTITY_LOCS.includes(clientLoC),
+          ),
+        "Identity is disabled but ClientLoCs contain identity LoCs",
+      ),
+    ),
+  );
+
+export const allValidators = backChannelLogoutUriValidator
+  .and(channelValidator)
+  .and(claimsValidator)
+  .and(clientLoCsValidator);

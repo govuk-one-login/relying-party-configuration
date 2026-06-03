@@ -1,4 +1,9 @@
-import { Channel, Claim, createClient } from "../models/client";
+import {
+  Channel,
+  Claim,
+  createClient,
+  LevelOfConfidence,
+} from "../models/client";
 import { allValidators } from "./client-validator";
 
 describe("Client validator tests", () => {
@@ -66,6 +71,33 @@ describe("Client validator tests", () => {
     expect(result).toBeInvalid();
     expect(result).toHaveInvalidReasons([
       'Invalid Claim provided: "not-a-claim"',
+    ]);
+  });
+
+  it("should return invalid result when ClientLoCs contains invalid ClientLoC", async () => {
+    const client = createClient({
+      ClientLoCs: ["not-an-loc"] as unknown as LevelOfConfidence[],
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      'Invalid ClientLoC provided: "not-an-loc"',
+    ]);
+  });
+
+  it("should return invalid result when ClientLoCs contains identity LoC but identity is disabled", async () => {
+    const client = createClient({
+      ClientLoCs: ["P2"],
+      IdentityVerificationSupported: false,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      "Identity is disabled but ClientLoCs contain identity LoCs",
     ]);
   });
 });

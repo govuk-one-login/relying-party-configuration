@@ -37,7 +37,8 @@ export type ServiceType = "MANDATORY" | "OPTIONAL";
 export type SubjectType = "pairwise" | "public";
 export type ClientType = "web" | "app";
 export type IdTokenSigningAlgorithm = "ES256" | "RS256";
-export type LevelOfConfidence = "P0" | "P1" | "P2" | "P3";
+export const VALID_LOCS = Object.freeze(["P0", "P1", "P2", "P3"] as const);
+export type LevelOfConfidence = (typeof VALID_LOCS)[number];
 export const VALID_CHANNELS = Object.freeze([
   "web",
   "generic_app",
