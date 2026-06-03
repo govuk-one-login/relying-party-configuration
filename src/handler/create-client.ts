@@ -27,6 +27,7 @@ export const handler: Handler = async (
   }
   try {
     // TODO: Perform validation on client input
+    // TODO: Fix IdTokenSigningAlgorithm of RSA256
     const clientInput = JSON.parse(event.body) as unknown as ClientInput;
     const clientToCreate = createClient(clientInput);
     const client = await clientService.putClient(clientToCreate);

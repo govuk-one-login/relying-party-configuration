@@ -6,6 +6,7 @@ import {
   VALID_CLAIMS,
   VALID_CLIENT_TYPES,
   VALID_LOCS,
+  VALID_TOKEN_SIGNING_ALGS,
 } from "../models/client";
 import { invalid, rule, valid, Validator, optional, when } from "./validator";
 
@@ -142,10 +143,16 @@ const clientTypeValidator = fieldValidator(
   "ClientType",
 ).adaptedFrom((client: Client) => client.ClientType);
 
+const idTokenSigningAlgorithmValidator = fieldValidator(
+  VALID_TOKEN_SIGNING_ALGS,
+  "IdTokenSigningAlgorithm",
+).adaptedFrom((client: Client) => client.IdTokenSigningAlgorithm);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
   .and(clientLoCsValidator)
   .and(clientNameValidator)
   .and(clientSecretValidator)
-  .and(clientTypeValidator);
+  .and(clientTypeValidator)
+  .and(idTokenSigningAlgorithmValidator);

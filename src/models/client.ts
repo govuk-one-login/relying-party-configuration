@@ -37,7 +37,12 @@ export type ServiceType = "MANDATORY" | "OPTIONAL";
 export type SubjectType = "pairwise" | "public";
 export const VALID_CLIENT_TYPES = Object.freeze(["web", "app"] as const);
 export type ClientType = (typeof VALID_CLIENT_TYPES)[number];
-export type IdTokenSigningAlgorithm = "ES256" | "RS256";
+export const VALID_TOKEN_SIGNING_ALGS = Object.freeze([
+  "ES256",
+  "RS256",
+  "RSA256", // TODO Needed to support migration only!
+] as const);
+export type IdTokenSigningAlgorithm = (typeof VALID_TOKEN_SIGNING_ALGS)[number];
 export const VALID_LOCS = Object.freeze(["P0", "P1", "P2", "P3"] as const);
 export type LevelOfConfidence = (typeof VALID_LOCS)[number];
 export const VALID_CHANNELS = Object.freeze([

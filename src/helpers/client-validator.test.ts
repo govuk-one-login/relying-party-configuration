@@ -3,6 +3,7 @@ import {
   Claim,
   ClientType,
   createClient,
+  IdTokenSigningAlgorithm,
   LevelOfConfidence,
 } from "../models/client";
 import { allValidators } from "./client-validator";
@@ -195,6 +196,19 @@ describe("Client validator tests", () => {
     expect(result).toBeInvalid();
     expect(result).toHaveInvalidReasons([
       `Invalid ClientType provided: "not-a-client-type"`,
+    ]);
+  });
+
+  it("should return invalid result when IdTokenSigningAlgorithm is not valid", async () => {
+    const client = createClient({
+      IdTokenSigningAlgorithm: "Ed25519" as unknown as IdTokenSigningAlgorithm,
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      `Invalid IdTokenSigningAlgorithm provided: "Ed25519"`,
     ]);
   });
 });
