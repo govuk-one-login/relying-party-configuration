@@ -80,3 +80,11 @@ export const when = <T>(
     predicate(input) ? validator.validate(input) : valid(),
   );
 };
+
+export const optional = <T>(
+  validator: Validator<T>,
+): Validator<T | undefined> => {
+  return new Validator((input: T | undefined) =>
+    input ? validator.validate(input) : valid(),
+  );
+};

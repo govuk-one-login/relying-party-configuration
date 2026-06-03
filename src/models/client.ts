@@ -60,7 +60,7 @@ export interface ClientInput {
   Scopes: Scope[];
   RedirectUrls: string[];
   PostLogoutRedirectUrls: string[];
-  BackChannelLogoutUri: string;
+  BackChannelLogoutUri?: string;
   ServiceType: ServiceType;
   SectorIdentifierUri: string;
   SubjectType: SubjectType;
