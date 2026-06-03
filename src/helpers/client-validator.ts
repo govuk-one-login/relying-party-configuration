@@ -89,7 +89,32 @@ const clientLoCsValidator = listFieldValidator(VALID_LOCS, "ClientLoC")
     ),
   );
 
+const clientNameValidator = rule(
+  (clientName: string) => clientName.length > 0 && clientName.length < 255,
+  "ClientName must have between 1 and 255 characters",
+)
+  .and(
+    rule(
+      (clientName: string) => /^[\x00-\x7F]{1,255}$/.test(clientName),
+      "ClientName must ONLY include ASCII characters",
+    ),
+  )
+  .and(
+    rule(
+      (clientName: string) => /(?!(\s+)).$/.test(clientName),
+      "ClientName must include at least one non-whitespace character",
+    ),
+  )
+  .and(
+    rule(
+      (clientName: string) => !clientName.startsWith(":"),
+      "ClientName must not start with a :",
+    ),
+  )
+  .adaptedFrom((client: Client) => client.ClientName);
+
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)
   .and(claimsValidator)
-  .and(clientLoCsValidator);
+  .and(clientLoCsValidator)
+  .and(clientNameValidator);

@@ -94,7 +94,7 @@ export interface ClientInput {
   ServiceIntegrationId: string;
 }
 export const CLIENT_DEFAULTS: ClientInput = {
-  ClientName: "",
+  ClientName: "test-client",
   ClientJwtPublicKeySource: {
     Type: "JWKS",
     JwksUrl: "http://example.com",

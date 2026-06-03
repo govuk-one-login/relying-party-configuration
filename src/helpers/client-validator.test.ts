@@ -100,4 +100,54 @@ describe("Client validator tests", () => {
       "Identity is disabled but ClientLoCs contain identity LoCs",
     ]);
   });
+
+  it("should return invalid result when ClientName has an invalid length", async () => {
+    const client = createClient({
+      ClientName: "a".repeat(255),
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      "ClientName must have between 1 and 255 characters",
+    ]);
+  });
+
+  it("should return invalid result when ClientName has non-ASCII characters", async () => {
+    const client = createClient({
+      ClientName: "My 🆕 Client",
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      "ClientName must ONLY include ASCII characters",
+    ]);
+  });
+
+  it("should return invalid result when ClientName starts with a colon", async () => {
+    const client = createClient({
+      ClientName: ":My Test Client",
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons(["ClientName must not start with a :"]);
+  });
+
+  it("should return invalid result when ClientName has only whitespace characters", async () => {
+    const client = createClient({
+      ClientName: "    \t\t\n\n   ",
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeInvalid();
+    expect(result).toHaveInvalidReasons([
+      "ClientName must include at least one non-whitespace character",
+    ]);
+  });
 });

@@ -17,6 +17,9 @@ export default defineConfig(
       ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
     ],
+    rules: {
+      "no-control-regex": "off",
+    },
     languageOptions: {
       ecmaVersion: "latest",
       parserOptions: {
