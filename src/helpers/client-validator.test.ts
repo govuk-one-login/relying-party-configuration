@@ -319,6 +319,26 @@ describe("Client validator tests", () => {
       ]);
     });
 
+    it(`should return invalid result when JwksUrl has a local hostname in all environments`, async () => {
+      process.env.ENVIRONMENT = "production";
+      const client = createClient({
+        ClientJwtPublicKeySource: {
+          Type: "JWKS",
+          JwksUrl: "https://localhost",
+        },
+      });
+
+      for (const env of [...NON_PROD_ENVS, "production"]) {
+        process.env.ENVIRONMENT = env;
+        const result = await allValidators.validate(client);
+
+        expect(result).toBeInvalid();
+        expect(result).toHaveInvalidReasons([
+          `Field JwksUrl is using a local hostname`,
+        ]);
+      }
+    });
+
     it(`should return valid result when JwksUrl has an invalid protocol in non-prod`, async () => {
       const client = createClient({
         ClientJwtPublicKeySource: {
