@@ -189,6 +189,7 @@ const jwksUrlValidator = when(
   (client: Client) => client.ClientJwtPublicKeySource.Type === "JWKS",
   validUrlValidator("JwksUrl")
     .and(when(isProd, notHttpValidator("JwksUrl")))
+    .and(notLocalhostValidator("JwksUrl"))
     .adaptedFrom(
       (client: Client) =>
         (client.ClientJwtPublicKeySource as JwksPublicKeySource).JwksUrl,
