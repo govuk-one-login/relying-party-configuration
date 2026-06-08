@@ -19,7 +19,9 @@ describe("Client service integration test", async () => {
       addClientsToDynamo,
       clientService,
     }) => {
-      const testClient = createClient("test-client-id");
+      const testClient = createClient({
+        ClientID: "test-client-id",
+      });
       await addClientsToDynamo(testClient);
 
       const actualClient = await clientService.getClient("test-client-id");
@@ -41,7 +43,9 @@ describe("Client service integration test", async () => {
       addClientsToDynamo,
       clientService,
     }) => {
-      const testClient = createClient("test-client-id");
+      const testClient = createClient({
+        ClientID: "test-client-id",
+      });
       await addClientsToDynamo(testClient);
 
       const actualClients = await clientService.getClientSummaries(1, 5);
@@ -61,9 +65,9 @@ describe("Client service integration test", async () => {
       addClientsToDynamo,
       clientService,
     }) => {
-      const testClient1 = createClient("test-client-id-1");
-      const testClient2 = createClient("test-client-id-2");
-      const testClient3 = createClient("test-client-id-3");
+      const testClient1 = createClient({ ClientID: "test-client-id-1" });
+      const testClient2 = createClient({ ClientID: "test-client-id-2" });
+      const testClient3 = createClient({ ClientID: "test-client-id-3" });
       await addClientsToDynamo(testClient1, testClient2, testClient3);
 
       const actualClients = await clientService.getClientSummaries(1, 2);
@@ -90,9 +94,9 @@ describe("Client service integration test", async () => {
       addClientsToDynamo,
       clientService,
     }) => {
-      const testClient1 = createClient("test-client-id-1");
-      const testClient2 = createClient("test-client-id-2");
-      const testClient3 = createClient("test-client-id-3");
+      const testClient1 = createClient({ ClientID: "test-client-id-1" });
+      const testClient2 = createClient({ ClientID: "test-client-id-2" });
+      const testClient3 = createClient({ ClientID: "test-client-id-3" });
       await addClientsToDynamo(testClient1, testClient2, testClient3);
 
       const actualClients = await clientService.getClientSummaries(2, 2);
@@ -131,7 +135,8 @@ describe("Client service integration test", async () => {
       getClientFromDynamo,
       clientService,
     }) => {
-      const testClient = await clientService.createClient(CLIENT_DEFAULTS);
+      const clientToCreate = createClient();
+      const testClient = await clientService.putClient(clientToCreate);
 
       expect(await getClientFromDynamo(testClient.ClientID)).toEqual(
         testClient,
@@ -149,8 +154,11 @@ describe("Client service integration test", async () => {
         LastModified: 1234567,
       });
 
+      const clientToCreate = createClient({
+        ClientID: "test-client-id",
+      });
       await expect(() =>
-        clientService.createClientWithId("test-client-id", CLIENT_DEFAULTS),
+        clientService.putClient(clientToCreate),
       ).rejects.toThrow(ClientServiceError);
     });
   });
@@ -161,10 +169,10 @@ describe("Client service integration test", async () => {
       getClientFromDynamo,
       clientService,
     }) => {
-      const testClient = createClient("test-client-id");
+      const testClient = createClient({ ClientID: "test-client-id" });
       await addClientsToDynamo(testClient);
 
-      await clientService.updateClient("test-client-id", {
+      await clientService.updateClient({
         ...testClient,
         Scopes: ["openid", "phone", "email"],
       });
@@ -179,10 +187,10 @@ describe("Client service integration test", async () => {
     it("should fail to update client if client does not exist", async ({
       clientService,
     }) => {
-      const testClient = createClient("test-client-id");
+      const testClient = createClient({ ClientID: "test-client-id" });
 
       await expect(() =>
-        clientService.updateClient("test-client-id", testClient),
+        clientService.updateClient(testClient),
       ).rejects.toThrow(ClientServiceError);
     });
   });

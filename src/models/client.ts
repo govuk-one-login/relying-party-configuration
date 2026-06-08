@@ -1,41 +1,68 @@
 import { JWK } from "jose";
+import crypto from "crypto";
 
+export interface JwksPublicKeySource {
+  Type: "JWKS";
+  JwksUrl: string;
+}
+export interface StaticPublicKeySource {
+  Type: "STATIC";
+  Jwks: JWK[];
+}
 export type ClientJwtPublicKeySource =
-  | {
-      Type: "JWKS";
-      JwksUrl: string;
-    }
-  | {
-      Type: "STATIC";
-      Jwks: JWK[];
-    };
-export type ClientTokenAuthMethod =
-  | {
-      TokenAuthMethod: "private_key_jwt";
-    }
-  | {
-      TokenAuthMethod: "client_secret_post";
-      ClientSecret: string;
-    };
-export type Scope =
-  | "openid"
-  | "phone"
-  | "email"
-  | "wallet_subject_id"
-  | "am"
-  | "offline_access";
-export type Claim =
-  | "https://vocab.account.gov.uk/v1/passport"
-  | "https://vocab.account.gov.uk/v1/drivingPermit"
-  | "https://vocab.account.gov.uk/v1/coreIdentityJWT"
-  | "https://vocab.account.gov.uk/v1/address"
-  | "https://vocab.account.gov.uk/v1/returnCode";
-export type ServiceType = "MANDATORY" | "OPTIONAL";
-export type SubjectType = "pairwise" | "public";
-export type ClientType = "web" | "app";
-export type IdTokenSigningAlgorithm = "ES256" | "RS256";
-export type LevelOfConfidence = "P0" | "P1" | "P2" | "P3";
-export type Channel = "web" | "generic_app" | "strategic_app";
+  | JwksPublicKeySource
+  | StaticPublicKeySource;
+export interface PrivateKeyJwtAuth {
+  TokenAuthMethod: "private_key_jwt";
+}
+export interface ClientSecretPostAuth {
+  TokenAuthMethod: "client_secret_post";
+  ClientSecret: string;
+}
+export type ClientTokenAuthMethod = PrivateKeyJwtAuth | ClientSecretPostAuth;
+export const VALID_SCOPES = Object.freeze([
+  "openid",
+  "phone",
+  "email",
+  "wallet_subject_id",
+  "am",
+  "offline_access",
+] as const);
+export type Scope = (typeof VALID_SCOPES)[number];
+export const VALID_CLAIMS = Object.freeze([
+  "https://vocab.account.gov.uk/v1/passport",
+  "https://vocab.account.gov.uk/v1/drivingPermit",
+  "https://vocab.account.gov.uk/v1/coreIdentityJWT",
+  "https://vocab.account.gov.uk/v1/address",
+  "https://vocab.account.gov.uk/v1/returnCode",
+] as const);
+export type Claim = (typeof VALID_CLAIMS)[number];
+export const VALID_SERVICE_TYPES = Object.freeze([
+  "MANDATORY",
+  "OPTIONAL",
+] as const);
+export type ServiceType = (typeof VALID_SERVICE_TYPES)[number];
+export const VALID_SUBJECT_TYPES = Object.freeze([
+  "pairwise",
+  "public",
+] as const);
+export type SubjectType = (typeof VALID_SUBJECT_TYPES)[number];
+export const VALID_CLIENT_TYPES = Object.freeze(["web", "app"] as const);
+export type ClientType = (typeof VALID_CLIENT_TYPES)[number];
+export const VALID_TOKEN_SIGNING_ALGS = Object.freeze([
+  "ES256",
+  "RS256",
+  "RSA256", // TODO Needed to support migration only!
+] as const);
+export type IdTokenSigningAlgorithm = (typeof VALID_TOKEN_SIGNING_ALGS)[number];
+export const VALID_LOCS = Object.freeze(["P0", "P1", "P2", "P3"] as const);
+export type LevelOfConfidence = (typeof VALID_LOCS)[number];
+export const VALID_CHANNELS = Object.freeze([
+  "web",
+  "generic_app",
+  "strategic_app",
+] as const);
+export type Channel = (typeof VALID_CHANNELS)[number];
 export interface PaginatedClientSummary {
   pageSize: number;
   pageNumber: number;
@@ -59,7 +86,7 @@ export interface ClientInput {
   Scopes: Scope[];
   RedirectUrls: string[];
   PostLogoutRedirectUrls: string[];
-  BackChannelLogoutUri: string;
+  BackChannelLogoutUri?: string;
   ServiceType: ServiceType;
   SectorIdentifierUri: string;
   SubjectType: SubjectType;
@@ -68,13 +95,13 @@ export interface ClientInput {
   CookieConsentShared: boolean;
   TestClient: boolean;
   JarValidationRequired: boolean;
-  Claims: string[];
+  Claims: Claim[];
   ClientType: ClientType;
   IdentityVerificationSupported: boolean;
   OneLoginService: boolean;
   IdTokenSigningAlgorithm: IdTokenSigningAlgorithm;
   SmokeTest: boolean;
-  LandingPageUrl: string;
+  LandingPageUrl?: string;
   ClientLoCs: LevelOfConfidence[];
   PermitMissingNonce: boolean;
   Channel: Channel;
@@ -85,20 +112,19 @@ export interface ClientInput {
   ServiceIntegrationId: string;
 }
 export const CLIENT_DEFAULTS: ClientInput = {
-  ClientName: "",
+  ClientName: "test-client",
   ClientJwtPublicKeySource: {
     Type: "JWKS",
-    JwksUrl: "http://example.com",
+    JwksUrl: "https://example.com",
   },
   ClientTokenAuthMethod: {
     TokenAuthMethod: "private_key_jwt",
   },
   Scopes: ["openid"],
-  RedirectUrls: [],
+  RedirectUrls: ["https://example.com"],
   PostLogoutRedirectUrls: [],
-  BackChannelLogoutUri: "",
   ServiceType: "MANDATORY",
-  SectorIdentifierUri: "",
+  SectorIdentifierUri: "https://example.com",
   SubjectType: "pairwise",
   IsActive: true,
   IsDeprecated: false,
@@ -120,15 +146,13 @@ export const CLIENT_DEFAULTS: ClientInput = {
   OrganisationId: "test-org",
   ServiceIntegrationId: "test-service-integration",
 };
-export function createClient(
-  clientId: string,
-  overrides?: Partial<ClientInput>,
-): Client {
+export function createClient(overrides?: Partial<Client>): Client {
   return {
     ...CLIENT_DEFAULTS,
     ...overrides,
-    ClientID: clientId,
-    Created: 123456,
-    LastModified: 123456,
+    ClientID:
+      overrides?.ClientID ?? crypto.randomBytes(20).toString("base64url"),
+    Created: overrides?.Created ?? 123456,
+    LastModified: overrides?.LastModified ?? 123456,
   };
 }

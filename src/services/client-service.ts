@@ -1,11 +1,9 @@
 import { DynamoDBDocument, paginateScan } from "@aws-sdk/lib-dynamodb";
 import {
   Client,
-  ClientInput,
   ClientSummary,
   PaginatedClientSummary,
 } from "../models/client";
-import crypto from "crypto";
 import { logger } from "../logger";
 
 export class ClientService {
@@ -68,55 +66,42 @@ export class ClientService {
     };
   };
 
-  createClient = async (clientInput: ClientInput): Promise<Client> => {
-    return this.createClientWithId(
-      crypto.randomBytes(20).toString("base64url"),
-      clientInput,
-    );
-  };
-
-  createClientWithId = async (
-    clientId: string,
-    clientInput: ClientInput,
-  ): Promise<Client> => {
+  putClient = async (client: Client): Promise<Client> => {
     try {
       const createdTime = Math.floor(Date.now() / 1000);
-      const client: Client = {
-        ...clientInput,
-        ClientID: clientId,
+      const clientWithUpdatedTimes: Client = {
+        ...client,
+        ClientID: client.ClientID,
         Created: createdTime,
         LastModified: createdTime,
       };
       await this.dynamoClient.put({
         ConditionExpression: "attribute_not_exists(ClientID)",
         TableName: this.tableName,
-        Item: client,
+        Item: clientWithUpdatedTimes,
       });
-      return client;
+      return clientWithUpdatedTimes;
     } catch (error) {
       logger.error(`Failed to create client: ${(error as Error).message}`);
       throw new ClientServiceError("Failed to create client", error as Error);
     }
   };
 
-  updateClient = async (clientId: string, updatedClient: Client) => {
+  updateClient = async (clientToUpdate: Client) => {
     // TODO: Perform validation on client updates
     try {
       const updatedTime = Math.floor(Date.now() / 1000);
+      const updatedClient = {
+        ...clientToUpdate,
+        ClientID: clientToUpdate.ClientID,
+        LastModified: updatedTime,
+      };
       await this.dynamoClient.put({
         ConditionExpression: "attribute_exists(ClientID)",
         TableName: this.tableName,
-        Item: {
-          ...updatedClient,
-          ClientID: clientId,
-          LastModified: updatedTime,
-        },
+        Item: updatedClient,
       });
-      return {
-        ...updatedClient,
-        ClientID: clientId,
-        LastModified: updatedTime,
-      };
+      return updatedClient;
     } catch (error) {
       logger.error(`Failed to update client: ${(error as Error).message}`);
       throw new ClientServiceError("Failed to update client", error as Error);

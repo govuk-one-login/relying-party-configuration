@@ -6,7 +6,7 @@ import { createApiGatewayEvent } from "./test-utils";
 import { APIGatewayProxyResult, Context } from "aws-lambda";
 
 process.env.ENVIRONMENT = "test";
-const TEST_CLIENT = createClient("abcd1234");
+const TEST_CLIENT = createClient({ ClientID: "test-client-id" });
 describe("Get client endpoint tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
 

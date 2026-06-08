@@ -9,6 +9,7 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { Client } from "../models/client";
 import { generateApiGatewayResponse, generateErrorResponse } from "./utils";
 import { logger } from "../logger";
+import { allValidators } from "../helpers/client-validator";
 
 const clientService = new ClientService(
   DynamoDBDocument.from(new DynamoDBClient({})),
@@ -28,8 +29,17 @@ export const handler: Handler = async (
   }
   try {
     // TODO: Perform validation on client input
-    const clientInput = JSON.parse(event.body) as unknown as Client;
-    const client = await clientService.updateClient(clientId, clientInput);
+    const clientToUpdate = JSON.parse(event.body) as unknown as Client;
+
+    const result = await allValidators.validate(clientToUpdate);
+    if (!result.isValid) {
+      return generateApiGatewayResponse(400, {
+        message: "One or more validation errors were found",
+        errors: result.reasons,
+      });
+    }
+
+    const client = await clientService.updateClient(clientToUpdate);
     return generateApiGatewayResponse(200, { ...client });
   } catch (error) {
     logger.error((error as Error).message);
