@@ -12,7 +12,14 @@ import { logger } from "../logger";
 import { allValidators } from "../helpers/client-validator";
 
 const clientService = new ClientService(
-  DynamoDBDocument.from(new DynamoDBClient({})),
+  DynamoDBDocument.from(
+    new DynamoDBClient({
+      region: "eu-west-2",
+      ...(process.env.DYNAMO_ENDPOINT && {
+        endpoint: process.env.DYNAMO_ENDPOINT,
+      }),
+    }),
+  ),
 );
 export const handler: Handler = async (
   event: APIGatewayProxyEvent,

@@ -12,7 +12,7 @@
     "lint:fix": "prettier . --write \"*/**/*.{ts,json}\" ; eslint . --fix",
     "test:unit": "vitest --run",
     "build": "sam build --template template.yml --build-dir build",
-    "start:local": "sam local start-api --template build/template.yaml --warm-containers EAGER",
+    "start:local": "sam local start-api --template build/template.yaml --warm-containers EAGER  --env-vars local-env.json",
     "test:integration": "vitest --run --config vitest.integration.config.ts",
     "test:ci:integration": "npm run start:local & (until curl --silent 127.0.0.1:3000/authorize; do sleep 1; done && npm run test:integration; exit 0)",
     "dynamodblocal:up": "docker compose -f dynamodb.local.yml up -d",
