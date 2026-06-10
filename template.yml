@@ -277,8 +277,6 @@ Resources:
 
   ClientRegistryTable:
     Type: AWS::DynamoDB::Table
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       TableName: !Sub ${Environment}-client-registry
       AttributeDefinitions:
@@ -303,7 +301,6 @@ Resources:
         SSEType: KMS
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
-      DeletionProtectionEnabled: true
       Tags:
         - Key: Name
           Value: ClientRegistryTable
