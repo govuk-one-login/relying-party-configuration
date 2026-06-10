@@ -33,7 +33,7 @@ export const it = baseTest
       return (
         await dynamoDocClient.get({
           TableName: `${process.env.VITEST_WORKER_ID}-client-registry`,
-          Key: { ClientID: clientId },
+          Key: { clientId: clientId },
         })
       ).Item;
     };
@@ -44,13 +44,13 @@ const createTable = async (dynamoClient: DynamoDBClient) => {
     TableName: `${process.env.VITEST_WORKER_ID}-client-registry`,
     AttributeDefinitions: [
       {
-        AttributeName: "ClientID",
+        AttributeName: "clientId",
         AttributeType: "S",
       },
     ],
     KeySchema: [
       {
-        AttributeName: "ClientID",
+        AttributeName: "clientId",
         KeyType: "HASH",
       },
     ],

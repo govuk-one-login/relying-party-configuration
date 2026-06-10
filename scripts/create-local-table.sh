@@ -8,11 +8,11 @@ export AWS_SECRET_ACCESS_KEY=test # pragma: allowlist secret
 aws dynamodb create-table \
    --table-name local-client-registry \
    --attribute-definitions \
-      AttributeName=ClientID,AttributeType=S \
-      AttributeName=ClientName,AttributeType=S \
+      AttributeName=clientId,AttributeType=S \
+      AttributeName=clientName,AttributeType=S \
    --key-schema \
-      AttributeName=ClientID,KeyType=HASH \
+      AttributeName=clientId,KeyType=HASH \
    --provisioned-throughput \
       ReadCapacityUnits=5,WriteCapacityUnits=5 \
    --global-secondary-indexes \
-      '[{"IndexName":"ClientNameIndex","KeySchema":[{"AttributeName":"ClientName","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"},"ProvisionedThroughput":{"ReadCapacityUnits":5,"WriteCapacityUnits":5}}]' \
+      '[{"IndexName":"ClientNameIndex","KeySchema":[{"AttributeName":"clientName","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"},"ProvisionedThroughput":{"ReadCapacityUnits":5,"WriteCapacityUnits":5}}]' \

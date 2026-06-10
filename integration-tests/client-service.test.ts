@@ -20,7 +20,7 @@ describe("Client service integration test", async () => {
       clientService,
     }) => {
       const testClient = createClient({
-        ClientID: "test-client-id",
+        clientId: "test-client-id",
       });
       await addClientsToDynamo(testClient);
 
@@ -44,7 +44,7 @@ describe("Client service integration test", async () => {
       clientService,
     }) => {
       const testClient = createClient({
-        ClientID: "test-client-id",
+        clientId: "test-client-id",
       });
       await addClientsToDynamo(testClient);
 
@@ -56,7 +56,7 @@ describe("Client service integration test", async () => {
         totalPages: 1,
         totalClients: 1,
         clients: [
-          { ClientID: testClient.ClientID, ClientName: testClient.ClientName },
+          { clientId: testClient.clientId, clientName: testClient.clientName },
         ],
       });
     });
@@ -65,9 +65,9 @@ describe("Client service integration test", async () => {
       addClientsToDynamo,
       clientService,
     }) => {
-      const testClient1 = createClient({ ClientID: "test-client-id-1" });
-      const testClient2 = createClient({ ClientID: "test-client-id-2" });
-      const testClient3 = createClient({ ClientID: "test-client-id-3" });
+      const testClient1 = createClient({ clientId: "test-client-id-1" });
+      const testClient2 = createClient({ clientId: "test-client-id-2" });
+      const testClient3 = createClient({ clientId: "test-client-id-3" });
       await addClientsToDynamo(testClient1, testClient2, testClient3);
 
       const actualClients = await clientService.getClientSummaries(1, 2);
@@ -79,12 +79,12 @@ describe("Client service integration test", async () => {
         totalClients: 3,
         clients: [
           {
-            ClientID: testClient2.ClientID,
-            ClientName: testClient2.ClientName,
+            clientId: testClient2.clientId,
+            clientName: testClient2.clientName,
           },
           {
-            ClientID: testClient1.ClientID,
-            ClientName: testClient1.ClientName,
+            clientId: testClient1.clientId,
+            clientName: testClient1.clientName,
           },
         ],
       });
@@ -94,9 +94,9 @@ describe("Client service integration test", async () => {
       addClientsToDynamo,
       clientService,
     }) => {
-      const testClient1 = createClient({ ClientID: "test-client-id-1" });
-      const testClient2 = createClient({ ClientID: "test-client-id-2" });
-      const testClient3 = createClient({ ClientID: "test-client-id-3" });
+      const testClient1 = createClient({ clientId: "test-client-id-1" });
+      const testClient2 = createClient({ clientId: "test-client-id-2" });
+      const testClient3 = createClient({ clientId: "test-client-id-3" });
       await addClientsToDynamo(testClient1, testClient2, testClient3);
 
       const actualClients = await clientService.getClientSummaries(2, 2);
@@ -108,8 +108,8 @@ describe("Client service integration test", async () => {
         totalClients: 3,
         clients: [
           {
-            ClientID: testClient3.ClientID,
-            ClientName: testClient3.ClientName,
+            clientId: testClient3.clientId,
+            clientName: testClient3.clientName,
           },
         ],
       });
@@ -138,7 +138,7 @@ describe("Client service integration test", async () => {
       const clientToCreate = createClient();
       const testClient = await clientService.putClient(clientToCreate);
 
-      expect(await getClientFromDynamo(testClient.ClientID)).toEqual(
+      expect(await getClientFromDynamo(testClient.clientId)).toEqual(
         testClient,
       );
     });
@@ -149,13 +149,13 @@ describe("Client service integration test", async () => {
     }) => {
       await addClientsToDynamo({
         ...CLIENT_DEFAULTS,
-        ClientID: "test-client-id",
-        Created: 1234567,
-        LastModified: 1234567,
+        clientId: "test-client-id",
+        created: 1234567,
+        lastModified: 1234567,
       });
 
       const clientToCreate = createClient({
-        ClientID: "test-client-id",
+        clientId: "test-client-id",
       });
       await expect(() =>
         clientService.putClient(clientToCreate),
@@ -169,25 +169,25 @@ describe("Client service integration test", async () => {
       getClientFromDynamo,
       clientService,
     }) => {
-      const testClient = createClient({ ClientID: "test-client-id" });
+      const testClient = createClient({ clientId: "test-client-id" });
       await addClientsToDynamo(testClient);
 
       await clientService.updateClient({
         ...testClient,
-        Scopes: ["openid", "phone", "email"],
+        scopes: ["openid", "phone", "email"],
       });
 
       expect(await getClientFromDynamo("test-client-id")).toEqual({
         ...testClient,
-        Scopes: ["openid", "phone", "email"],
-        LastModified: 1234567,
+        scopes: ["openid", "phone", "email"],
+        lastModified: 1234567,
       });
     });
 
     it("should fail to update client if client does not exist", async ({
       clientService,
     }) => {
-      const testClient = createClient({ ClientID: "test-client-id" });
+      const testClient = createClient({ clientId: "test-client-id" });
 
       await expect(() =>
         clientService.updateClient(testClient),

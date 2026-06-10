@@ -91,119 +91,119 @@ const notEmptyValidator = <T>(fieldName: string) =>
   }, `Field ${fieldName} cannot be empty`);
 
 const backChannelLogoutUriValidator = optional(
-  validUrlValidator("BackChannelLogoutUri")
-    .and(notHttpValidator("BackChannelLogoutUri"))
-    .and(notLocalhostValidator("BackChannelLogoutUri")),
-).adaptedFrom((client: Client) => client.BackChannelLogoutUri);
+  validUrlValidator("backChannelLogoutUri")
+    .and(notHttpValidator("backChannelLogoutUri"))
+    .and(notLocalhostValidator("backChannelLogoutUri")),
+).adaptedFrom((client: Client) => client.backChannelLogoutUri);
 
-const channelValidator = fieldValidator(VALID_CHANNELS, "Channel").adaptedFrom(
-  (client: Client) => client.Channel,
+const channelValidator = fieldValidator(VALID_CHANNELS, "channel").adaptedFrom(
+  (client: Client) => client.channel,
 );
 
-const claimsValidator = listFieldValidator(VALID_CLAIMS, "Claim").adaptedFrom(
-  (client: Client) => client.Claims,
+const claimsValidator = listFieldValidator(VALID_CLAIMS, "claim").adaptedFrom(
+  (client: Client) => client.claims,
 );
 
-const clientLoCsValidator = listFieldValidator(VALID_LOCS, "ClientLoC")
-  .adaptedFrom((client: Client) => client.ClientLoCs)
+const clientLoCsValidator = listFieldValidator(VALID_LOCS, "clientLoC")
+  .adaptedFrom((client: Client) => client.clientLoCs)
   .and(
     when(
-      (client: Client) => !client.IdentityVerificationSupported,
+      (client: Client) => !client.identityVerificationSupported,
       rule(
         (client: Client) =>
-          !client.ClientLoCs.some((clientLoC) =>
+          !client.clientLoCs.some((clientLoC) =>
             IDENTITY_LOCS.includes(clientLoC),
           ),
-        "Identity is disabled but ClientLoCs contain identity LoCs",
+        "Identity is disabled but clientLoCs contain identity LoCs",
       ),
     ),
   );
 
 const clientNameValidator = rule(
   (clientName: string) => clientName.length > 0 && clientName.length < 255,
-  "ClientName must have between 1 and 255 characters",
+  "clientName must have between 1 and 255 characters",
 )
   .and(
     rule(
       (clientName: string) => /^[\x00-\x7F]{1,255}$/.test(clientName),
-      "ClientName must ONLY include ASCII characters",
+      "clientName must ONLY include ASCII characters",
     ),
   )
   .and(
     rule(
       (clientName: string) => /(?!(\s+)).$/.test(clientName),
-      "ClientName must include at least one non-whitespace character",
+      "clientName must include at least one non-whitespace character",
     ),
   )
   .and(
     rule(
       (clientName: string) => !clientName.startsWith(":"),
-      "ClientName must not start with a :",
+      "clientName must not start with a :",
     ),
   )
-  .adaptedFrom((client: Client) => client.ClientName);
+  .adaptedFrom((client: Client) => client.clientName);
 
 const clientSecretValidator = when(
   (tokenAuthMethod: ClientTokenAuthMethod) =>
-    tokenAuthMethod.TokenAuthMethod === "client_secret_post",
+    tokenAuthMethod.tokenAuthMethod === "client_secret_post",
   rule(
     (tokenAuthMethod: ClientTokenAuthMethod) =>
-      !!(tokenAuthMethod as ClientSecretPostAuth).ClientSecret,
-    `TokenAuthMethod is "client_secret_post" but ClientSecret was not provided`,
+      !!(tokenAuthMethod as ClientSecretPostAuth).clientSecret,
+    `tokenAuthMethod is "client_secret_post" but clientSecret was not provided`,
   ),
 )
-  .adaptedFrom((client: Client) => client.ClientTokenAuthMethod)
+  .adaptedFrom((client: Client) => client.clientTokenAuthMethod)
   .and(
     when(
-      (client: Client) => client.IdentityVerificationSupported,
+      (client: Client) => client.identityVerificationSupported,
       rule(
         (client: Client) =>
-          client.ClientTokenAuthMethod.TokenAuthMethod === "private_key_jwt",
-        "Cannot use TokenAuthMethod of client_secret_post with identity enabled",
+          client.clientTokenAuthMethod.tokenAuthMethod === "private_key_jwt",
+        "Cannot use tokenAuthMethod of client_secret_post with identity enabled",
       ),
     ),
   );
 
 const clientTypeValidator = fieldValidator(
   VALID_CLIENT_TYPES,
-  "ClientType",
-).adaptedFrom((client: Client) => client.ClientType);
+  "clientType",
+).adaptedFrom((client: Client) => client.clientType);
 
 const idTokenSigningAlgorithmValidator = fieldValidator(
   VALID_TOKEN_SIGNING_ALGS,
-  "IdTokenSigningAlgorithm",
-).adaptedFrom((client: Client) => client.IdTokenSigningAlgorithm);
+  "idTokenSigningAlgorithm",
+).adaptedFrom((client: Client) => client.idTokenSigningAlgorithm);
 
 const landingPageUrlValidator = optional(
-  validUrlValidator("LandingPageUrl").and(
+  validUrlValidator("landingPageUrl").and(
     when(
       isProd,
-      notHttpValidator("LandingPageUrl").and(
-        notLocalhostValidator("LandingPageUrl"),
+      notHttpValidator("landingPageUrl").and(
+        notLocalhostValidator("landingPageUrl"),
       ),
     ),
   ),
-).adaptedFrom((client: Client) => client.LandingPageUrl);
+).adaptedFrom((client: Client) => client.landingPageUrl);
 
 const jwksUrlValidator = when(
-  (client: Client) => client.ClientJwtPublicKeySource.Type === "JWKS",
-  validUrlValidator("JwksUrl")
-    .and(when(isProd, notHttpValidator("JwksUrl")))
-    .and(notLocalhostValidator("JwksUrl"))
+  (client: Client) => client.clientJwtPublicKeySource.type === "JWKS",
+  validUrlValidator("jwksUrl")
+    .and(when(isProd, notHttpValidator("jwksUrl")))
+    .and(notLocalhostValidator("jwksUrl"))
     .adaptedFrom(
       (client: Client) =>
-        (client.ClientJwtPublicKeySource as JwksPublicKeySource).JwksUrl,
+        (client.clientJwtPublicKeySource as JwksPublicKeySource).jwksUrl,
     ),
 );
 
 const staticJwksValidator = when(
-  (client: Client) => client.ClientJwtPublicKeySource.Type === "STATIC",
+  (client: Client) => client.clientJwtPublicKeySource.type === "STATIC",
   rule((client: Client) => {
-    const jwks = (client.ClientJwtPublicKeySource as StaticPublicKeySource)
-      .Jwks;
+    const jwks = (client.clientJwtPublicKeySource as StaticPublicKeySource)
+      .jwks;
     return (
       jwks.length > 0 ||
-      client.ClientTokenAuthMethod.TokenAuthMethod === "client_secret_post"
+      client.clientTokenAuthMethod.tokenAuthMethod === "client_secret_post"
     );
   }, "Static JWKS cannot be empty when client secret is not provided").and(
     when(
@@ -220,62 +220,62 @@ const staticJwksValidator = when(
       }, "Static JWKS contains an invalid JWK"),
     ).adaptedFrom(
       (client: Client) =>
-        (client.ClientJwtPublicKeySource as StaticPublicKeySource).Jwks,
+        (client.clientJwtPublicKeySource as StaticPublicKeySource).jwks,
     ),
   ),
 );
 
 const permitMissingNonceValidator = when(
-  (client: Client) => client.IdentityVerificationSupported,
+  (client: Client) => client.identityVerificationSupported,
   rule(
-    (client: Client) => !client.PermitMissingNonce,
-    "Cannot enable PermitMissingNonce if IdentityVerificationSupported is true",
+    (client: Client) => !client.permitMissingNonce,
+    "Cannot enable permitMissingNonce if IdentityVerificationSupported is true",
   ),
 );
 
 const postLogoutRedirectUrlsValidator = listValidator(
   rule(
     isValidUrl,
-    `Field PostLogoutRedirectUrls contains a URL that is not a legal URL`,
+    `Field postLogoutRedirectUrls contains a URL that is not a legal URL`,
   ).and(
     when(
       isProd,
       rule(
         protocolNotHttp,
-        `Field PostLogoutRedirectUrls contains a URL that does not have a valid URL protocol`,
+        `Field postLogoutRedirectUrls contains a URL that does not have a valid URL protocol`,
       ).and(
         rule(
           isNotLocalhost,
-          `Field PostLogoutRedirectUrls contains a URL that is using a local hostname`,
+          `Field postLogoutRedirectUrls contains a URL that is using a local hostname`,
         ),
       ),
     ),
   ),
-).adaptedFrom((client: Client) => client.PostLogoutRedirectUrls);
+).adaptedFrom((client: Client) => client.postLogoutRedirectUrls);
 
 const rateLimitValidator = rule(
   (rateLimit?: number) =>
     !rateLimit || (rateLimit > 0 && Math.floor(rateLimit) === rateLimit),
-  "RateLimit must be a positive whole number",
-).adaptedFrom((client: Client) => client.RateLimit);
+  "rateLimit must be a positive whole number",
+).adaptedFrom((client: Client) => client.rateLimit);
 
-const redirectUrlsValidator = notEmptyValidator<string>("RedirectUrls")
+const redirectUrlsValidator = notEmptyValidator<string>("redirectUrls")
   .and(
     listValidator(
       rule(
         isValidUrl,
-        `Field RedirectUrls contains a URL that is not a legal URL`,
+        `Field redirectUrls contains a URL that is not a legal URL`,
       )
         .and(
           when(
             isProd,
             rule(
               protocolNotHttp,
-              `Field RedirectUrls contains a URL that does not have a valid URL protocol`,
+              `Field redirectUrls contains a URL that does not have a valid URL protocol`,
             ).and(
               rule(
                 isNotLocalhost,
-                `Field RedirectUrls contains a URL that is using a local hostname`,
+                `Field redirectUrls contains a URL that is using a local hostname`,
               ),
             ),
           ),
@@ -295,7 +295,7 @@ const redirectUrlsValidator = notEmptyValidator<string>("RedirectUrls")
                 }
               });
               return valid;
-            }, "RedirectUrls contains a URL with an invalid query parameter name"),
+            }, "redirectUrls contains a URL with an invalid query parameter name"),
           ),
         )
         .and(
@@ -307,35 +307,35 @@ const redirectUrlsValidator = notEmptyValidator<string>("RedirectUrls")
               const urlScheme = url.protocol.replace(":", "");
 
               return !PROHIBITED_REDIRECT_URI_SCHEMES.includes(urlScheme);
-            }, "RedirectUrls contains a URL with an invalid schema"),
+            }, "redirectUrls contains a URL with an invalid schema"),
           ),
         ),
     ),
   )
-  .adaptedFrom((client: Client) => client.RedirectUrls);
+  .adaptedFrom((client: Client) => client.redirectUrls);
 
 const scopesValidator = listFieldValidator(VALID_SCOPES, "Scope")
   .and(
     rule(
       (scopes: string[]) => scopes.includes("openid"),
-      'Scopes must contain "openid"',
+      'scopes must contain "openid"',
     ),
   )
-  .adaptedFrom((client: Client) => client.Scopes);
+  .adaptedFrom((client: Client) => client.scopes);
 
-const sectorIdentifierUriValidator = validUrlValidator("SectorIdentifierUri")
-  .and(when(isProd, notLocalhostValidator("SectorIdentifierUri")))
-  .adaptedFrom((client: Client) => client.SectorIdentifierUri);
+const sectorIdentifierUriValidator = validUrlValidator("sectorIdentifierUri")
+  .and(when(isProd, notLocalhostValidator("sectorIdentifierUri")))
+  .adaptedFrom((client: Client) => client.sectorIdentifierUri);
 
 const serviceTypeValidator = fieldValidator(
   VALID_SERVICE_TYPES,
-  "ServiceType",
-).adaptedFrom((client: Client) => client.ServiceType);
+  "serviceType",
+).adaptedFrom((client: Client) => client.serviceType);
 
 const subjectTypeValidator = fieldValidator(
   VALID_SUBJECT_TYPES,
-  "SubjectType",
-).adaptedFrom((client: Client) => client.SubjectType);
+  "subjectType",
+).adaptedFrom((client: Client) => client.subjectType);
 
 export const allValidators = backChannelLogoutUriValidator
   .and(channelValidator)

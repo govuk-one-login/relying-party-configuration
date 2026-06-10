@@ -2,22 +2,22 @@ import { JWK } from "jose";
 import crypto from "crypto";
 
 export interface JwksPublicKeySource {
-  Type: "JWKS";
-  JwksUrl: string;
+  type: "JWKS";
+  jwksUrl: string;
 }
 export interface StaticPublicKeySource {
-  Type: "STATIC";
-  Jwks: JWK[];
+  type: "STATIC";
+  jwks: JWK[];
 }
 export type ClientJwtPublicKeySource =
   | JwksPublicKeySource
   | StaticPublicKeySource;
 export interface PrivateKeyJwtAuth {
-  TokenAuthMethod: "private_key_jwt";
+  tokenAuthMethod: "private_key_jwt";
 }
 export interface ClientSecretPostAuth {
-  TokenAuthMethod: "client_secret_post";
-  ClientSecret: string;
+  tokenAuthMethod: "client_secret_post";
+  clientSecret: string;
 }
 export type ClientTokenAuthMethod = PrivateKeyJwtAuth | ClientSecretPostAuth;
 export const VALID_SCOPES = Object.freeze([
@@ -71,88 +71,88 @@ export interface PaginatedClientSummary {
   clients: ClientSummary[];
 }
 export interface ClientSummary {
-  ClientID: string;
-  ClientName: string;
+  clientId: string;
+  clientName: string;
 }
 export interface Client extends ClientInput {
-  ClientID: string;
-  Created: number;
-  LastModified: number;
+  clientId: string;
+  created: number;
+  lastModified: number;
 }
 export interface ClientInput {
-  ClientName: string;
-  ClientJwtPublicKeySource: ClientJwtPublicKeySource;
-  ClientTokenAuthMethod: ClientTokenAuthMethod;
-  Scopes: Scope[];
-  RedirectUrls: string[];
-  PostLogoutRedirectUrls: string[];
-  BackChannelLogoutUri?: string;
-  ServiceType: ServiceType;
-  SectorIdentifierUri: string;
-  SubjectType: SubjectType;
-  IsActive: boolean;
-  IsDeprecated: boolean;
-  CookieConsentShared: boolean;
-  TestClient: boolean;
-  JarValidationRequired: boolean;
-  Claims: Claim[];
-  ClientType: ClientType;
-  IdentityVerificationSupported: boolean;
-  OneLoginService: boolean;
-  IdTokenSigningAlgorithm: IdTokenSigningAlgorithm;
-  SmokeTest: boolean;
-  LandingPageUrl?: string;
-  ClientLoCs: LevelOfConfidence[];
-  PermitMissingNonce: boolean;
-  Channel: Channel;
-  MaxAgeEnabled: boolean;
-  PkceEnforced: boolean;
-  RateLimit?: number;
-  OrganisationId: string;
-  ServiceIntegrationId: string;
+  clientName: string;
+  clientJwtPublicKeySource: ClientJwtPublicKeySource;
+  clientTokenAuthMethod: ClientTokenAuthMethod;
+  scopes: Scope[];
+  redirectUrls: string[];
+  postLogoutRedirectUrls: string[];
+  backChannelLogoutUri?: string;
+  serviceType: ServiceType;
+  sectorIdentifierUri: string;
+  subjectType: SubjectType;
+  isActive: boolean;
+  isDeprecated: boolean;
+  cookieConsentShared: boolean;
+  testClient: boolean;
+  jarValidationRequired: boolean;
+  claims: Claim[];
+  clientType: ClientType;
+  identityVerificationSupported: boolean;
+  oneLoginService: boolean;
+  idTokenSigningAlgorithm: IdTokenSigningAlgorithm;
+  smokeTest: boolean;
+  landingPageUrl?: string;
+  clientLoCs: LevelOfConfidence[];
+  permitMissingNonce: boolean;
+  channel: Channel;
+  maxAgeEnabled: boolean;
+  pkceEnforced: boolean;
+  rateLimit?: number;
+  organisationId: string;
+  serviceIntegrationId: string;
 }
 export const CLIENT_DEFAULTS: ClientInput = {
-  ClientName: "test-client",
-  ClientJwtPublicKeySource: {
-    Type: "JWKS",
-    JwksUrl: "https://example.com",
+  clientName: "test-client",
+  clientJwtPublicKeySource: {
+    type: "JWKS",
+    jwksUrl: "https://example.com",
   },
-  ClientTokenAuthMethod: {
-    TokenAuthMethod: "private_key_jwt",
+  clientTokenAuthMethod: {
+    tokenAuthMethod: "private_key_jwt",
   },
-  Scopes: ["openid"],
-  RedirectUrls: ["https://example.com"],
-  PostLogoutRedirectUrls: [],
-  ServiceType: "MANDATORY",
-  SectorIdentifierUri: "https://example.com",
-  SubjectType: "pairwise",
-  IsActive: true,
-  IsDeprecated: false,
-  CookieConsentShared: false,
-  TestClient: false,
-  JarValidationRequired: false,
-  Claims: [],
-  ClientType: "web",
-  IdentityVerificationSupported: false,
-  OneLoginService: false,
-  IdTokenSigningAlgorithm: "ES256",
-  SmokeTest: false,
-  LandingPageUrl: "",
-  ClientLoCs: ["P0"],
-  PermitMissingNonce: false,
-  Channel: "web",
-  MaxAgeEnabled: false,
-  PkceEnforced: false,
-  OrganisationId: "test-org",
-  ServiceIntegrationId: "test-service-integration",
+  scopes: ["openid"],
+  redirectUrls: ["https://example.com"],
+  postLogoutRedirectUrls: [],
+  serviceType: "MANDATORY",
+  sectorIdentifierUri: "https://example.com",
+  subjectType: "pairwise",
+  isActive: true,
+  isDeprecated: false,
+  cookieConsentShared: false,
+  testClient: false,
+  jarValidationRequired: false,
+  claims: [],
+  clientType: "web",
+  identityVerificationSupported: false,
+  oneLoginService: false,
+  idTokenSigningAlgorithm: "ES256",
+  smokeTest: false,
+  landingPageUrl: "",
+  clientLoCs: ["P0"],
+  permitMissingNonce: false,
+  channel: "web",
+  maxAgeEnabled: false,
+  pkceEnforced: false,
+  organisationId: "test-org",
+  serviceIntegrationId: "test-service-integration",
 };
 export function createClient(overrides?: Partial<Client>): Client {
   return {
     ...CLIENT_DEFAULTS,
     ...overrides,
-    ClientID:
-      overrides?.ClientID ?? crypto.randomBytes(20).toString("base64url"),
-    Created: overrides?.Created ?? 123456,
-    LastModified: overrides?.LastModified ?? 123456,
+    clientId:
+      overrides?.clientId ?? crypto.randomBytes(20).toString("base64url"),
+    created: overrides?.created ?? 123456,
+    lastModified: overrides?.lastModified ?? 123456,
   };
 }

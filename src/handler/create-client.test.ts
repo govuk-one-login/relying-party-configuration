@@ -27,9 +27,9 @@ describe("Create client endpoint tests", () => {
 
     const expectedClient = {
       ...testClientInput,
-      ClientID: expect.any(String),
-      Created: 1234567,
-      LastModified: 1234567,
+      clientId: expect.any(String),
+      created: 1234567,
+      lastModified: 1234567,
     };
     expect(response.statusCode).toEqual(201);
     const createdClient = JSON.parse(response.body);
@@ -37,7 +37,7 @@ describe("Create client endpoint tests", () => {
     expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
       TableName: "test-client-registry",
       Item: expectedClient,
-      ConditionExpression: "attribute_not_exists(ClientID)",
+      ConditionExpression: "attribute_not_exists(clientId)",
     });
   });
 
@@ -57,8 +57,8 @@ describe("Create client endpoint tests", () => {
   it("should return a 400 response with validation errors for invalid client input", async () => {
     const invalidClientInput = {
       ...CLIENT_DEFAULTS,
-      Scopes: [],
-      RedirectUrls: [],
+      scopes: [],
+      redirectUrls: [],
     };
 
     const response = await sendCreateClientRequest(invalidClientInput);
@@ -67,8 +67,8 @@ describe("Create client endpoint tests", () => {
     expect(JSON.parse(response.body)).toEqual({
       message: "One or more validation errors were found",
       errors: [
-        "Field RedirectUrls cannot be empty",
-        'Scopes must contain "openid"',
+        "Field redirectUrls cannot be empty",
+        'scopes must contain "openid"',
       ],
     });
   });
@@ -91,7 +91,7 @@ describe("Create client endpoint tests", () => {
       .on(PutCommand, {
         TableName: "test-client-registry",
         Item: CLIENT_DEFAULTS,
-        ConditionExpression: "attribute_not_exists(ClientID)",
+        ConditionExpression: "attribute_not_exists(clientId)",
       })
       .rejects(new Error("Test dynamo error"));
 

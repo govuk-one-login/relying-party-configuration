@@ -6,7 +6,7 @@ import { createApiGatewayEvent } from "./test-utils";
 import { APIGatewayProxyResult, Context } from "aws-lambda";
 
 process.env.ENVIRONMENT = "test";
-const TEST_CLIENT = createClient({ ClientID: "test-client-id" });
+const TEST_CLIENT = createClient({ clientId: "test-client-id" });
 describe("Get client endpoint tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
 
@@ -15,12 +15,12 @@ describe("Get client endpoint tests", () => {
   });
 
   it("should return a 200 response with client if client exists", async () => {
-    mockGetClient(TEST_CLIENT.ClientID).resolves({
+    mockGetClient(TEST_CLIENT.clientId).resolves({
       Item: TEST_CLIENT,
     });
 
     const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("GET", "", {}, {}, { id: TEST_CLIENT.ClientID }),
+      createApiGatewayEvent("GET", "", {}, {}, { id: TEST_CLIENT.clientId }),
       {} as Context,
       () => {},
     );
@@ -30,7 +30,7 @@ describe("Get client endpoint tests", () => {
   });
 
   it("should return a 400 response if client ID parameter is missing", async () => {
-    mockGetClient(TEST_CLIENT.ClientID).resolves({
+    mockGetClient(TEST_CLIENT.clientId).resolves({
       Item: TEST_CLIENT,
     });
 
@@ -77,10 +77,10 @@ describe("Get client endpoint tests", () => {
   });
 
   it("should return a 500 response if dynamo throws error", async () => {
-    mockGetClient(TEST_CLIENT.ClientID).rejects(new Error("Test dynamo error"));
+    mockGetClient(TEST_CLIENT.clientId).rejects(new Error("Test dynamo error"));
 
     const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("GET", "", {}, {}, { id: TEST_CLIENT.ClientID }),
+      createApiGatewayEvent("GET", "", {}, {}, { id: TEST_CLIENT.clientId }),
       {} as Context,
       () => {},
     );
@@ -91,11 +91,11 @@ describe("Get client endpoint tests", () => {
     });
   });
 
-  const mockGetClient = (ClientID: string) => {
+  const mockGetClient = (clientId: string) => {
     return mockDynamo.on(GetCommand, {
       TableName: "test-client-registry",
       Key: {
-        ClientID,
+        clientId,
       },
     });
   };

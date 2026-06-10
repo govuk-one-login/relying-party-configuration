@@ -17,7 +17,7 @@ export class ClientService {
   getClient = async (clientId: string): Promise<Client | undefined> => {
     const result = await this.dynamoClient.get({
       TableName: this.tableName,
-      Key: { ClientID: clientId },
+      Key: { clientId },
     });
     return result.Item as Client;
   };
@@ -38,7 +38,7 @@ export class ClientService {
       },
       {
         TableName: this.tableName,
-        ProjectionExpression: "ClientID, ClientName",
+        ProjectionExpression: "clientId, clientName",
       },
     );
     let pageCount = 0;
@@ -51,8 +51,8 @@ export class ClientService {
         clients =
           page.Items?.map((client) => {
             return {
-              ClientID: client.ClientID as string,
-              ClientName: client.ClientName as string,
+              clientId: client.clientId as string,
+              clientName: client.clientName as string,
             };
           }) ?? [];
       }
@@ -71,12 +71,12 @@ export class ClientService {
       const createdTime = Math.floor(Date.now() / 1000);
       const clientWithUpdatedTimes: Client = {
         ...client,
-        ClientID: client.ClientID,
-        Created: createdTime,
-        LastModified: createdTime,
+        clientId: client.clientId,
+        created: createdTime,
+        lastModified: createdTime,
       };
       await this.dynamoClient.put({
-        ConditionExpression: "attribute_not_exists(ClientID)",
+        ConditionExpression: "attribute_not_exists(clientId)",
         TableName: this.tableName,
         Item: clientWithUpdatedTimes,
       });
@@ -93,11 +93,11 @@ export class ClientService {
       const updatedTime = Math.floor(Date.now() / 1000);
       const updatedClient = {
         ...clientToUpdate,
-        ClientID: clientToUpdate.ClientID,
-        LastModified: updatedTime,
+        clientId: clientToUpdate.clientId,
+        lastModified: updatedTime,
       };
       await this.dynamoClient.put({
-        ConditionExpression: "attribute_exists(ClientID)",
+        ConditionExpression: "attribute_exists(clientId)",
         TableName: this.tableName,
         Item: updatedClient,
       });
