@@ -336,14 +336,6 @@ components:
           description: The service integration that this client belongs to
           type: string
           example: My Service Integration
-        created:
-          description: When this client was created
-          type: string
-          format: date-time
-        lastModified:
-          description: When this client was last modified
-          type: string
-          format: date-time
 
     IdTokenSigningAlgorithm:
       description: Algorithm used to sign the ID token
