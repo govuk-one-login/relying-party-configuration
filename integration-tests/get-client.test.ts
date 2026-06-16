@@ -4,7 +4,7 @@ import { createApiGatewayEvent } from "../src/handler/test-utils";
 import { createClient } from "../src/models/client";
 import { it } from "./base";
 
-const TEST_CLIENT = createClient({ ClientID: "test-client-id" });
+const TEST_CLIENT = createClient({ clientId: "test-client-id" });
 describe("Get client endpoint integration tests", () => {
   it("should return a 200 response with client if client exists", async ({
     addClientsToDynamo,
@@ -12,7 +12,7 @@ describe("Get client endpoint integration tests", () => {
     await addClientsToDynamo(TEST_CLIENT);
 
     const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("GET", "", {}, {}, { id: TEST_CLIENT.ClientID }),
+      createApiGatewayEvent("GET", "", {}, {}, { id: TEST_CLIENT.clientId }),
       {} as Context,
       () => {},
     );
@@ -61,7 +61,7 @@ describe("Get client endpoint integration tests", () => {
     await addClientsToDynamo(TEST_CLIENT);
 
     const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("POST", "", {}, {}, { id: TEST_CLIENT.ClientID }),
+      createApiGatewayEvent("POST", "", {}, {}, { id: TEST_CLIENT.clientId }),
       {} as Context,
       () => {},
     );

@@ -21,18 +21,18 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 200 response with updated client if provided with valid client input", async () => {
-    const existingClient = createClient({ ClientID: "test-client-id" });
+    const existingClient = createClient({ clientId: "test-client-id" });
 
-    const updatedClient = {
+    const updatedClient: Client = {
       ...existingClient,
-      Scopes: ["openid", "phone", "email"],
+      scopes: ["openid", "phone", "email"],
     };
     const response = await sendUpdateClientRequest(updatedClient);
 
     expect(response.statusCode).toEqual(200);
     expect(JSON.parse(response.body)).toEqual({
       ...updatedClient,
-      LastModified: 156789,
+      lastModified: 156789,
     });
   });
 
@@ -63,12 +63,12 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 400 response with errors if client is invalid", async () => {
-    const existingClient = createClient({ ClientID: "test-client-id" });
+    const existingClient = createClient({ clientId: "test-client-id" });
 
     const invalidClient = {
       ...existingClient,
-      RedirectUrls: [],
-      Scopes: [],
+      redirectUrls: [],
+      scopes: [],
     };
     const response = await sendUpdateClientRequest(invalidClient);
 
@@ -76,8 +76,8 @@ describe("Update client endpoint tests", () => {
     expect(JSON.parse(response.body)).toEqual({
       message: "One or more validation errors were found",
       errors: [
-        "Field RedirectUrls cannot be empty",
-        'Scopes must contain "openid"',
+        "Field redirectUrls cannot be empty",
+        'scopes must contain "openid"',
       ],
     });
   });
@@ -96,7 +96,7 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 500 response if dynamo throws an error", async () => {
-    const testClient = createClient({ ClientID: "test-client-id" });
+    const testClient = createClient({ clientId: "test-client-id" });
     mockDynamo.on(PutCommand).rejects(new Error("Test dynamo error"));
 
     const response: APIGatewayProxyResult = await handler(
@@ -105,7 +105,7 @@ describe("Update client endpoint tests", () => {
         JSON.stringify(testClient),
         {},
         {},
-        { id: testClient.ClientID },
+        { id: testClient.clientId },
       ),
       {} as Context,
       () => {},
@@ -126,7 +126,7 @@ describe("Update client endpoint tests", () => {
         JSON.stringify(client),
         {},
         {},
-        { id: client.ClientID },
+        { id: client.clientId },
       ),
       {} as Context,
       () => {},

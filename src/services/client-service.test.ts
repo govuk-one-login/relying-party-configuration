@@ -9,7 +9,7 @@ import { ClientService } from "./client-service";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { CLIENT_DEFAULTS, createClient } from "../models/client";
 
-const TEST_CLIENT = createClient({ ClientID: "abcd1234" });
+const TEST_CLIENT = createClient({ clientId: "abcd1234" });
 const TABLE_PREFIX = "test";
 describe("Client service tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
@@ -35,14 +35,14 @@ describe("Client service tests", () => {
         .on(GetCommand, {
           TableName: `${TABLE_PREFIX}-client-registry`,
           Key: {
-            ClientID: TEST_CLIENT.ClientID,
+            clientId: TEST_CLIENT.clientId,
           },
         })
         .resolves({
           Item: TEST_CLIENT,
         });
 
-      const result = await clientService.getClient(TEST_CLIENT.ClientID);
+      const result = await clientService.getClient(TEST_CLIENT.clientId);
       expect(result).toEqual(TEST_CLIENT);
     });
 
@@ -51,7 +51,7 @@ describe("Client service tests", () => {
         .on(GetCommand, {
           TableName: `${TABLE_PREFIX}-client-registry`,
           Key: {
-            ClientID: "not-a-client-id",
+            clientId: "not-a-client-id",
           },
         })
         .resolves({});
@@ -80,8 +80,8 @@ describe("Client service tests", () => {
         totalClients: 1,
         clients: [
           {
-            ClientID: TEST_CLIENT.ClientID,
-            ClientName: TEST_CLIENT.ClientName,
+            clientId: TEST_CLIENT.clientId,
+            clientName: TEST_CLIENT.clientName,
           },
         ],
       });
@@ -115,12 +115,12 @@ describe("Client service tests", () => {
       expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
         Item: {
           ...CLIENT_DEFAULTS,
-          ClientID: expect.any(String),
-          Created: 1234567,
-          LastModified: 1234567,
+          clientId: expect.any(String),
+          created: 1234567,
+          lastModified: 1234567,
         },
         TableName: `${TABLE_PREFIX}-client-registry`,
-        ConditionExpression: "attribute_not_exists(ClientID)",
+        ConditionExpression: "attribute_not_exists(clientId)",
       });
     });
   });
@@ -128,20 +128,20 @@ describe("Client service tests", () => {
   describe("Update client", () => {
     it("should update a client", async () => {
       const clientToUpdate = createClient({
-        ClientID: "test-client-id",
-        Created: 100000,
+        clientId: "test-client-id",
+        created: 100000,
       });
       await clientService.updateClient(clientToUpdate);
 
       expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
         Item: {
           ...CLIENT_DEFAULTS,
-          ClientID: "test-client-id",
-          Created: 100000,
-          LastModified: 1234567,
+          clientId: "test-client-id",
+          created: 100000,
+          lastModified: 1234567,
         },
         TableName: `${TABLE_PREFIX}-client-registry`,
-        ConditionExpression: "attribute_exists(ClientID)",
+        ConditionExpression: "attribute_exists(clientId)",
       });
     });
   });

@@ -2,7 +2,12 @@ import { APIGatewayProxyResult, Context } from "aws-lambda";
 import { handler } from "../src/handler/update-client";
 import { createApiGatewayEvent } from "../src/handler/test-utils";
 import { it } from "./base";
-import { Client, CLIENT_DEFAULTS, createClient } from "../src/models/client";
+import {
+  Client,
+  CLIENT_DEFAULTS,
+  createClient,
+  Scope,
+} from "../src/models/client";
 import crypto from "crypto";
 
 vi.spyOn(crypto, "randomBytes").mockReturnValue(
@@ -25,20 +30,20 @@ describe("Update client endpoint integration tests", () => {
     getClientFromDynamo,
   }) => {
     const existingClient = createClient({
-      ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
+      clientId: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
     });
     await addClientsToDynamo(existingClient);
 
     const updatedClient = {
       ...existingClient,
-      Scopes: ["openid", "phone", "email"],
+      scopes: ["openid", "phone", "email"] as Scope[],
     };
     const response = await sendUpdateClientRequest(updatedClient);
 
     const expectedClient = {
       ...updatedClient,
-      Created: 123456,
-      LastModified: TEST_TIMESTAMP / 1000,
+      created: 123456,
+      lastModified: TEST_TIMESTAMP / 1000,
     };
     expect(response.statusCode).toEqual(200);
     const createdClient = JSON.parse(response.body);
@@ -52,14 +57,14 @@ describe("Update client endpoint integration tests", () => {
     addClientsToDynamo,
   }) => {
     const existingClient = createClient({
-      ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
+      clientId: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
     });
     await addClientsToDynamo(existingClient);
 
     const invalidClient = {
       ...existingClient,
-      RedirectUrls: [],
-      Scopes: [],
+      redirectUrls: [],
+      scopes: [],
     };
     const response = await sendUpdateClientRequest(invalidClient);
 
@@ -67,8 +72,8 @@ describe("Update client endpoint integration tests", () => {
     expect(JSON.parse(response.body)).toEqual({
       message: "One or more validation errors were found",
       errors: [
-        "Field RedirectUrls cannot be empty",
-        'Scopes must contain "openid"',
+        "Field redirectUrls cannot be empty",
+        'scopes must contain "openid"',
       ],
     });
   });
@@ -78,14 +83,14 @@ describe("Update client endpoint integration tests", () => {
   }) => {
     const existingClient = {
       ...CLIENT_DEFAULTS,
-      ClientID: "a-different-client-id",
-      Created: 1234567890,
-      LastModified: 1234567890,
+      clientId: "a-different-client-id",
+      created: 1234567890,
+      lastModified: 1234567890,
     };
     await addClientsToDynamo(existingClient);
 
     const testClient = createClient({
-      ClientID: "client-id-that-does-not-exist",
+      clientId: "client-id-that-does-not-exist",
     });
     const response = await sendUpdateClientRequest(testClient);
 
@@ -104,7 +109,7 @@ describe("Update client endpoint integration tests", () => {
         JSON.stringify(client),
         {},
         {},
-        { id: client.ClientID },
+        { id: client.clientId },
       ),
       {} as Context,
       () => {},

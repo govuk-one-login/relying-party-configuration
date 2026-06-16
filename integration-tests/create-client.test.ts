@@ -27,14 +27,14 @@ describe("Create client endpoint integration tests", () => {
 
     const expectedClient = {
       ...CLIENT_DEFAULTS,
-      ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
-      Created: 1234567,
-      LastModified: 1234567,
+      clientId: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
+      created: 1234567,
+      lastModified: 1234567,
     };
     expect(response.statusCode).toEqual(201);
     const createdClient = JSON.parse(response.body);
     expect(createdClient).toEqual(expectedClient);
-    expect(await getClientFromDynamo(createdClient.ClientID)).toEqual(
+    expect(await getClientFromDynamo(createdClient.clientId)).toEqual(
       expectedClient,
     );
   });
@@ -42,8 +42,8 @@ describe("Create client endpoint integration tests", () => {
   it("should return a 400 response with errors if client is invalid", async () => {
     const invalidClient = {
       ...CLIENT_DEFAULTS,
-      RedirectUrls: [],
-      Scopes: [],
+      redirectUrls: [],
+      scopes: [],
     };
     const response = await sendCreateClientRequest(invalidClient);
 
@@ -51,8 +51,8 @@ describe("Create client endpoint integration tests", () => {
     expect(JSON.parse(response.body)).toEqual({
       message: "One or more validation errors were found",
       errors: [
-        "Field RedirectUrls cannot be empty",
-        'Scopes must contain "openid"',
+        "Field redirectUrls cannot be empty",
+        'scopes must contain "openid"',
       ],
     });
   });
@@ -62,9 +62,9 @@ describe("Create client endpoint integration tests", () => {
   }) => {
     const existingClient = {
       ...CLIENT_DEFAULTS,
-      ClientID: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
-      Created: 1234567890,
-      LastModified: 1234567890,
+      clientId: "Z2VuZXJhdGVkLWNsaWVudC1pZA",
+      created: 1234567890,
+      lastModified: 1234567890,
     };
     await addClientsToDynamo(existingClient);
 
