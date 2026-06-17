@@ -6,7 +6,8 @@ import { createApiGatewayEvent } from "./test-utils";
 import { APIGatewayProxyResult, Context } from "aws-lambda";
 
 process.env.ENVIRONMENT = "test";
-describe("Update client endpoint tests", () => {
+
+describe("update client endpoint tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
   const TEST_TIMESTAMP = 156789000;
 
@@ -29,8 +30,8 @@ describe("Update client endpoint tests", () => {
     };
     const response = await sendUpdateClientRequest(updatedClient);
 
-    expect(response.statusCode).toEqual(200);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toStrictEqual({
       ...updatedClient,
       lastModified: 156789,
     });
@@ -43,8 +44,8 @@ describe("Update client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(400);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Client ID path parameter not found",
     });
   });
@@ -56,8 +57,8 @@ describe("Update client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(400);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Client not provided in body of request",
     });
   });
@@ -72,8 +73,8 @@ describe("Update client endpoint tests", () => {
     };
     const response = await sendUpdateClientRequest(invalidClient);
 
-    expect(response.statusCode).toEqual(400);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "One or more validation errors were found",
       errors: [
         "Field redirectUrls cannot be empty",
@@ -89,8 +90,8 @@ describe("Update client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(405);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(405);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Method not allowed",
     });
   });
@@ -111,8 +112,8 @@ describe("Update client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(500);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Internal server error",
     });
   });

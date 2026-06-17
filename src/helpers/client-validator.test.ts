@@ -11,12 +11,14 @@ import {
 } from "../models/client";
 import { allValidators } from "./client-validator";
 
-describe("Client validator tests", () => {
+describe("client validator tests", () => {
   const NON_PROD_ENVS = ["dev", "build", "staging", "integration"];
+
   beforeEach(() => {
     process.env.ENVIRONMENT = "dev";
   });
-  describe("URL validation for backChannelLogoutUri", () => {
+
+  describe("url validation for backChannelLogoutUri", () => {
     it(`should return invalid result when backChannelLogoutUri is not a legal URL`, async () => {
       const client = createClient({
         backChannelLogoutUri: "/////not-a-url!",
@@ -219,7 +221,7 @@ describe("Client validator tests", () => {
     ]);
   });
 
-  describe("URL validation for landingPageUrl", () => {
+  describe("url validation for landingPageUrl", () => {
     it(`should return invalid result when landingPageUrl is not a legal URL`, async () => {
       const client = createClient({
         landingPageUrl: "/////not-a-url!",
@@ -287,7 +289,8 @@ describe("Client validator tests", () => {
       }
     });
   });
-  describe("URL validation for jwksUrl", () => {
+
+  describe("url validation for jwksUrl", () => {
     it(`should return invalid result when jwksUrl is not a legal URL`, async () => {
       const client = createClient({
         clientJwtPublicKeySource: {
@@ -405,7 +408,7 @@ describe("Client validator tests", () => {
     ]);
   });
 
-  describe("URL validation for postLogoutRedirectUrls", () => {
+  describe("url validation for postLogoutRedirectUrls", () => {
     it(`should return invalid result when postLogoutRedirectUrls contains an illegal URL`, async () => {
       const client = createClient({
         postLogoutRedirectUrls: ["/////not-a-url!"],
@@ -500,7 +503,7 @@ describe("Client validator tests", () => {
     ]);
   });
 
-  describe("URL validation for redirectUrls", () => {
+  describe("url validation for redirectUrls", () => {
     it(`should return invalid result when redirectUrls contains an illegal URL`, async () => {
       const client = createClient({
         redirectUrls: ["/////not-a-url!"],
@@ -632,7 +635,7 @@ describe("Client validator tests", () => {
     expect(result).toHaveInvalidReasons([`scopes must contain "openid"`]);
   });
 
-  describe("URL validation for sectorIdentifierUri", () => {
+  describe("url validation for sectorIdentifierUri", () => {
     it(`should return invalid result when sectorIdentifierUri is not a legal URL`, async () => {
       const client = createClient({
         sectorIdentifierUri: "/////not-a-url!",

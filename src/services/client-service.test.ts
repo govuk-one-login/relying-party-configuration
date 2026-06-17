@@ -15,7 +15,8 @@ import {
 
 const TEST_CLIENT = createClient({ clientId: "abcd1234" });
 const TABLE_PREFIX = "test";
-describe("Client service tests", () => {
+
+describe("client service tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
   const TEST_TIMESTAMP = 1234567890;
 
@@ -29,7 +30,7 @@ describe("Client service tests", () => {
     vi.useRealTimers();
   });
 
-  describe("Get client by clientId", () => {
+  describe("get client by clientId", () => {
     it("should get client from dynamo", async () => {
       mockDynamo
         .on(GetCommand, {
@@ -43,7 +44,8 @@ describe("Client service tests", () => {
         });
 
       const result = await getClient(TEST_CLIENT.clientId);
-      expect(result).toEqual(TEST_CLIENT);
+
+      expect(result).toStrictEqual(TEST_CLIENT);
     });
 
     it("should get no client if client does not exist in dynamo", async () => {
@@ -57,11 +59,12 @@ describe("Client service tests", () => {
         .resolves({});
 
       const result = await getClient("not-a-client-id");
+
       expect(result).toBeUndefined();
     });
   });
 
-  describe("Get all clients", () => {
+  describe("get all clients", () => {
     it("should get client summaries from dynamo with one page", async () => {
       mockDynamo
         .on(ScanCommand, {
@@ -73,7 +76,8 @@ describe("Client service tests", () => {
         });
 
       const result = await getClientSummaries(1, 5);
-      expect(result).toEqual({
+
+      expect(result).toStrictEqual({
         pageNumber: 1,
         pageSize: 5,
         totalPages: 1,
@@ -97,7 +101,8 @@ describe("Client service tests", () => {
           Items: [],
         });
       const result = await getClientSummaries(1, 5);
-      expect(result).toEqual({
+
+      expect(result).toStrictEqual({
         pageNumber: 1,
         pageSize: 5,
         totalPages: 1,
@@ -107,7 +112,7 @@ describe("Client service tests", () => {
     });
   });
 
-  describe("Create client", () => {
+  describe("create client", () => {
     it("should create a client", async () => {
       const client = createClient();
       await putClient(client);
@@ -125,7 +130,7 @@ describe("Client service tests", () => {
     });
   });
 
-  describe("Update client", () => {
+  describe("update client", () => {
     it("should update a client", async () => {
       const clientToUpdate = createClient({
         clientId: "test-client-id",

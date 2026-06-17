@@ -7,7 +7,8 @@ import { APIGatewayProxyResult, Context } from "aws-lambda";
 
 process.env.ENVIRONMENT = "test";
 const TEST_CLIENT = createClient({ clientId: "test-client-id" });
-describe("Get client endpoint tests", () => {
+
+describe("get client endpoint tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
 
   beforeEach(() => {
@@ -25,8 +26,8 @@ describe("Get client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(200);
-    expect(JSON.parse(response.body)).toEqual(TEST_CLIENT);
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toStrictEqual(TEST_CLIENT);
   });
 
   it("should return a 400 response if client ID parameter is missing", async () => {
@@ -40,8 +41,8 @@ describe("Get client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(400);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Client ID path parameter not found",
     });
   });
@@ -57,8 +58,8 @@ describe("Get client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(404);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(404);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Client not found",
     });
   });
@@ -70,8 +71,8 @@ describe("Get client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(405);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(405);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Method not allowed",
     });
   });
@@ -85,8 +86,8 @@ describe("Get client endpoint tests", () => {
       () => {},
     )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(500);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Internal server error",
     });
   });

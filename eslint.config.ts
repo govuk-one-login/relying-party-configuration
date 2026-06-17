@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 import playwrightEslint from "eslint-plugin-playwright";
+import vitestEslint from "@vitest/eslint-plugin";
 
 export default defineConfig(
   includeIgnoreFile(
@@ -51,6 +52,20 @@ export default defineConfig(
       parserOptions: {
         projectService: true,
       },
+    },
+  },
+  {
+    plugins: {
+      vitest: vitestEslint,
+    },
+    files: ["src/**/*.test.ts"],
+    rules: {
+      ...vitestEslint.configs.all.rules,
+      "vitest/prefer-importing-vitest-globals": "off",
+      "vitest/no-hooks": "off",
+      "vitest/prefer-expect-assertions": "off",
+      "vitest/require-mock-type-parameters": "off",
+      "vitest/valid-title": "off",
     },
   },
   {
