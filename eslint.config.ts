@@ -14,11 +14,11 @@ export default defineConfig(
   {
     files: ["src/**/*.ts", "src/**/*.js"],
     extends: [
-      ...tseslint.configs.strictTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
+      tseslint.configs.strictTypeChecked,
+      tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      "no-control-regex": "off",
+      "@typescript-eslint/explicit-function-return-type": "error",
     },
     languageOptions: {
       ecmaVersion: "latest",
@@ -30,14 +30,16 @@ export default defineConfig(
   {
     files: ["src/setup-unit-tests.ts", "src/**/*.test.ts", "src/**/*.test.js"],
     extends: [
-      ...tseslint.configs.strictTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
+      tseslint.configs.strictTypeChecked,
+      tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/no-empty-object-type": [
+        "error",
+        { allowInterfaces: "with-single-extends" },
+      ],
       "@typescript-eslint/no-empty-function": "off",
-      "@typescript-eslint/no-empty-object-type": "off",
-      "@typescript-eslint/no-explicit-any": "off",
     },
     languageOptions: {
       ecmaVersion: "latest",
