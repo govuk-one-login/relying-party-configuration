@@ -3,6 +3,7 @@ import { handler } from "../src/handler/get-client";
 import { createApiGatewayEvent } from "../src/handler/test-utils";
 import { createClient } from "../src/models/client";
 import { it } from "./base";
+import { DeleteTableCommand } from "@aws-sdk/client-dynamodb";
 
 const TEST_CLIENT = createClient({ clientId: "test-client-id" });
 describe("Get client endpoint integration tests", () => {
@@ -11,10 +12,8 @@ describe("Get client endpoint integration tests", () => {
   }) => {
     await addClientsToDynamo(TEST_CLIENT);
 
-    const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("GET", "", {}, {}, { id: TEST_CLIENT.clientId }),
-      {} as Context,
-      () => {},
+    const response: APIGatewayProxyResult = await sendGetClientRequest(
+      TEST_CLIENT.clientId,
     );
 
     expect(response.statusCode).toEqual(200);
@@ -26,11 +25,11 @@ describe("Get client endpoint integration tests", () => {
   }) => {
     await addClientsToDynamo(TEST_CLIENT);
 
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("GET", "", {}, {}, {}),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
     expect(response.statusCode).toEqual(400);
     expect(JSON.parse(response.body)).toEqual({
@@ -43,11 +42,7 @@ describe("Get client endpoint integration tests", () => {
   }) => {
     await addClientsToDynamo(TEST_CLIENT);
 
-    const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("GET", "", {}, {}, { id: "not-a-client-id" }),
-      {} as Context,
-      () => {},
-    );
+    const response = await sendGetClientRequest("not-a-client-id");
 
     expect(response.statusCode).toEqual(404);
     expect(JSON.parse(response.body)).toEqual({
@@ -60,11 +55,11 @@ describe("Get client endpoint integration tests", () => {
   }) => {
     await addClientsToDynamo(TEST_CLIENT);
 
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("POST", "", {}, {}, { id: TEST_CLIENT.clientId }),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
     expect(response.statusCode).toEqual(405);
     expect(JSON.parse(response.body)).toEqual({
@@ -72,15 +67,15 @@ describe("Get client endpoint integration tests", () => {
     });
   });
 
-  it("should return a 500 response if dynamo throws error", async () => {
-    // Not using any test context variables defined in base.ts
-    // This means the createTable/destroyTable hooks aren't called
-    // so the table does not exist, which is why this test returns a 500
-    const response: APIGatewayProxyResult = await handler(
-      createApiGatewayEvent("GET", "", {}, {}, { id: "not-a-client-id" }),
-      {} as Context,
-      () => {},
-    );
+  it("should return a 500 response if dynamo throws error", async ({
+    dynamoClient,
+  }) => {
+    const command = new DeleteTableCommand({
+      TableName: `${process.env.VITEST_WORKER_ID}-client-registry`,
+    });
+    await dynamoClient.send(command);
+
+    const response = await sendGetClientRequest("not-a-client-id");
 
     expect(response.statusCode).toEqual(500);
     expect(JSON.parse(response.body)).toEqual({
@@ -88,3 +83,13 @@ describe("Get client endpoint integration tests", () => {
     });
   });
 });
+
+const sendGetClientRequest = async (
+  clientId: string,
+): Promise<APIGatewayProxyResult> => {
+  return (await handler(
+    createApiGatewayEvent("GET", "", {}, {}, { id: clientId }),
+    {} as Context,
+    () => {},
+  )) as APIGatewayProxyResult;
+};

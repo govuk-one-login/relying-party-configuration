@@ -5,18 +5,18 @@ import {
   ScanCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { ClientService } from "./client-service";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { CLIENT_DEFAULTS, createClient } from "../models/client";
+import {
+  getClient,
+  getClientSummaries,
+  putClient,
+  updateClient,
+} from "./client-service";
 
 const TEST_CLIENT = createClient({ clientId: "abcd1234" });
 const TABLE_PREFIX = "test";
 describe("Client service tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
-  const clientService = new ClientService(
-    DynamoDBDocument.from(new DynamoDBClient({})),
-    TABLE_PREFIX,
-  );
   const TEST_TIMESTAMP = 1234567890;
 
   beforeEach(() => {
@@ -42,7 +42,7 @@ describe("Client service tests", () => {
           Item: TEST_CLIENT,
         });
 
-      const result = await clientService.getClient(TEST_CLIENT.clientId);
+      const result = await getClient(TEST_CLIENT.clientId);
       expect(result).toEqual(TEST_CLIENT);
     });
 
@@ -56,7 +56,7 @@ describe("Client service tests", () => {
         })
         .resolves({});
 
-      const result = await clientService.getClient("not-a-client-id");
+      const result = await getClient("not-a-client-id");
       expect(result).toBeUndefined();
     });
   });
@@ -72,7 +72,7 @@ describe("Client service tests", () => {
           Items: [TEST_CLIENT],
         });
 
-      const result = await clientService.getClientSummaries(1, 5);
+      const result = await getClientSummaries(1, 5);
       expect(result).toEqual({
         pageNumber: 1,
         pageSize: 5,
@@ -96,7 +96,7 @@ describe("Client service tests", () => {
         .resolves({
           Items: [],
         });
-      const result = await clientService.getClientSummaries(1, 5);
+      const result = await getClientSummaries(1, 5);
       expect(result).toEqual({
         pageNumber: 1,
         pageSize: 5,
@@ -110,7 +110,7 @@ describe("Client service tests", () => {
   describe("Create client", () => {
     it("should create a client", async () => {
       const client = createClient();
-      await clientService.putClient(client);
+      await putClient(client);
 
       expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
         Item: {
@@ -131,7 +131,7 @@ describe("Client service tests", () => {
         clientId: "test-client-id",
         created: 100000,
       });
-      await clientService.updateClient(clientToUpdate);
+      await updateClient(clientToUpdate);
 
       expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
         Item: {

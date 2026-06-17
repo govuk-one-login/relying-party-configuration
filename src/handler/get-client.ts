@@ -3,22 +3,9 @@ import {
   APIGatewayProxyResult,
   Handler,
 } from "aws-lambda";
-import { ClientService } from "../services/client-service";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { generateApiGatewayResponse, generateErrorResponse } from "./utils";
 import { logger } from "../logger";
-
-const clientService = new ClientService(
-  DynamoDBDocument.from(
-    new DynamoDBClient({
-      region: "eu-west-2",
-      ...(process.env.DYNAMO_ENDPOINT && {
-        endpoint: process.env.DYNAMO_ENDPOINT,
-      }),
-    }),
-  ),
-);
+import { getClient } from "../services/client-service";
 
 export const handler: Handler<
   APIGatewayProxyEvent,
@@ -33,7 +20,7 @@ export const handler: Handler<
       return generateErrorResponse(400, "Client ID path parameter not found");
     }
 
-    const client = await clientService.getClient(clientId);
+    const client = await getClient(clientId);
     if (!client) {
       return generateErrorResponse(404, "Client not found");
     } else {
