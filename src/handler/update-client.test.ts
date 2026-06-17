@@ -37,11 +37,11 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 400 response if no client id path parameter provided in body provided", async () => {
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("PUT", "", {}, {}, {}),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
     expect(response.statusCode).toEqual(400);
     expect(JSON.parse(response.body)).toEqual({
@@ -50,11 +50,11 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 400 response if no client input in body provided", async () => {
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("PUT", "", {}, {}, { id: "test-client-id" }),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
     expect(response.statusCode).toEqual(400);
     expect(JSON.parse(response.body)).toEqual({
@@ -83,11 +83,11 @@ describe("Update client endpoint tests", () => {
   });
 
   it("should return a 405 response if using wrong method", async () => {
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("GET", "", {}, {}, {}),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
     expect(response.statusCode).toEqual(405);
     expect(JSON.parse(response.body)).toEqual({
@@ -99,7 +99,7 @@ describe("Update client endpoint tests", () => {
     const testClient = createClient({ clientId: "test-client-id" });
     mockDynamo.on(PutCommand).rejects(new Error("Test dynamo error"));
 
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent(
         "PUT",
         JSON.stringify(testClient),
@@ -109,7 +109,7 @@ describe("Update client endpoint tests", () => {
       ),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
     expect(response.statusCode).toEqual(500);
     expect(JSON.parse(response.body)).toEqual({

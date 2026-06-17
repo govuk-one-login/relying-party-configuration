@@ -87,11 +87,11 @@ export class ClientService {
     }
   };
 
-  updateClient = async (clientToUpdate: Client) => {
+  updateClient = async (clientToUpdate: Client): Promise<Client> => {
     // TODO: Perform validation on client updates
     try {
       const updatedTime = Math.floor(Date.now() / 1000);
-      const updatedClient = {
+      const updatedClient: Client = {
         ...clientToUpdate,
         clientId: clientToUpdate.clientId,
         lastModified: updatedTime,

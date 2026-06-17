@@ -115,7 +115,7 @@ describe("Client service tests", () => {
       expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
         Item: {
           ...CLIENT_DEFAULTS,
-          clientId: expect.any(String),
+          clientId: expect.any(String) as string,
           created: 1234567,
           lastModified: 1234567,
         },

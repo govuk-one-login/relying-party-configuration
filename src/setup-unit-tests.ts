@@ -9,7 +9,7 @@ interface CustomMatchers<R = unknown> {
 }
 
 declare module "vitest" {
-  interface Assertion<T = any> extends CustomMatchers<T> {}
+  interface Assertion<T> extends CustomMatchers<T> {}
   interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
 
@@ -19,7 +19,7 @@ expect.extend({
 
     return {
       pass,
-      message: () =>
+      message: (): string =>
         pass
           ? `Expected validation result NOT to be valid, but it passed.`
           : `Expected validation result to be valid, but it failed with reasons:\n${this.utils.printReceived(
@@ -34,7 +34,7 @@ expect.extend({
     return {
       pass,
       options: { isNot: this.isNot },
-      message: () =>
+      message: (): string =>
         pass
           ? `Expected validation result NOT to be invalid, but it failed.`
           : `Expected validation result to be invalid, but it passed successfully.`,
@@ -47,7 +47,7 @@ expect.extend({
     if (!isInvalid) {
       return {
         pass: false,
-        message: () =>
+        message: (): string =>
           `Expected validation result to have specific reasons, but it passed successfully without errors.`,
       };
     }
@@ -56,7 +56,7 @@ expect.extend({
 
     return {
       pass,
-      message: () =>
+      message: (): string =>
         `Validation failed as expected, but the error reasons did not match.\n\n` +
         `Expected: ${this.utils.printExpected(expectedReasons)}\n` +
         `Received: ${this.utils.printReceived(received.reasons)}`,

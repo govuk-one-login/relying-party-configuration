@@ -1,6 +1,6 @@
 import { DynamoDBDocument, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { CLIENT_DEFAULTS, ClientInput } from "../models/client";
+import { Client, CLIENT_DEFAULTS, ClientInput } from "../models/client";
 import { handler } from "./create-client";
 import { createApiGatewayEvent } from "./test-utils";
 import { APIGatewayProxyResult, Context } from "aws-lambda";
@@ -25,14 +25,14 @@ describe("Create client endpoint tests", () => {
 
     const response = await sendCreateClientRequest(testClientInput);
 
-    const expectedClient = {
+    const expectedClient: Client = {
       ...testClientInput,
-      clientId: expect.any(String),
+      clientId: expect.any(String) as string,
       created: 1234567,
       lastModified: 1234567,
     };
     expect(response.statusCode).toEqual(201);
-    const createdClient = JSON.parse(response.body);
+    const createdClient: Client = JSON.parse(response.body) as Client;
     expect(createdClient).toEqual(expectedClient);
     expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
       TableName: "test-client-registry",
@@ -42,11 +42,11 @@ describe("Create client endpoint tests", () => {
   });
 
   it("should return a 400 response if no client input in body provided", async () => {
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("POST", "", {}, {}),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
     expect(response.statusCode).toEqual(400);
     expect(JSON.parse(response.body)).toEqual({
@@ -74,11 +74,11 @@ describe("Create client endpoint tests", () => {
   });
 
   it("should return a 405 response if using wrong method", async () => {
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("GET", "", {}, {}, {}),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
     expect(response.statusCode).toEqual(405);
     expect(JSON.parse(response.body)).toEqual({

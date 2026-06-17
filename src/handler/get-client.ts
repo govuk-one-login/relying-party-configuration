@@ -20,9 +20,10 @@ const clientService = new ClientService(
   ),
 );
 
-export const handler: Handler = async (
-  event: APIGatewayProxyEvent,
-): Promise<APIGatewayProxyResult> => {
+export const handler: Handler<
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult
+> = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   if ("GET" !== event.httpMethod) {
     return generateErrorResponse(405, "Method not allowed");
   }
