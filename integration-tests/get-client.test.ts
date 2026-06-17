@@ -71,7 +71,7 @@ describe("Get client endpoint integration tests", () => {
     dynamoClient,
   }) => {
     const command = new DeleteTableCommand({
-      TableName: `${process.env.VITEST_WORKER_ID}-client-registry`,
+      TableName: `${process.env.VITEST_WORKER_ID ?? "test"}-client-registry`,
     });
     await dynamoClient.send(command);
 

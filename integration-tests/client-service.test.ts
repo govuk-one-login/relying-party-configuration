@@ -8,7 +8,7 @@ import {
 } from "../src/services/client-service";
 import { it } from "./base";
 
-describe("Client service integration test", async () => {
+describe("Client service integration test", () => {
   const TEST_TIMESTAMP = 1234567890;
 
   beforeEach(() => {

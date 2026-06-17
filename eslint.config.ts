@@ -28,7 +28,12 @@ export default defineConfig(
     },
   },
   {
-    files: ["src/setup-unit-tests.ts", "src/**/*.test.ts", "src/**/*.test.js"],
+    files: [
+      "src/setup-unit-tests.ts",
+      "src/**/*.test.ts",
+      "src/**/*.test.js",
+      "integration-tests/*.test.ts",
+    ],
     extends: [
       tseslint.configs.strictTypeChecked,
       tseslint.configs.stylisticTypeChecked,

@@ -2,11 +2,11 @@ import { APIGatewayProxyResult, Context } from "aws-lambda";
 import { handler } from "../src/handler/create-client";
 import { createApiGatewayEvent } from "../src/handler/test-utils";
 import { it } from "./base";
-import { CLIENT_DEFAULTS, ClientInput } from "../src/models/client";
+import { Client, CLIENT_DEFAULTS, ClientInput } from "../src/models/client";
 import crypto from "crypto";
 
-vi.spyOn(crypto, "randomBytes").mockReturnValue(
-  Buffer.from("generated-client-id", "utf8") as any,
+vi.spyOn(crypto, "randomBytes").mockImplementation(() =>
+  Buffer.from("generated-client-id", "utf8"),
 );
 
 describe("Create client endpoint integration tests", () => {
@@ -32,7 +32,7 @@ describe("Create client endpoint integration tests", () => {
       lastModified: 1234567,
     };
     expect(response.statusCode).toEqual(201);
-    const createdClient = JSON.parse(response.body);
+    const createdClient = JSON.parse(response.body) as Client;
     expect(createdClient).toEqual(expectedClient);
     expect(await getClientFromDynamo(createdClient.clientId)).toEqual(
       expectedClient,
