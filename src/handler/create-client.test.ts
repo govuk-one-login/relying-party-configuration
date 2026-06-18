@@ -1,12 +1,13 @@
 import { DynamoDBDocument, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { CLIENT_DEFAULTS, ClientInput } from "../models/client";
+import { Client, CLIENT_DEFAULTS, ClientInput } from "../models/client";
 import { handler } from "./create-client";
 import { createApiGatewayEvent } from "./test-utils";
 import { APIGatewayProxyResult, Context } from "aws-lambda";
 
 process.env.ENVIRONMENT = "test";
-describe("Create client endpoint tests", () => {
+
+describe("create client endpoint tests", () => {
   const mockDynamo = mockClient(DynamoDBDocument);
   const TEST_TIMESTAMP = 1234567890;
 
@@ -25,15 +26,17 @@ describe("Create client endpoint tests", () => {
 
     const response = await sendCreateClientRequest(testClientInput);
 
-    const expectedClient = {
+    const expectedClient: Client = {
       ...testClientInput,
-      clientId: expect.any(String),
+      clientId: expect.any(String) as string,
       created: 1234567,
       lastModified: 1234567,
     };
-    expect(response.statusCode).toEqual(201);
-    const createdClient = JSON.parse(response.body);
-    expect(createdClient).toEqual(expectedClient);
+
+    const createdClient: Client = JSON.parse(response.body) as Client;
+
+    expect(response.statusCode).toBe(201);
+    expect(createdClient).toStrictEqual(expectedClient);
     expect(mockDynamo).toHaveReceivedCommandExactlyOnceWith(PutCommand, {
       TableName: "test-client-registry",
       Item: expectedClient,
@@ -42,14 +45,14 @@ describe("Create client endpoint tests", () => {
   });
 
   it("should return a 400 response if no client input in body provided", async () => {
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("POST", "", {}, {}),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(400);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Client input not provided in body of request",
     });
   });
@@ -63,8 +66,8 @@ describe("Create client endpoint tests", () => {
 
     const response = await sendCreateClientRequest(invalidClientInput);
 
-    expect(response.statusCode).toEqual(400);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "One or more validation errors were found",
       errors: [
         "Field redirectUrls cannot be empty",
@@ -74,14 +77,14 @@ describe("Create client endpoint tests", () => {
   });
 
   it("should return a 405 response if using wrong method", async () => {
-    const response: APIGatewayProxyResult = await handler(
+    const response: APIGatewayProxyResult = (await handler(
       createApiGatewayEvent("GET", "", {}, {}, {}),
       {} as Context,
       () => {},
-    );
+    )) as APIGatewayProxyResult;
 
-    expect(response.statusCode).toEqual(405);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(405);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Method not allowed",
     });
   });
@@ -97,8 +100,8 @@ describe("Create client endpoint tests", () => {
 
     const response = await sendCreateClientRequest(CLIENT_DEFAULTS);
 
-    expect(response.statusCode).toEqual(500);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toStrictEqual({
       message: "Internal server error",
     });
   });

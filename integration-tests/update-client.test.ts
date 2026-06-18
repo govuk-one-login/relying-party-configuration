@@ -10,8 +10,8 @@ import {
 } from "../src/models/client";
 import crypto from "crypto";
 
-vi.spyOn(crypto, "randomBytes").mockReturnValue(
-  Buffer.from("generated-client-id", "utf8") as any,
+vi.spyOn(crypto, "randomBytes").mockImplementation(() =>
+  Buffer.from("generated-client-id", "utf8"),
 );
 
 describe("Update client endpoint integration tests", () => {
@@ -46,7 +46,7 @@ describe("Update client endpoint integration tests", () => {
       lastModified: TEST_TIMESTAMP / 1000,
     };
     expect(response.statusCode).toEqual(200);
-    const createdClient = JSON.parse(response.body);
+    const createdClient = JSON.parse(response.body) as Client;
     expect(createdClient).toEqual(expectedClient);
     expect(await getClientFromDynamo("Z2VuZXJhdGVkLWNsaWVudC1pZA")).toEqual(
       expectedClient,

@@ -1,8 +1,14 @@
 import { CLIENT_DEFAULTS, createClient } from "../src/models/client";
-import { ClientServiceError } from "../src/services/client-service";
+import {
+  ClientServiceError,
+  getClient,
+  getClientSummaries,
+  putClient,
+  updateClient,
+} from "../src/services/client-service";
 import { it } from "./base";
 
-describe("Client service integration test", async () => {
+describe("Client service integration test", () => {
   const TEST_TIMESTAMP = 1234567890;
 
   beforeEach(() => {
@@ -15,24 +21,19 @@ describe("Client service integration test", async () => {
   });
 
   describe("Get client by ID tests", () => {
-    it("should get client by ID", async ({
-      addClientsToDynamo,
-      clientService,
-    }) => {
+    it("should get client by ID", async ({ addClientsToDynamo }) => {
       const testClient = createClient({
         clientId: "test-client-id",
       });
       await addClientsToDynamo(testClient);
 
-      const actualClient = await clientService.getClient("test-client-id");
+      const actualClient = await getClient("test-client-id");
 
       expect(actualClient).toEqual(testClient);
     });
 
-    it("should not get client if client does not exist with ID", async ({
-      clientService,
-    }) => {
-      const actualClient = await clientService.getClient("test-client-id");
+    it("should not get client if client does not exist with ID", async () => {
+      const actualClient = await getClient("test-client-id");
 
       expect(actualClient).toBeUndefined();
     });
@@ -41,14 +42,13 @@ describe("Client service integration test", async () => {
   describe("Get client summaries", () => {
     it("should get first page of client summaries (less clients than page size)", async ({
       addClientsToDynamo,
-      clientService,
     }) => {
       const testClient = createClient({
         clientId: "test-client-id",
       });
       await addClientsToDynamo(testClient);
 
-      const actualClients = await clientService.getClientSummaries(1, 5);
+      const actualClients = await getClientSummaries(1, 5);
 
       expect(actualClients).toEqual({
         pageNumber: 1,
@@ -63,14 +63,13 @@ describe("Client service integration test", async () => {
 
     it("should get first page of client summaries (more clients than page size)", async ({
       addClientsToDynamo,
-      clientService,
     }) => {
       const testClient1 = createClient({ clientId: "test-client-id-1" });
       const testClient2 = createClient({ clientId: "test-client-id-2" });
       const testClient3 = createClient({ clientId: "test-client-id-3" });
       await addClientsToDynamo(testClient1, testClient2, testClient3);
 
-      const actualClients = await clientService.getClientSummaries(1, 2);
+      const actualClients = await getClientSummaries(1, 2);
 
       expect(actualClients).toEqual({
         pageNumber: 1,
@@ -92,14 +91,13 @@ describe("Client service integration test", async () => {
 
     it("should get second page of client summaries (more clients than page size)", async ({
       addClientsToDynamo,
-      clientService,
     }) => {
       const testClient1 = createClient({ clientId: "test-client-id-1" });
       const testClient2 = createClient({ clientId: "test-client-id-2" });
       const testClient3 = createClient({ clientId: "test-client-id-3" });
       await addClientsToDynamo(testClient1, testClient2, testClient3);
 
-      const actualClients = await clientService.getClientSummaries(2, 2);
+      const actualClients = await getClientSummaries(2, 2);
 
       expect(actualClients).toEqual({
         pageNumber: 2,
@@ -115,10 +113,8 @@ describe("Client service integration test", async () => {
       });
     });
 
-    it("should get no client summaries (no clients exist)", async ({
-      clientService,
-    }) => {
-      const actualClients = await clientService.getClientSummaries(1, 5);
+    it("should get no client summaries (no clients exist)", async () => {
+      const actualClients = await getClientSummaries(1, 5);
 
       expect(actualClients).toEqual({
         pageNumber: 1,
@@ -131,12 +127,9 @@ describe("Client service integration test", async () => {
   });
 
   describe("Create client", () => {
-    it("should create client", async ({
-      getClientFromDynamo,
-      clientService,
-    }) => {
+    it("should create client", async ({ getClientFromDynamo }) => {
       const clientToCreate = createClient();
-      const testClient = await clientService.putClient(clientToCreate);
+      const testClient = await putClient(clientToCreate);
 
       expect(await getClientFromDynamo(testClient.clientId)).toEqual(
         testClient,
@@ -145,7 +138,6 @@ describe("Client service integration test", async () => {
 
     it("should fail to create client if client already exists", async ({
       addClientsToDynamo,
-      clientService,
     }) => {
       await addClientsToDynamo({
         ...CLIENT_DEFAULTS,
@@ -157,9 +149,9 @@ describe("Client service integration test", async () => {
       const clientToCreate = createClient({
         clientId: "test-client-id",
       });
-      await expect(() =>
-        clientService.putClient(clientToCreate),
-      ).rejects.toThrow(ClientServiceError);
+      await expect(() => putClient(clientToCreate)).rejects.toThrow(
+        ClientServiceError,
+      );
     });
   });
 
@@ -167,12 +159,11 @@ describe("Client service integration test", async () => {
     it("should update existing client", async ({
       addClientsToDynamo,
       getClientFromDynamo,
-      clientService,
     }) => {
       const testClient = createClient({ clientId: "test-client-id" });
       await addClientsToDynamo(testClient);
 
-      await clientService.updateClient({
+      await updateClient({
         ...testClient,
         scopes: ["openid", "phone", "email"],
       });
@@ -184,14 +175,12 @@ describe("Client service integration test", async () => {
       });
     });
 
-    it("should fail to update client if client does not exist", async ({
-      clientService,
-    }) => {
+    it("should fail to update client if client does not exist", async () => {
       const testClient = createClient({ clientId: "test-client-id" });
 
-      await expect(() =>
-        clientService.updateClient(testClient),
-      ).rejects.toThrow(ClientServiceError);
+      await expect(() => updateClient(testClient)).rejects.toThrow(
+        ClientServiceError,
+      );
     });
   });
 });

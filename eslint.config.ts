@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 import playwrightEslint from "eslint-plugin-playwright";
+import vitestEslint from "@vitest/eslint-plugin";
 
 export default defineConfig(
   includeIgnoreFile(
@@ -14,11 +15,11 @@ export default defineConfig(
   {
     files: ["src/**/*.ts", "src/**/*.js"],
     extends: [
-      ...tseslint.configs.strictTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
+      tseslint.configs.strictTypeChecked,
+      tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      "no-control-regex": "off",
+      "@typescript-eslint/explicit-function-return-type": "error",
     },
     languageOptions: {
       ecmaVersion: "latest",
@@ -28,22 +29,43 @@ export default defineConfig(
     },
   },
   {
-    files: ["src/setup-unit-tests.ts", "src/**/*.test.ts", "src/**/*.test.js"],
+    files: [
+      "src/setup-unit-tests.ts",
+      "src/**/*.test.ts",
+      "src/**/*.test.js",
+      "integration-tests/*.test.ts",
+    ],
     extends: [
-      ...tseslint.configs.strictTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
+      tseslint.configs.strictTypeChecked,
+      tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/no-empty-object-type": [
+        "error",
+        { allowInterfaces: "with-single-extends" },
+      ],
       "@typescript-eslint/no-empty-function": "off",
-      "@typescript-eslint/no-empty-object-type": "off",
-      "@typescript-eslint/no-explicit-any": "off",
     },
     languageOptions: {
       ecmaVersion: "latest",
       parserOptions: {
         projectService: true,
       },
+    },
+  },
+  {
+    plugins: {
+      vitest: vitestEslint,
+    },
+    files: ["src/**/*.test.ts"],
+    rules: {
+      ...vitestEslint.configs.all.rules,
+      "vitest/prefer-importing-vitest-globals": "off",
+      "vitest/no-hooks": "off",
+      "vitest/prefer-expect-assertions": "off",
+      "vitest/require-mock-type-parameters": "off",
+      "vitest/valid-title": "off",
     },
   },
   {

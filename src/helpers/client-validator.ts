@@ -30,7 +30,7 @@ const PROHIBITED_REDIRECT_URI_QUERY_PARAMETER_NAMES: string[] = [
   "response",
 ];
 
-const isProd = () => process.env.ENVIRONMENT === "production";
+const isProd = (): boolean => process.env.ENVIRONMENT === "production";
 
 const isValidUrl = (url: string): boolean => {
   try {
@@ -49,17 +49,17 @@ const isNotLocalhost = (url: string): boolean => {
   return !(url.includes("localhost") || url.includes("127.0.0.1"));
 };
 
-const validUrlValidator = (fieldName: string) =>
+const validUrlValidator = (fieldName: string): Validator<string> =>
   rule(isValidUrl, `Field ${fieldName} is not a legal URL`);
-const notHttpValidator = (fieldName: string) =>
+const notHttpValidator = (fieldName: string): Validator<string> =>
   rule(
     protocolNotHttp,
     `Field ${fieldName} does not have a valid URL protocol`,
   );
-const notLocalhostValidator = (fieldName: string) =>
+const notLocalhostValidator = (fieldName: string): Validator<string> =>
   rule(isNotLocalhost, `Field ${fieldName} is using a local hostname`);
 
-const listValidator = <T>(validator: Validator<T>) => {
+const listValidator = <T>(validator: Validator<T>): Validator<T[]> => {
   return new Validator(async (values: T[]) => {
     const results = await Promise.all(
       values.map((value) => validator.validate(value)),
@@ -74,7 +74,10 @@ const listValidator = <T>(validator: Validator<T>) => {
   });
 };
 
-const fieldValidator = (validValues: readonly string[], fieldName: string) =>
+const fieldValidator = (
+  validValues: readonly string[],
+  fieldName: string,
+): Validator<string> =>
   rule(
     (value: string) => validValues.includes(value),
     (value: string) => `Invalid ${fieldName} provided: "${value}"`,
@@ -83,9 +86,9 @@ const fieldValidator = (validValues: readonly string[], fieldName: string) =>
 const listFieldValidator = (
   validValues: readonly string[],
   fieldName: string,
-) => listValidator(fieldValidator(validValues, fieldName));
+): Validator<string[]> => listValidator(fieldValidator(validValues, fieldName));
 
-const notEmptyValidator = <T>(fieldName: string) =>
+const notEmptyValidator = <T>(fieldName: string): Validator<T[]> =>
   rule((input: T[]) => {
     return input.length > 0;
   }, `Field ${fieldName} cannot be empty`);
@@ -125,6 +128,7 @@ const clientNameValidator = rule(
 )
   .and(
     rule(
+      // eslint-disable-next-line no-control-regex
       (clientName: string) => /^[\x00-\x7F]{1,255}$/.test(clientName),
       "clientName must ONLY include ASCII characters",
     ),

@@ -5,18 +5,20 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { test as baseTest } from "vitest";
-import { ClientService } from "../src/services/client-service";
 import { Client } from "../src/models/client";
+import { logger } from "../src/logger";
 
 export const it = baseTest
-  .extend("dynamoDocClient", async ({}, { onCleanup }) => {
-    const dynamoClient = new DynamoDBClient({});
-    await createTable(dynamoClient);
-    onCleanup(async () => await deleteTable(dynamoClient));
-    return DynamoDBDocument.from(dynamoClient);
+  .extend("dynamoClient", async ({}) => {
+    return new DynamoDBClient({
+      region: "eu-west-2",
+      ...(process.env.DYNAMO_ENDPOINT && {
+        endpoint: process.env.DYNAMO_ENDPOINT,
+      }),
+    });
   })
-  .extend("clientService", ({ dynamoDocClient }) => {
-    return new ClientService(dynamoDocClient, process.env.VITEST_WORKER_ID);
+  .extend("dynamoDocClient", async ({ dynamoClient }) => {
+    return DynamoDBDocument.from(dynamoClient);
   })
   .extend("addClientsToDynamo", ({ dynamoDocClient }) => {
     return async (...clients: Client[]) => {
@@ -38,6 +40,16 @@ export const it = baseTest
       ).Item;
     };
   });
+it.beforeEach(async ({ dynamoClient }) => {
+  await createTable(dynamoClient);
+});
+it.afterEach(async ({ dynamoClient }) => {
+  try {
+    await deleteTable(dynamoClient);
+  } catch (err) {
+    logger.info("Table does not exist");
+  }
+});
 
 const createTable = async (dynamoClient: DynamoDBClient) => {
   const command = new CreateTableCommand({

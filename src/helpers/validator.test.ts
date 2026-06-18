@@ -1,6 +1,6 @@
 import { rule, when } from "./validator.js";
 
-describe("Validator tests", () => {
+describe("validator tests", () => {
   const abcValidator = rule(
     (input: string) => input.includes("abc"),
     "String does not contain abc",
