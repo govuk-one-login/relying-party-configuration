@@ -35,8 +35,9 @@ repos:
         entry: bash
         args:
           - -c
-          - export GITHUB_WORKSPACE=$(pwd)
-          - sam validate --lint --ignore-lint-errors W1001 -t template.yml
+          - |
+            export GITHUB_WORKSPACE=$(pwd)
+            sam validate --lint -t template.yml
         language: system
         pass_filenames: false
         files: "^template.yml$"
