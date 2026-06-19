@@ -162,6 +162,16 @@ describe("client validator tests", () => {
     ]);
   });
 
+  it("should return valid result when clientName starts and ends with a whitespace", async () => {
+    const client = createClient({
+      clientName: " test ",
+    });
+
+    const result = await allValidators.validate(client);
+
+    expect(result).toBeValid();
+  });
+
   it("should return invalid result when clientSecret is empty when tokenAuthMethod is client_secret_post", async () => {
     const client = createClient({
       clientTokenAuthMethod: {

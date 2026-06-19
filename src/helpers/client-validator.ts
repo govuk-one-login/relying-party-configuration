@@ -135,7 +135,7 @@ const clientNameValidator = rule(
   )
   .and(
     rule(
-      (clientName: string) => /(?!(\s+)).$/.test(clientName),
+      (clientName: string) => clientName.trim() !== "",
       "clientName must include at least one non-whitespace character",
     ),
   )
