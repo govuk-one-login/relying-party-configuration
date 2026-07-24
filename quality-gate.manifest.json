@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.14.0/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.15.0/schemas/schema.json",
   "services": [
     {
       "product": "Orchestration",
@@ -7,83 +7,101 @@
       "promotionType": "securePipelines",
       "automated": [
         {
-          "checkTypes": [
-            "code style and linting",
-            "secret scanning"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/validation.yml",
             "path": "$.jobs.style-checks"
-          }
+          },
+          "checks": [
+            {
+              "name": "code style and linting"
+            },
+            {
+              "name": "secret scanning"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "unit"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/unit-tests.yml",
             "path": "$.jobs.unit-test"
-          }
+          },
+          "checks": [
+            {
+              "name": "unit"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "integration"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/integration-tests.yml",
             "path": "$.jobs.integration-test"
-          }
+          },
+          "checks": [
+            {
+              "name": "integration"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "code quality",
-            "unit test coverage"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/sonarcloud.yml",
             "path": "$.jobs.check"
-          }
+          },
+          "checks": [
+            {
+              "name": "code quality"
+            },
+            {
+              "name": "unit test coverage"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "code style and linting"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/terraform-checks.yml",
             "path": "$.jobs.terraform-format"
-          }
+          },
+          "checks": [
+            {
+              "name": "code style and linting"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "code style and linting"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/terraform-checks.yml",
             "path": "$.jobs.terraform-validate"
-          }
+          },
+          "checks": [
+            {
+              "name": "code style and linting"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "code style and linting"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/checkov.yml",
             "path": "$.jobs.checkov"
-          }
+          },
+          "checks": [
+            {
+              "name": "code style and linting"
+            }
+          ]
         }
       ]
     }
