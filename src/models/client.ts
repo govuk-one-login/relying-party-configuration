@@ -24,7 +24,7 @@ export const VALID_SCOPES = Object.freeze([
   "openid",
   "phone",
   "email",
-  "wallet_subject_id",
+  "wallet-subject-id",
   "am",
   "offline_access",
 ] as const);
