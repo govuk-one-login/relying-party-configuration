@@ -24,7 +24,7 @@
     "@aws-sdk/lib-dynamodb": "^3.1134.0",
     "@eslint/compat": "^2.0.5",
     "@eslint/js": "^10.0.1",
-    "@typescript-eslint/parser": "^8.56.1",
+    "@typescript-eslint/parser": "^8.67.0",
     "@vitest/eslint-plugin": "^1.6.27",
     "esbuild": "^0.28.2",
     "eslint-plugin-playwright": "^2.5.1",
