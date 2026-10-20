@@ -28,6 +28,12 @@ Parameters:
   VpcStackName:
     Type: String
     Description: The name of the stack used to create the VPC
+Mappings:
+  EnvironmentConfiguration:
+    dev:
+      rpatVpce: vpce-0f43ae202e51377a9
+    build:
+      rpatVpce: vpce-029ffda6b9282f5c2
 
 Conditions:
   UseCodeSigning: !Not [!Equals [none, !Ref CodeSigningConfigArn]]
@@ -39,6 +45,11 @@ Conditions:
       !Equals [production, !Ref Environment],
     ]
   IsLocalEnv: !Equals [local, !Ref Environment]
+  IsDevOrBuild:     
+    !Or [
+      !Equals [dev, !Ref Environment],
+      !Equals [build, !Ref Environment],
+    ]
 
 Globals:
   Function:
@@ -107,12 +118,19 @@ Resources:
                 - "execute-api:/*"
               Condition:
                 StringNotEquals:
-                  aws:SourceVpce:
-                    - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
+                  aws:SourceVpce: !If
+                    - IsDevOrBuild
+                    - - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
+                      - !FindInMap [EnvironmentConfiguration, !Ref Environment, rpatVpce]
+                    - - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
       EndpointConfiguration:
         Type: PRIVATE
         VpcEndpointIds:
           - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
+          - !If
+            - IsDevOrBuild
+            - !FindInMap [EnvironmentConfiguration, !Ref Environment, rpatVpce]
+            - !Ref AWS::NoValue
 
   TempLambda:
     Type: AWS::Serverless::Function
