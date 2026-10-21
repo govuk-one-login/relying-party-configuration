@@ -34,6 +34,14 @@ Mappings:
       rpatVpce: vpce-0f43ae202e51377a9
     build:
       rpatVpce: vpce-029ffda6b9282f5c2
+    # TODO: RPAT has not deployed the VPC to higher envs, but SAM does not like these vars unset
+    #  The only places the rpatVpce varibale is used is behind feature flags checking for dev or build, so the below vars will never be used.
+    staging:
+      rpatVpce: changeme
+    integration:
+      rpatVpce: changeme
+    production:
+      rpatVpce: changeme
 
 Conditions:
   UseCodeSigning: !Not [!Equals [none, !Ref CodeSigningConfigArn]]
