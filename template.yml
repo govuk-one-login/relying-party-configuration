@@ -53,11 +53,8 @@ Conditions:
       !Equals [production, !Ref Environment],
     ]
   IsLocalEnv: !Equals [local, !Ref Environment]
-  IsDevOrBuild:     
-    !Or [
-      !Equals [dev, !Ref Environment],
-      !Equals [build, !Ref Environment],
-    ]
+  IsDevOrBuild:
+    !Or [!Equals [dev, !Ref Environment], !Equals [build, !Ref Environment]]
 
 Globals:
   Function:
@@ -129,7 +126,11 @@ Resources:
                   aws:SourceVpce: !If
                     - IsDevOrBuild
                     - - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
-                      - !FindInMap [EnvironmentConfiguration, !Ref Environment, rpatVpce]
+                      - !FindInMap [
+                          EnvironmentConfiguration,
+                          !Ref Environment,
+                          rpatVpce,
+                        ]
                     - - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
       EndpointConfiguration:
         Type: PRIVATE

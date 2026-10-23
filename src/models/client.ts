@@ -10,8 +10,7 @@ export interface StaticPublicKeySource {
   jwks: JWK[];
 }
 export type ClientJwtPublicKeySource =
-  | JwksPublicKeySource
-  | StaticPublicKeySource;
+  JwksPublicKeySource | StaticPublicKeySource;
 export interface PrivateKeyJwtAuth {
   tokenAuthMethod: "private_key_jwt";
 }
@@ -28,7 +27,7 @@ export const VALID_SCOPES = Object.freeze([
   "am",
   "offline_access",
   "govuk-account",
-  "doc-checking-app"
+  "doc-checking-app",
 ] as const);
 export type Scope = (typeof VALID_SCOPES)[number];
 export const VALID_CLAIMS = Object.freeze([
@@ -83,7 +82,7 @@ export interface Client extends ClientInput {
 }
 export interface ClientInput {
   clientName: string;
-  clientJwtPublicKeySource: ClientJwtPublicKeySource;
+  clientJwtPublicKeySource?: ClientJwtPublicKeySource;
   clientTokenAuthMethod: ClientTokenAuthMethod;
   scopes: Scope[];
   redirectUrls: string[];
