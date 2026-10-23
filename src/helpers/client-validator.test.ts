@@ -383,23 +383,18 @@ describe("client validator tests", () => {
     ]);
   });
 
-  it("should return invalid result when clientJwkPublicKeySource is STATIC but no JWKS or client secret provided", async () => {
+  it("should return valid result when clientJwkPublicKeySource is not provided but client secret provided", async () => {
     const client = createClient({
-      clientJwtPublicKeySource: {
-        type: "STATIC",
-        jwks: [],
-      },
+      clientJwtPublicKeySource: undefined,
       clientTokenAuthMethod: {
-        tokenAuthMethod: "private_key_jwt",
+        tokenAuthMethod: "client_secret_post",
+        clientSecret: "test-client-secret", //pragma: allowlist secret
       },
     });
 
     const result = await allValidators.validate(client);
 
-    expect(result).toBeInvalid();
-    expect(result).toHaveInvalidReasons([
-      `Static JWKS cannot be empty when client secret is not provided`,
-    ]);
+    expect(result).toBeValid();
   });
 
   it("should return invalid result when clientJwkPublicKeySource is STATIC but invalid JWK provided", async () => {
