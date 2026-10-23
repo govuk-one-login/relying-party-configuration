@@ -13,7 +13,9 @@
 ### Checklist
 
 - [ ] Successfully deployed to dev or not required.
+
 <!-- Any changes to pre-merge/pre-commit/GHA/etc should be reflected in quality-gate.manifest.json -->
+
 - [ ] Updated quality gates manifest or not required.
 
 ## Related PRs
