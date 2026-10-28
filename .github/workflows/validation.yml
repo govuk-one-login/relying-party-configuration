@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version-file: .nvmrc
 
@@ -29,14 +29,14 @@ jobs:
         run: npm run lint
 
       - name: Set up tflint
-        uses: terraform-linters/setup-tflint@1cf010d3c7aef302051ccdb68c14c5dc2efa34ef
+        uses: terraform-linters/setup-tflint@6ffdbaa3be476b3431f7275c26966ef32ff60337
 
       - name: Lint Terraform
         run: npm run tflint
 
       - name: Setup SAM
         if: github.actor != 'dependabot[bot]'
-        uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310 # v3
+        uses: aws-actions/setup-sam@341eee193f458fa5aae5d52c94b0c5cf3a1c5a52 # v3
         with:
           use-installer: true
 
@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.11.2"
 
