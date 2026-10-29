@@ -150,31 +150,6 @@ Resources:
             - !FindInMap [EnvironmentConfiguration, !Ref Environment, rpatVpce]
             - !Ref AWS::NoValue
 
-  TempLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: .
-      Handler: temp-api.handler
-      Runtime: nodejs24.x
-      Architectures:
-        - arm64
-      Events:
-        Get:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ReadOnlyApiGateway
-            Path: /temp-api
-            Method: get
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        EntryPoints:
-          - src/temp-api.ts
-        Minify: true
-        Sourcemap: true
-        Target: es2022
-        UseNpmCi: True
-
   GetClientLambda:
     Type: AWS::Serverless::Function
     Properties:
