@@ -19,6 +19,7 @@ resource "aws_cloudformation_stack" "api_pipeline_stack" {
     BuildNotificationStackName              = "build-notifications"
     SlackNotificationType                   = var.environment == "dev" ? "None" : "Failures"
     AllowedServiceOne                       = "DynamoDB"
+    AllowedServiceTwo                       = "EC2"
     ProgrammaticPermissionsBoundary         = "True"
     TestImageRepositoryNames                = contains(["build"], var.environment) ? var.repository_name : ""
     TestImageRepositoryUri                  = contains(["build"], var.environment) ? aws_cloudformation_stack.test_image_repository[0].outputs["TestRunnerImageEcrRepositoryUri"] : "none"

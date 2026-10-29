@@ -7,6 +7,16 @@ Description: Relying Party Configuration
 #        Source: govuk-one-login/relying-party-configuration
 #        Owner: di-orchestration@digital.cabinet-office.gov.uk
 
+Metadata:
+  cfn-lint:
+    config:
+      configure_rules:
+        E3031:
+          exceptions:
+            - none
+      ignore_checks:
+        - E3724 # The latest version of cfn-lint seems to think that CodeSigningConfigArn is not a valid parameter in Globals
+
 Parameters:
   Environment:
     Type: String
@@ -53,7 +63,7 @@ Conditions:
       !Equals [production, !Ref Environment],
     ]
   IsLocalEnv: !Equals [local, !Ref Environment]
-  IsDevOrBuild:     
+  IsDevOrBuild:
     !Or [
       !Equals [dev, !Ref Environment],
       !Equals [build, !Ref Environment],
