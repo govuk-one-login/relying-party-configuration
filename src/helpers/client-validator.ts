@@ -1,4 +1,4 @@
-import { importJWK, JWK } from "jose";
+import { importJWK } from "jose";
 import {
   Client,
   ClientSecretPostAuth,
@@ -190,7 +190,7 @@ const landingPageUrlValidator = optional(
 ).adaptedFrom((client: Client) => client.landingPageUrl);
 
 const jwksUrlValidator = when(
-  (client: Client) => client.clientJwtPublicKeySource.type === "JWKS",
+  (client: Client) => client.clientJwtPublicKeySource?.type === "JWKS",
   validUrlValidator("jwksUrl")
     .and(when(isProd, notHttpValidator("jwksUrl")))
     .and(notLocalhostValidator("jwksUrl"))
@@ -201,32 +201,20 @@ const jwksUrlValidator = when(
 );
 
 const staticJwksValidator = when(
-  (client: Client) => client.clientJwtPublicKeySource.type === "STATIC",
-  rule((client: Client) => {
-    const jwks = (client.clientJwtPublicKeySource as StaticPublicKeySource)
-      .jwks;
-    return (
-      jwks.length > 0 ||
-      client.clientTokenAuthMethod.tokenAuthMethod === "client_secret_post"
-    );
-  }, "Static JWKS cannot be empty when client secret is not provided").and(
-    when(
-      (jwks: JWK[]) => jwks.length > 0,
-      rule(async (jwks: JWK[]) => {
-        for (const jwk of jwks) {
-          try {
-            await importJWK(jwk);
-          } catch {
-            return false;
-          }
-        }
-        return true;
-      }, "Static JWKS contains an invalid JWK"),
-    ).adaptedFrom(
-      (client: Client) =>
-        (client.clientJwtPublicKeySource as StaticPublicKeySource).jwks,
-    ),
-  ),
+  (client: Client) =>
+    client.clientJwtPublicKeySource?.type === "STATIC" &&
+    client.clientJwtPublicKeySource.jwks.length > 0,
+  rule(async (client: Client) => {
+    for (const jwk of (client.clientJwtPublicKeySource as StaticPublicKeySource)
+      .jwks) {
+      try {
+        await importJWK(jwk);
+      } catch {
+        return false;
+      }
+    }
+    return true;
+  }, "Static JWKS contains an invalid JWK"),
 );
 
 const permitMissingNonceValidator = when(

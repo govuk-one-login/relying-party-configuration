@@ -139,7 +139,11 @@ Resources:
                   aws:SourceVpce: !If
                     - IsDevOrBuild
                     - - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
-                      - !FindInMap [EnvironmentConfiguration, !Ref Environment, rpatVpce]
+                      - !FindInMap [
+                          EnvironmentConfiguration,
+                          !Ref Environment,
+                          rpatVpce,
+                        ]
                     - - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
       EndpointConfiguration:
         Type: PRIVATE
