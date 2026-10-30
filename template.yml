@@ -150,31 +150,6 @@ Resources:
             - !FindInMap [EnvironmentConfiguration, !Ref Environment, rpatVpce]
             - !Ref AWS::NoValue
 
-  TempLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: .
-      Handler: temp-api.handler
-      Runtime: nodejs24.x
-      Architectures:
-        - arm64
-      Events:
-        Get:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ReadOnlyApiGateway
-            Path: /temp-api
-            Method: get
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        EntryPoints:
-          - src/temp-api.ts
-        Minify: true
-        Sourcemap: true
-        Target: es2022
-        UseNpmCi: True
-
   GetClientLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -196,6 +171,13 @@ Resources:
             RestApiId: !Ref ReadWriteApiGateway
             Path: /clients/{id}
             Method: get
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
       Policies:
         - !Ref ClientRegistryTableReadAccessPolicy
       Environment:
@@ -228,6 +210,13 @@ Resources:
             RestApiId: !Ref ReadWriteApiGateway
             Path: /clients
             Method: post
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
       Policies:
         - !Ref ClientRegistryTableReadWriteAccessPolicy
       Environment:
@@ -260,6 +249,13 @@ Resources:
             RestApiId: !Ref ReadWriteApiGateway
             Path: /clients/{id}
             Method: put
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
       Policies:
         - !Ref ClientRegistryTableReadWriteAccessPolicy
       Environment:
@@ -400,3 +396,22 @@ Resources:
               - kms:Encrypt
             Resource: !GetAtt ClientRegistryTableEncryptionKey.Arn
   #endregion
+
+  LambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Lambda Security Group permissions ruleset
+      VpcId:
+        Fn::ImportValue: !Sub ${VpcStackName}-VpcId
+      SecurityGroupEgress:
+        - DestinationSecurityGroupId:
+            Fn::ImportValue: !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
+          Description: Allow outbound traffic to vpc endpoints
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - DestinationPrefixListId: pl-b3a742da
+          Description: Allow traffic to dynamoDb
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
