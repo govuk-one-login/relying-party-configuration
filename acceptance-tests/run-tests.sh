@@ -17,8 +17,6 @@ get_env_vars_from_SSM
 export API_GW_URL="https://$API_GW_ID-$VPCE_ID.execute-api.eu-west-2.amazonaws.com/$TEST_ENVIRONMENT"
 echo "Using API GW URL: $API_GW_URL"
 
-curl -i -v "https://$API_GW_ID-$VPCE_ID.execute-api.eu-west-2.amazonaws.com/$TEST_ENVIRONMENT/temp-api"
-
 TEST_EXIT_CODE=0
 npm run test || TEST_EXIT_CODE=$?
 

@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { getBaseUrl } from "../utils/get-base-url.js";
 
-test("should call temp api endpoint", async ({ request }) => {
-  const tempApiResult = await request.get(`${getBaseUrl()}/temp-api`);
+test("should call get client endpoint", async ({ request }) => {
+  const tempApiResult = await request.get(`${getBaseUrl()}/clients/123`);
   expect(await tempApiResult.json()).toEqual(
     expect.objectContaining({
-      message: "Hello World",
+      message: "Client not found",
     }),
   );
 });
