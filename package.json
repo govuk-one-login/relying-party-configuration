@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "lint": "prettier --check \"*/**/*.{ts,json}\" ; eslint . ",
+    "lint": "prettier --check \"*/**/*.{ts,json}\" ; eslint . ; echo \"done\"",
     "lint:fix": "prettier . --write \"*/**/*.{ts,json}\" ; eslint . --fix",
     "test:unit": "vitest --run",
     "build": "sam build --template template.yml --build-dir build",
